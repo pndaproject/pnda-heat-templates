@@ -1,0 +1,467 @@
+heat_template_version: 2014-10-16
+
+parameters:
+  SaltmasterFlavor:
+    type: string
+    description: Flavor for the salmaster nodes
+    default: m1.large
+  Manager1Flavor:
+    type: string
+    description: Flavor for the manager nodes
+    default: m1.xlarge
+  Manager2Flavor:
+    type: string
+    description: Flavor for the manager nodes
+    default: m1.xlarge
+  Manager3Flavor:
+    type: string
+    description: Flavor for the manager nodes
+    default: m1.xlarge
+  Manager4Flavor:
+    type: string
+    description: Flavor for the manager nodes
+    default: m1.xlarge
+  EdgeFlavor:
+    type: string
+    description: Flavor for the edge node
+    default: m1.xlarge
+  BastionFlavor:
+    type: string
+    description: Flavor for the bastion nodes
+    default: m1.large
+  ZookeeperFlavor:
+    type: string
+    description: Flavor for the zookeeper nodes
+    default: m1.large
+  KafkaFlavor:
+    type: string
+    description: Flavor for the kafka nodes
+    default: m1.large
+  DatanodeFlavor:
+    type: string
+    description: Flavor for the data nodes
+    default: m1.xlarge
+  CMFlavor:
+    type: string
+    description: Flavor for the data nodes
+    default: m1.xlarge
+  ToolsFlavor:
+    type: string
+    description: Flavor for the tools nodes
+    default: m1.large
+  JupyterFlavor:
+    type: string
+    description: Flavor for the Jupyter nodes
+    default: m1.large
+  LogserverFlavor:
+    type: string
+    description: Flavor for the logserver node
+    default: m1.large
+  OpentsdbFlavor:
+    type: string
+    description: Flavor for the opentsdb node
+    default: m1.large
+  image_id:
+    type: string
+    description: default image for pnda servers
+    default: PndaDEV-trusty-cloud-user-x86_64
+  ToolsNodes:
+    default: '1'
+    description: Number of TOOLS nodes
+    type: string
+  ZookeeperNodes:
+    default: '1'
+    description: Number of ZOOKEEPER nodes
+    type: string
+  KafkaNodes:
+    default: '1'
+    description: Number of KAFKA nodes
+    type: string
+  DataNodes:
+    default: '4'
+    description: Number of DATA nodes
+    type: string
+  ManagerNodes:
+    default: '1'
+    description: Number of DATA nodes
+    type: string
+  OpentsdbNodes:
+    default: 2
+    description: Number of Opentsdb nodes
+    type: number
+  DatanodeVolumeSize:
+    default: 200
+    type: number
+  DatanodeMountpoint:
+    default: /dev/vdb
+    type: string
+  public_net:
+    type: string
+    description: >
+      ID or name of public network for which floating IP addresses will be allocated
+  private_net_name:
+    type: string
+    description: Name of private network to be created
+  private_net_cidr:
+    type: string
+    description: Private network address (CIDR notation)
+  private_net_gateway:
+    type: string
+    description: Private network gateway address
+  private_net_pool_start:
+    type: string
+    description: Start of private network IP address allocation pool
+  private_net_pool_end:
+    type: string
+    description: End of private network IP address allocation pool
+  name_servers:
+    description: List of name name servers
+    type: string
+  KeyName:
+    description: Name of an existing KeyPair to enable SSH access to the instances
+    type: string
+  git_private_key_file:
+    description: private key file for cloning from git
+    type: string
+  PndaFlavor:
+    description: pnda flavor
+    type: string
+    default: standard 
+  GitBranch:
+    description: Branch of the salt repository
+    type: string
+    default: master
+  JavaMirror:
+    description: URL of a mirror for java release download
+    type: string
+    default: ''
+  ClouderaParcelsMirror:
+    description: URL of a mirror for cloudera parcels download
+    type: string
+    default: ''
+
+  keystone_user:
+    type: string
+  keystone_password:
+    type: string
+  keystone_tenant:
+    type: string
+  keystone_auth_url:
+    type: string
+  keystone_region_name:
+    type: string
+  pnda_apps_container:
+    type: string
+  pnda_apps_folder:
+    type: string
+  pnda_archive_container:
+    type: string
+
+  DeploymentID:
+    type: string
+    default: ''
+    description: |
+      DeploymentID for this deployment. To trigger a scaling, the stack shall be updated using a different value passed as a parameter.
+      Otherwise, orchestration steps necessary to properly the scale the clusters will not be executed.
+
+  packages_server_uri:
+    type: string
+    default: ''
+    description: |
+      Base URI for retrieving packages
+  platform_uri:
+    type: string
+    default: ''
+    description: |
+      Uri to retrieve a platform-salt release zip file
+  platform_git_repo_uri:
+    type: string
+    default: ''
+    description: |
+      uri to the platform-salt upstream git repository
+
+resources:
+  Key:
+    type: OS::Nova::KeyPair
+    properties:
+      save_private_key: true
+      name: { get_param: 'OS::stack_name' }
+  private_net:
+    type: OS::Neutron::Net
+    properties:
+      name:
+        str_replace:
+          template: '%stackname%-net'
+          params:
+            '%stackname%': { get_param: 'OS::stack_name' }
+  private_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: private_net }
+      cidr: { get_param: private_net_cidr }
+      gateway_ip: { get_param: private_net_gateway }
+      allocation_pools:
+        - start: { get_param: private_net_pool_start }
+          end: { get_param: private_net_pool_end }
+      dns_nameservers: { get_param: name_servers }
+  router:
+    type: OS::Neutron::Router
+    properties:
+      external_gateway_info:
+        network: { get_param: public_net }
+  router_interface:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: router }
+      subnet_id: { get_resource: private_subnet }
+  PndaSecGroup:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      description: Add security group rules for pnda deployment
+      name:
+        str_replace:
+          template:
+            cname-pnda-cluster
+          params:
+            cname: { get_param: 'OS::stack_name' }
+      rules:
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: tcp
+          port_range_min: 22
+          port_range_max: 22
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: icmp
+        - remote_mode: remote_group_id
+          protocol: tcp
+          port_range_min: 1
+          port_range_max: 65535
+
+  pnda_cluster:
+    type: OS::Pnda::cluster
+    depends_on: [ router_interface, deploy_install ]
+    properties:
+      private_net: { get_resource: private_net }
+      private_subnet: { get_resource: private_subnet }
+      git_private_key_file: { get_param: git_private_key_file }
+      public_net: { get_param: public_net }
+      KeyName: { get_resource: Key }
+      SaltmasterIP: { get_attr: ['saltmaster_server','first_address']}
+      PndaSecGroup: { get_resource: PndaSecGroup }
+      private_key: { get_attr: ['Key','private_key'] }
+      BastionKeyName: { get_param: KeyName }
+      deployment_name: { get_param: 'OS::stack_name' }
+      image_id: { get_param: image_id }
+      EdgeFlavor: { get_param: EdgeFlavor }
+      KafkaFlavor: { get_param: KafkaFlavor }
+      OpentsdbFlavor: { get_param: OpentsdbFlavor }
+      JupyterFlavor: { get_param: JupyterFlavor }
+      CMFlavor: { get_param: CMFlavor }
+      SaltmasterFlavor: { get_param: SaltmasterFlavor }
+      BastionFlavor: { get_param: BastionFlavor }
+      DatanodeFlavor: { get_param: DatanodeFlavor }
+      Manager1Flavor: { get_param: Manager1Flavor }
+      Manager2Flavor: { get_param: Manager2Flavor }
+      Manager3Flavor: { get_param: Manager3Flavor }
+      Manager4Flavor: { get_param: Manager4Flavor }
+      ZookeeperFlavor: { get_param: ZookeeperFlavor }
+      LogserverFlavor: { get_param: LogserverFlavor }
+      ToolsFlavor: { get_param: ToolsFlavor }
+      ZookeeperNodes: { get_param: ZookeeperNodes }
+      KafkaNodes: { get_param: KafkaNodes }
+      DataNodes: { get_param: DataNodes }
+      OpentsdbNodes: { get_param: OpentsdbNodes }
+      DatanodeVolumeSize : { get_param: DatanodeVolumeSize }
+
+  saltmaster_sec_group:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      description: Bastion SecurityGroup
+      name:
+        str_replace:
+          template: '%stackname%-saltmaster'
+          params:
+            '%stackname%': {get_param: 'OS::stack_name'}
+      rules:
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: icmp
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: tcp
+          port_range_min: 22
+          port_range_max: 22
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: tcp
+          port_range_min: 4505
+          port_range_max: 4506
+  saltmaster_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: private_net }
+      fixed_ips:
+        - subnet_id: { get_resource: private_subnet }
+      security_groups: [{ get_resource: saltmaster_sec_group }, { get_resource: PndaSecGroup }]
+  install_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      outputs:
+        - name: result
+      config:
+        str_replace:
+          template: {get_file: scripts/master_install.sh }
+          params:
+            $git_private_key$: { get_file: deploy }
+            $git_branch$: { get_param: GitBranch }
+            $java_mirror$: { get_param: JavaMirror }
+            $cloudera_mirror$: { get_param: ClouderaParcelsMirror }
+            $keystone_user$: { get_param: keystone_user }
+            $keystone_password$: { get_param: keystone_password }
+            $keystone_tenant$: { get_param: keystone_tenant }
+            $keystone_auth_url$: { get_param: keystone_auth_url }
+            $keystone_region_name$: { get_param: keystone_region_name }
+            $packages_server_uri$: { get_param: packages_server_uri }
+            $platform_uri$: { get_param: platform_uri }
+            $platform_git_repo_uri$: { get_param: platform_git_repo_uri }
+            $pnda_apps_container$: { get_param: pnda_apps_container }
+            $pnda_apps_folder$: { get_param: pnda_apps_folder }
+            $pnda_archive_container$: { get_param: pnda_archive_container }
+
+  deploy_install:
+        type: OS::Heat::SoftwareDeployment
+        properties:
+          signal_transport: TEMP_URL_SIGNAL
+          config:
+            get_resource: install_config
+          server:
+            get_resource: saltmaster_server
+          actions:
+            - CREATE
+
+  highstate_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      outputs:
+        - name: result
+      config: |
+        #!/bin/bash -v
+        set -e
+        set -o pipefail
+        salt -v --log-level=debug --state-output=mixed '*' state.highstate | tee salt-highstate-$(date +"%F-%T").log
+  deploy_highstate:
+        type: OS::Heat::SoftwareDeployment
+        depends_on: [deploy_install,pnda_cluster]
+        properties:
+          signal_transport: TEMP_URL_SIGNAL
+          config:
+            get_resource: highstate_config
+          server:
+            get_resource: saltmaster_server
+          actions:
+          - CREATE
+          - UPDATE
+
+  orchestrate_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      outputs:
+        - name: result
+      config:
+        str_replace:
+          template: |
+            #!/bin/bash -v
+            set -e
+            CLUSTER=cname salt-run --log-level=debug state.orchestrate orchestrate.pnda | tee salt-orchestrate-$(date +"%F-%T").log
+          params:
+            cname: { get_param: 'OS::stack_name' }
+  deploy_orchestrate:
+        type: OS::Heat::SoftwareDeployment
+        depends_on: deploy_highstate
+        properties:
+          signal_transport: TEMP_URL_SIGNAL
+          config:
+            get_resource: orchestrate_config
+          server:
+            get_resource: saltmaster_server
+          actions:
+          - CREATE
+
+  expand_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      inputs:
+        - name: deployment_id
+      outputs:
+        - name: result
+      config:
+       str_replace:
+          template: |
+            #!/bin/bash -v
+            set -e
+            set -o pipefail
+            salt -v --log-level=debug --state-output=mixed '*' state.highstate | tee salt-highstate-$(date +"%F-%T").log
+            CLUSTER=cname salt-run --log-level=debug state.orchestrate orchestrate.pnda-expand | tee salt-expand-$(date +"%F-%T").log
+          params:
+            cname: { get_param: 'OS::stack_name' }
+  deploy_expand:
+        type: OS::Heat::SoftwareDeployment
+        depends_on: [deploy_highstate,deploy_orchestrate,pnda_cluster]
+        properties:
+          signal_transport: TEMP_URL_SIGNAL
+          config:
+            get_resource: expand_config
+          server:
+            get_resource: saltmaster_server
+          actions: [ UPDATE ]
+          input_values:
+            deployment_id: { get_param: DeploymentID }
+
+  saltmaster_server:
+    type: OS::Nova::Server
+    depends_on: [ router, private_subnet ]
+    properties:
+      image: { get_param: image_id }
+      flavor: { get_param: SaltmasterFlavor }
+      key_name: { get_resource: Key }
+      networks:
+        - port: { get_resource: saltmaster_port }
+      name:
+        str_replace:
+          template: '%stackname%-saltmaster'
+          params:
+            '%stackname%': {get_param: 'OS::stack_name'}
+      software_config_transport: POLL_TEMP_URL
+      user_data_format: SOFTWARE_CONFIG
+      config_drive: True
+
+outputs:
+  private_key:
+    value: { get_attr: [Key, private_key]}
+    description: |
+      The dynamically created keypair's private key value
+  DeploymentID:
+    value: { get_param: DeploymentID }
+    description: |
+      Last DeploymentID used. To trigger a scaling, the stack shall be updated using a different value passed as a parameter.
+      Otherwise, orchestration steps necessary to properly the scale the clusters will not be executed.
+  salt_highstate:
+    description: Output of the Salt highstate command
+    value:
+      get_attr: [deploy_highstate, deploy_stdout]
+  salt_orchestrate:
+    description: Output of the Salt orchestrate command
+    value:
+      get_attr: [deploy_orchestrate, deploy_stdout]
+  install_stdout:
+    value:
+      get_attr: [deploy_install, deploy_stdout]
+  install_stderr:
+    value:
+      get_attr: [deploy_install, deploy_stderr]
+  install_status_code:
+    value:
+      get_attr: [deploy_install, deploy_status_code]
+  install_result:
+    value:
+      get_attr: [deploy_install, result]

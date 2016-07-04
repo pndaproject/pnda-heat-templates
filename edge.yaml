@@ -1,0 +1,154 @@
+heat_template_version: 2014-10-16
+
+parameters:
+  Flavor:
+    description: Flavor of the edge server
+    type: string
+    default: m1.xlarge
+  KeyName:
+    description: Name of an existing ssh keypair
+    type: string
+  PrivateNet:
+    description: Private network for pnda deployment
+    type: string
+  PrivateSubnet:
+    description: Private network for pnda deployment
+    type: string
+  Image:
+    type: string
+  name:
+    type: string
+  SaltmasterIP:
+    type: string
+  NodeIndex:
+    type: number
+    default: 0
+  cluster_name:
+    type: string
+  pnda_secgroup:
+    type: string
+  pnda_flavor:
+    type: string
+    default: standard 
+  logvolume_size:
+    type: number
+    default: 250
+  log_mountpoint:
+    type: string
+    default: /dev/vdb
+
+resources:
+  sec_group:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      description: Edge SecurityGroup
+      name:
+        str_replace:
+          template:
+            cname-edge
+          params :
+            cname: { get_param: cluster_name }
+      rules:
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: icmp
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: tcp
+          port_range_min: 22
+          port_range_max: 22
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: tcp
+          port_range_min: 8888
+          port_range_max: 8888
+  install_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      config:
+        str_replace:
+          template: {get_file: scripts/edge_install.sh }
+          params:
+            $flavor$: { get_param: pnda_flavor }
+            $master_ip$: { get_param: SaltmasterIP }
+            $pnda_cluster$: { get_param: cluster_name }
+            $volume_dev$: { get_param: log_mountpoint }
+  install_deployment:
+    type: OS::Heat::SoftwareDeployment
+    depends_on: [ minion_deployment, logvolume_attachment ]
+    properties:
+      signal_transport: TEMP_URL_SIGNAL
+      config:
+        get_resource: install_config
+      server:
+        get_resource: server
+  minion_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      config:
+        str_replace:
+          template: {get_file: scripts/saltminion_install.sh }
+          params:
+            $master_ip$: { get_param: SaltmasterIP }
+  minion_deployment:
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      signal_transport: TEMP_URL_SIGNAL
+      config:
+        get_resource: minion_config
+      server:
+        get_resource: server
+
+  port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: PrivateNet }
+      fixed_ips:
+        - subnet_id: { get_param: PrivateSubnet }
+      security_groups: [{ get_resource: sec_group }, { get_param: pnda_secgroup }]
+  logvolume:
+    type: OS::Cinder::Volume
+    properties:
+      size: { get_param: logvolume_size }
+      description: Volume for edge logs
+
+  logvolume_attachment:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_resource: logvolume }
+      instance_uuid: { get_resource: server }
+      mountpoint: { get_param: log_mountpoint }
+
+
+  server:
+    type: OS::Nova::Server
+    properties:
+      name: { get_param: name }
+      image: { get_param: Image }
+      flavor: { get_param: Flavor }
+      key_name: { get_param: KeyName }
+      networks: [{ network: {get_param: PrivateNet}}]
+      security_groups: [{ get_resource: sec_group }, { get_param: pnda_secgroup }]
+
+      software_config_transport: POLL_TEMP_URL
+      user_data_format: SOFTWARE_CONFIG
+      config_drive: True
+
+outputs:
+  port_resource:
+    description: Heat resource handle for the Neutron port
+    value:
+      { get_resource: port }
+  server_resource:
+    description: Heat resource handle for the Nova compute server
+    value:
+      {get_resource: server}
+  hosts_entry:
+    description: >
+      Server's IP address and hostname in the /etc/hosts format
+    value:
+      str_replace:
+        template: |
+          PRIMARYIP PRIMARYHOST
+        params:
+          PRIMARYIP: {get_attr: [server, first_address]}
+          PRIMARYHOST: {get_attr: [server, name]}
