@@ -129,8 +129,8 @@ def create_cluster(args):
                                                                                     stack_environment_file,
                                                                                     stack_params_string)
     elif args.command == 'resize':
-        stack_params_string = ' '.join(stack_params)    
-        cmdline = 'openstack stack update --timeout 120 --template {} --environment {} {}'.format(stack_template_file,
+        stack_params_string = ' '.join(stack_params)
+        cmdline = 'openstack stack update --timeout 120 --wait --template {} --environment {} {}'.format(stack_template_file,
                                                                                     stack_environment_file,
                                                                                     stack_params_string)
     print cmdline
