@@ -29,9 +29,12 @@ def name_string(v):
         raise argparse.ArgumentTypeError("String '%s' may contain only  a-z 0-9 and '-'"%v)
 
 def banner():
-    print "+---------+"
-    print "| P N D A |"
-    print "+---------+"
+    print r"    ____  _   ______  ___ "
+    print r"   / __ \/ | / / __ \/   |"
+    print r"  / /_/ /  |/ / / / / /| |"  
+    print r" / ____/ /|  / /_/ / ___ |"   
+    print r"/_/   /_/ |_/_____/_/  |_|"
+    print r""
 
 def os_cmd(cmdline, print_output=False, verbose=False):
     if verbose:
