@@ -90,6 +90,14 @@ cloudera:
 EOF
 fi
 
+if [ "x$anaconda_mirror$" != "x" ] ; then
+cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
+anaconda:
+  parcel_version: '4.0.0'  
+  parcel_repo: '$anaconda_mirror$'
+EOF
+fi
+
 if [ "x$packages_server_uri$" != "x" ] ; then
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
 packages_server:
