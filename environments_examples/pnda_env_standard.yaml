@@ -60,6 +60,7 @@ parameter_defaults:
   # Optional mirrors
   JavaMirror: 'http://mirror/jdk-8u74-linux-x64.tar.gz'
   ClouderaParcelsMirror: 'http://mirror/archive.cloudera.com/cdh5/parcels/5.5.2/'
+  AnacondaParcelsMirror: 'http://mirror/anaconda/misc/parcels/'
 
   git_private_key_file: deploy
   
