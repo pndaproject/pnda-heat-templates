@@ -31,8 +31,8 @@ def name_string(v):
 def banner():
     print r"    ____  _   ______  ___ "
     print r"   / __ \/ | / / __ \/   |"
-    print r"  / /_/ /  |/ / / / / /| |"  
-    print r" / ____/ /|  / /_/ / ___ |"   
+    print r"  / /_/ /  |/ / / / / /| |"
+    print r" / ____/ /|  / /_/ / ___ |"
     print r"/_/   /_/ |_/_____/_/  |_|"
     print r""
 
