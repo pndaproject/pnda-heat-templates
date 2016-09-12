@@ -4,8 +4,9 @@ set -e
 
 if [ "x$flavor$" = "xstandard" ]; then
 cat > /etc/salt/grains <<EOF
+pnda:
+  flavor: $flavor$
 cloudera:
-  cluster_flavour: $flavor$
   role: MGR01
 roles:
   - cloudera_management
