@@ -17,6 +17,8 @@ fi
 
 a="roles:\n";for i in $roles; do a="$a  - $i\n";done;echo $a
 cat > /etc/salt/grains <<EOF
+pnda:
+  flavor: $flavor$
 pnda_cluster: $pnda_cluster$
 EOF
 cat >> /etc/salt/grains <<EOF

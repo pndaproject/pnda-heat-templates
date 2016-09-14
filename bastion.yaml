@@ -27,6 +27,9 @@ parameters:
     type: string
   cluster_name:
     type: string
+  pnda_flavor:
+    type: string
+    default: standard
   pnda_secgroup:
     type: string
 
@@ -70,6 +73,7 @@ resources:
         str_replace:
           template: {get_file: scripts/bastion_install.sh }
           params:
+            $flavor$: { get_param: pnda_flavor }
             $formula: bastion
             $master_ip$: { get_param: SaltmasterIP }
             $keyname$: { get_param: 'OS::stack_name' }
