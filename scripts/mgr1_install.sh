@@ -9,10 +9,8 @@ pnda:
 cloudera:
   role: MGR01
 roles:
-  - cloudera_management
   - cloudera_namenode
-  - cloudera_zookeeper
-
+  - mysql_connector
 pnda_cluster: $pnda_cluster$
 EOF
 fi
