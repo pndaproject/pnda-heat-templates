@@ -9,8 +9,6 @@ pnda:
   flavor: $flavor$
 cloudera:
   role: DATANODE
-roles:
-  - cloudera_datanode
 pnda_cluster: $pnda_cluster$
 EOF
 
