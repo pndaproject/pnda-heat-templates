@@ -9,7 +9,9 @@ cat > /etc/salt/grains <<EOF
 pnda:
   flavor: $flavor$
 roles:
+  - elk
   - logserver
+  - kibana_dashboard
 pnda_cluster: $pnda_cluster$
 EOF
 

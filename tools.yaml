@@ -51,7 +51,7 @@ resources:
           template: {get_file: scripts/base_install.sh }
           params:
             $flavor$: { get_param: pnda_flavor }
-            $formula: 'tools elk'
+            $formula: 'kafka_manager platform_testing_general elk'
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
   install_deployment:
