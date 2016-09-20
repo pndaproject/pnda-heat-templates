@@ -8,8 +8,6 @@ apt-get -y install xfsprogs
 cat > /etc/salt/grains <<EOF
 pnda:
   flavor: $flavor$
-cloudera:
-  role: DATANODE
 roles:
   - logserver
 pnda_cluster: $pnda_cluster$
