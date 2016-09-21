@@ -91,7 +91,7 @@ parameters:
 resources:
   pnda_cluster:
     type: OS::Pnda::cluster
-    depends_on: [ router_interface, deploy_install ]
+    depends_on: [ router_interface, deploy_install, saltmaster_server ]
     properties:
       private_net: { get_resource: private_net }
       private_subnet: { get_resource: private_subnet }
@@ -141,4 +141,4 @@ resources:
             '%stackname%': {get_param: 'OS::stack_name'}
       software_config_transport: POLL_TEMP_URL
       user_data_format: SOFTWARE_CONFIG
-      config_drive: True
+      config_drive: True   

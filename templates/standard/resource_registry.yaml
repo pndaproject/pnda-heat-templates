@@ -1,5 +1,5 @@
 resource_registry:
-  OS::Pnda::cluster: pnda_cluster_standard.yaml
+  OS::Pnda::cluster: pnda_cluster.yaml
   OS::Pnda::bastion: bastion.yaml
   OS::Pnda::cm: cm.yaml
   OS::Pnda::dn: dn.yaml
@@ -14,3 +14,4 @@ resource_registry:
   OS::Pnda::manager4: mgr4.yaml
   OS::Pnda::jupyter: jupyter.yaml
   OS::Pnda::opentsdb: opentsdb.yaml
+  OS::Pnda::opentsdb: saltmaster.yaml
