@@ -60,38 +60,24 @@ resources:
       group: script
       config:
         str_replace:
-          template: {get_file: scripts/dn_install.sh }
+          template: {get_file: scripts/base_install.sh }
           params:
             $flavor$: { get_param: pnda_flavor }
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
             $volume_dev$: { get_param: log_mountpoint }
+            $roles$: 'cloudera_manager platform_testing_cdh mysql_connector'
+            $cloudera_role$: 'CM'                
   install_deployment:
     type: OS::Heat::SoftwareDeployment
-    depends_on: [ minion_deployment, volume_attachment, logvolume_attachment ]
+    depends_on: [ volume_attachment, logvolume_attachment ]
     properties:
       signal_transport: TEMP_URL_SIGNAL
       config:
         get_resource: install_config
       server:
         get_resource: server
-  minion_config:
-    type: OS::Heat::SoftwareConfig
-    properties:
-      group: script
-      config:
-        str_replace:
-          template: {get_file: scripts/saltminion_install.sh }
-          params:
-            $master_ip$: { get_param: SaltmasterIP }
-  minion_deployment:
-    type: OS::Heat::SoftwareDeployment
-    properties:
-      signal_transport: TEMP_URL_SIGNAL
-      config:
-        get_resource: minion_config
-      server:
-        get_resource: server
+
   server:
     type: OS::Nova::Server
     properties:

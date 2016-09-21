@@ -185,7 +185,7 @@ resources:
         - name: result
       config:
         str_replace:
-          template: {get_file: scripts/master_install.sh }
+          template: {get_file: scripts/saltmaster_install.sh }
           params:
             $git_private_key$: { get_file: deploy }
             $git_branch$: { get_param: GitBranch }

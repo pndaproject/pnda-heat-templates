@@ -53,7 +53,7 @@ resources:
       group: script
       config:
         str_replace:
-          template: {get_file: scripts/saltmaster_install.sh }
+          template: {get_file: scripts/base_install.sh }
           params:
             $flavor$: { get_param: pnda_flavor }
             $pnda_cluster$: { get_param: cluster_name }

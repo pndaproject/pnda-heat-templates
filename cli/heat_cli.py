@@ -80,6 +80,14 @@ def get_args():
     args = parser.parse_args()
     return args
 
+def merge_dicts(base, mergein):
+    for element in mergein:
+        if element not in base:
+            base[element] = mergein[element]
+        else:
+            for child in mergein[element]:
+                base[element][child] = mergein[element][child]  
+
 def setup_flavor_templates(flavor):
     resources_dir = '_resources_%s' % flavor
     shutil.rmtree(resources_dir)
@@ -93,17 +101,21 @@ def setup_flavor_templates(flavor):
         pnda_flavor = yaml.load(infile)
     with open('../../templates/pnda.yaml', 'r') as infile:
         pnda_common = yaml.load(infile)
+    merge_dicts(pnda_common, pnda_flavor)
     with open('pnda.yaml', 'w') as outfile:
-        yaml.dump(pnda_common, outfile, default_flow_style=True)
+        yaml.dump(pnda_common, outfile, default_flow_style=False)
     with open('../../pnda_env.yaml', 'r') as infile:
         pnda_env = yaml.load(infile)
     with open('../../templates/%s/resource_registry.yaml' % flavor, 'r') as infile:
         resource_registry = yaml.load(infile)
     with open('../../templates/%s/instance_flavors.yaml' % flavor, 'r') as infile:
         instance_flavors = yaml.load(infile)
+    merge_dicts(pnda_env, resource_registry)
+    merge_dicts(pnda_env, instance_flavors)
     with open('pnda_env.yaml', 'w') as outfile:
-        yaml.dump(pnda_env, outfile, default_flow_style=True)        
+        yaml.dump(pnda_env, outfile, default_flow_style=False)        
     shutil.copytree('../../scripts', './scripts')
+    shutil.copy('../../deploy', './')
 
 def create_cluster(args):
     pnda_cluster = args.pnda_cluster
@@ -117,7 +129,6 @@ def create_cluster(args):
     command = args.command
 
     setup_flavor_templates(flavor)
-    print 1/0
 
     if flavor == 'standard':
 

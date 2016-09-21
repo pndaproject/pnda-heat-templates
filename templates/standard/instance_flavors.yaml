@@ -1,4 +1,4 @@
-  # FLAVORS
+parameter_defaults:
   Manager1Flavor: p.medium
   Manager2Flavor: p.xlarge
   Manager3Flavor: p.xlarge
