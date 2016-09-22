@@ -1,7 +1,6 @@
 #!/bin/bash -v
 
 set -e
-
 export roles="$roles$"
 
 cat >> /etc/hosts <<EOF
@@ -26,26 +25,28 @@ if [ "x$cloudera_role$" != "x" ]; then
   cat >> /etc/salt/grains <<EOF
   cloudera:
     role: $cloudera_role$
-  EOF
+EOF
 fi
 
 cat >> /etc/salt/grains <<EOF
 `printf "%b" "$a"`
 EOF
 
+
 service salt-minion restart
 
+apt-get -y install xfsprogs
+
 if [ -b $volume_dev$ ]; then
-  apt-get -y install xfsprogs
+  umount $volume_dev$ || echo 'not mounted'  
   mkfs.xfs $volume_dev$
   mkdir -p /var/log/pnda
   cat >> /etc/fstab <<EOF
   $volume_dev$  /var/log/pnda xfs defaults  0 0
-  EOF
-  mount -a
+EOF
 fi
 
-DISKS="vdb"
+DISKS="vdc vdd vde"
 DISK_IDX=0
 for DISK in $DISKS; do
    echo $DISK
