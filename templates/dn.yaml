@@ -30,7 +30,7 @@ parameters:
     default: 200
   mountpoint:
     type: string
-    default: /dev/vdb
+    default: /dev/vdc
   cluster_name:
     type: string
   pnda_secgroup:
@@ -43,7 +43,7 @@ parameters:
     default: 250
   log_mountpoint:
     type: string
-    default: /dev/vdc
+    default: /dev/vdb
 
 
 resources:

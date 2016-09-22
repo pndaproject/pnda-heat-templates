@@ -96,7 +96,7 @@ parameters:
     default: 200
     type: number
   DatanodeMountpoint:
-    default: /dev/vdb
+    default: /dev/vdc
     type: string
 
   public_net:
