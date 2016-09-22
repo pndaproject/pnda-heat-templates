@@ -5,8 +5,9 @@ set -e
 apt-get -y install xfsprogs
 
 cat > /etc/salt/grains <<EOF
+pnda:
+  flavor: $flavor$
 cloudera:
-  cluster_flavour: $flavor$
   role: DATANODE
 roles:
   - cloudera_datanode

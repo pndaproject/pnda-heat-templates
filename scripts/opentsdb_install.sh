@@ -5,8 +5,8 @@ set -e
 export node_index=$index$
 
 cat > /etc/salt/grains <<EOF
-cloudera:
-  cluster_flavour: $flavor$
+pnda:
+  flavor: $flavor$
 pnda_cluster: $pnda_cluster$
 roles:
   - opentsdb

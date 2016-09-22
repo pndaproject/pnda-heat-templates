@@ -29,6 +29,9 @@ parameters:
     type: string
   pnda_secgroup:
     type: string
+  pnda_flavor:
+    type: string
+    default: standard
   logvolume_size:
     type: number
     default: 250
@@ -52,6 +55,7 @@ resources:
         str_replace:
           template: {get_file: scripts/kafka_install.sh }
           params:
+            $flavor$: { get_param: pnda_flavor }
             $master_ip$: { get_param: SaltmasterIP }
             $brokerid$: { get_param: NodeIndex}
             $pnda_cluster$: { get_param: cluster_name }

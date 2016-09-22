@@ -6,9 +6,8 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get -y install xfsprogs
 
 cat > /etc/salt/grains <<EOF
-cloudera:
-  cluster_flavour: $flavor$
-  role: DATANODE
+pnda:
+  flavor: $flavor$
 roles:
   - logserver
 pnda_cluster: $pnda_cluster$
