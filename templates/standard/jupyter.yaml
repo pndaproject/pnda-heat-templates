@@ -32,7 +32,7 @@ resources:
   sec_group:
     type: OS::Neutron::SecurityGroup
     properties:
-      description: CM SecurityGroup
+      description: Jupyter SecurityGroup
       name:
         str_replace:
           template:

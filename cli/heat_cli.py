@@ -72,7 +72,7 @@ def get_args():
     parser.add_argument('-o','--opentsdb-nodes', type=int, help='How many Open TSDB nodes for the hadoop cluster')
     parser.add_argument('-k','--kafka-nodes', type=int, help='How many kafka nodes for the databus cluster')
     parser.add_argument('-z','--zk-nodes', type=int, help='How many zookeeper nodes for the databus cluster')
-    parser.add_argument('-f','--flavor', help='PNDA flavor: e.g. "standard"', choices=['standard'])
+    parser.add_argument('-f','--flavor', help='PNDA flavor: e.g. "standard"', choices=['pico', 'standard'])
     parser.add_argument('-b','--branch', help='Git branch to use (defaults to master)')
     parser.add_argument('-s','--keypair', help='keypair name for ssh to the bastion server')
     parser.add_argument('-v','--verbose', help='Be more verbose')
@@ -90,7 +90,8 @@ def merge_dicts(base, mergein):
 
 def setup_flavor_templates(flavor):
     resources_dir = '_resources_%s' % flavor
-    shutil.rmtree(resources_dir)
+    if os.path.isdir(resources_dir):
+        shutil.rmtree(resources_dir)
     os.makedirs(resources_dir)
     os.chdir(resources_dir)
     for yaml_file in glob.glob('../../templates/%s/*.yaml' % flavor):

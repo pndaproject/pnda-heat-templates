@@ -39,7 +39,7 @@ resources:
   sec_group:
     type: OS::Neutron::SecurityGroup
     properties:
-      description: CM SecurityGroup
+      description: CDH Manager SecurityGroup
       name:
         str_replace:
           template:
@@ -68,7 +68,7 @@ resources:
             $pnda_cluster$: { get_param: cluster_name }
             $flavor$: { get_param: pnda_flavor }
             $volume_dev$: { get_param: log_mountpoint }
-            $roles$: 'cloudera_namenode mysql_connector'
+            $roles$: 'cloudera_namenode mysql_connector oozie_database hue'
             $cloudera_role$: 'MGR01'
   install_deployment:
     type: OS::Heat::SoftwareDeployment

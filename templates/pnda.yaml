@@ -4,7 +4,7 @@ parameters:
   image_id:
     type: string
     description: default image for pnda servers
-    default: PndaDEV-trusty-cloud-user-x86_64
+    default: ubuntu1404
   DatanodeMountpoint:
     default: /dev/vdb
     type: string

@@ -4,31 +4,31 @@ parameters:
   SaltmasterFlavor:
     type: string
     description: Falvor for the salmaster nodes
-    default: m1.micro
+    default: pnda-micro
   Manager1Flavor:
     type: string
     description: Falvor for the manager nodes
-    default: m1.micro
+    default: pnda-micro
   EdgeFlavor:
     type: string
     description: Falvor for the edge node
-    default: m1.micro
+    default: pnda-micro
   BastionFlavor:
     type: string
     description: Flavor for the bastion nodes
-    default: m1.micro
+    default: pnda-micro
   KafkaFlavor:
     type: string
     description: Flavor for the kafka nodes
-    default: m1.micro
+    default: pnda-micro
   DatanodeFlavor:
     type: string
     description: Flavor for the data nodes
-    default: m1.micro
+    default: pnda-micro
   image_id:
     type: string
     description: default image for pnda servers
-    default: PndaDEV-trusty-cloud-user-x86_64
+    default: ubuntu1404
 
   DataNodes:
     default: '1'
@@ -77,23 +77,6 @@ parameters:
     type: string
 
 resources:
-  ZKSecGroup:
-    type: OS::Neutron::SecurityGroup
-    properties:
-      description: Add security group rules for Data Nodes
-      name:
-        str_replace:
-          template:
-            cname-sk
-          params:
-            cname: { get_param: deployment_name }
-      rules:
-        - remote_ip_prefix: 0.0.0.0/0
-          protocol: tcp
-          port_range_min: 22
-          port_range_max: 22
-        - remote_ip_prefix: 0.0.0.0/0
-          protocol: icmp
   KafkaSecGroup:
     type: OS::Neutron::SecurityGroup
     properties:
@@ -111,6 +94,10 @@ resources:
           port_range_max: 22
         - remote_ip_prefix: 0.0.0.0/0
           protocol: icmp
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: tcp
+          port_range_min: 443
+          port_range_max: 443          
   DNSecGroup:
     type: OS::Neutron::SecurityGroup
     properties:
@@ -124,36 +111,7 @@ resources:
       rules:
         - remote_ip_prefix: 0.0.0.0/0
           protocol: icmp
-  OpentsdbSecGroup:
-    type: OS::Neutron::SecurityGroup
-    properties:
-      description: Add security group rules for Opentsdb Nodes
-      name:
-        str_replace:
-          template:
-            cname-opentsdb
-          params:
-            cname: { get_param: deployment_name }
-      rules:
-        - remote_ip_prefix: 0.0.0.0/0
-          protocol: icmp
-  ToolsSecGroup:
-    type: OS::Neutron::SecurityGroup
-    properties:
-      description: Add security group rules for Data Nodes
-      name:
-        str_replace:
-          template:
-            cname-tools
-          params:
-            cname: { get_param: deployment_name }
-      rules:
-        - remote_ip_prefix: 0.0.0.0/0
-          protocol: icmp
-        - remote_ip_prefix: 0.0.0.0/0
-          protocol: tcp
-          port_range_min: 443
-          port_range_max: 443
+  
   bastion:
     type: OS::Pnda::bastion
     properties:
@@ -173,33 +131,11 @@ resources:
       pnda_secgroup: { get_param: PndaSecGroup }
       cluster_name: { get_param: deployment_name }
       pnda_flavor: { get_param: PndaFlavor }
-  zookeeper:
-    type: OS::Heat::ResourceGroup
-    properties:
-      count: { get_param: ZookeeperNodes }
-      resource_def:
-        type: OS::Pnda::zookeeper
-        properties:
-          Flavor: { get_param: ZookeeperFlavor }
-          Image: { get_param: image_id }
-          KeyName: { get_param: KeyName }
-          name:
-            str_replace:
-              template: '%stackname%-zookeeper-%index%'
-              params:
-                '%stackname%': { get_param: deployment_name }
-          NodeIndex: '%index%'
-          PrivateNet: { get_param: private_net }
-          PrivateSubnet: { get_param: private_subnet }
-          SaltmasterIP: { get_param: SaltmasterIP }
-          sec_group: { get_resource: ZKSecGroup }
-          cluster_name: { get_param: deployment_name }
-          pnda_secgroup: { get_param: PndaSecGroup }
-          pnda_flavor: { get_param: PndaFlavor }
+
   kafka:
     type: OS::Heat::ResourceGroup
     properties:
-      count: { get_param: KafkaNodes }
+      count: 1
       resource_def:
         type: OS::Pnda::kafka
         properties:
@@ -219,80 +155,7 @@ resources:
           cluster_name: { get_param: deployment_name }
           pnda_secgroup: { get_param: PndaSecGroup }
           pnda_flavor: { get_param: PndaFlavor }
-  tools:
-    type: OS::Heat::ResourceGroup
-    properties:
-      count: { get_param: ToolsNodes }
-      resource_def:
-        type: OS::Pnda::tools
-        properties:
-          Flavor: { get_param: ToolsFlavor }
-          Image: { get_param: image_id }
-          KeyName: { get_param: KeyName }
-          name:
-            str_replace:
-              template: '%stackname%-tools-%index%'
-              params:
-                '%stackname%': { get_param: deployment_name }
-          NodeIndex: '%index%'
-          PrivateNet: { get_param: private_net }
-          PrivateSubnet: { get_param: private_subnet }
-          SaltmasterIP: { get_param: SaltmasterIP }
-          sec_group: { get_resource: ToolsSecGroup }
-          cluster_name: { get_param: deployment_name }
-          pnda_secgroup: { get_param: PndaSecGroup }
-          pnda_flavor: { get_param: PndaFlavor }
-  cm:
-    type: OS::Pnda::cm
-    properties:
-      Flavor: { get_param: CMFlavor }
-      Image: { get_param: image_id }
-      KeyName: { get_param: KeyName }
-      name:
-        str_replace:
-          template: '%stackname%-cdh-cm'
-          params:
-            '%stackname%': { get_param: deployment_name }
-      PrivateNet: { get_param: private_net }
-      PrivateSubnet: { get_param: private_subnet }
-      SaltmasterIP: { get_param: SaltmasterIP }
-      cluster_name: { get_param: deployment_name }
-      pnda_secgroup: { get_param: PndaSecGroup }
-      pnda_flavor: { get_param: PndaFlavor }
-  logserver:
-    type: OS::Pnda::logserver
-    properties:
-      Flavor: { get_param: LogserverFlavor }
-      Image: { get_param: image_id }
-      KeyName: { get_param: KeyName }
-      name:
-        str_replace:
-          template: '%stackname%-logserver'
-          params:
-            '%stackname%': { get_param: deployment_name }
-      PrivateNet: { get_param: private_net }
-      PrivateSubnet: { get_param: private_subnet }
-      SaltmasterIP: { get_param: SaltmasterIP }
-      cluster_name: { get_param: deployment_name }
-      pnda_secgroup: { get_param: PndaSecGroup }
-      pnda_flavor: { get_param: PndaFlavor }
-  jupyter:
-    type: OS::Pnda::jupyter
-    properties:
-      Flavor: { get_param: JupyterFlavor }
-      Image: { get_param: image_id }
-      KeyName: { get_param: KeyName }
-      name:
-        str_replace:
-          template: '%stackname%-cdh-jupyter'
-          params:
-            '%stackname%': { get_param: deployment_name }
-      PrivateNet: { get_param: private_net }
-      PrivateSubnet: { get_param: private_subnet }
-      SaltmasterIP: { get_param: SaltmasterIP }
-      cluster_name: { get_param: deployment_name }
-      pnda_secgroup: { get_param: PndaSecGroup }
-      pnda_flavor: { get_param: PndaFlavor }
+
   manager1:
     type: OS::Pnda::manager1
     properties:
@@ -302,57 +165,6 @@ resources:
       name:
         str_replace:
           template: '%stackname%-cdh-mgr1'
-          params:
-            '%stackname%': { get_param: deployment_name }
-      PrivateNet: { get_param: private_net }
-      PrivateSubnet: { get_param: private_subnet }
-      SaltmasterIP: { get_param: SaltmasterIP }
-      pnda_secgroup: { get_param: PndaSecGroup }
-      cluster_name: { get_param: deployment_name }
-      pnda_flavor: { get_param: PndaFlavor }
-  manager2:
-    type: OS::Pnda::manager2
-    properties:
-      Flavor: { get_param: Manager2Flavor }
-      Image: { get_param: image_id }
-      KeyName: { get_param: KeyName }
-      name:
-        str_replace:
-          template: '%stackname%-cdh-mgr2'
-          params:
-            '%stackname%': { get_param: deployment_name }
-      PrivateNet: { get_param: private_net }
-      PrivateSubnet: { get_param: private_subnet }
-      SaltmasterIP: { get_param: SaltmasterIP }
-      pnda_secgroup: { get_param: PndaSecGroup }
-      cluster_name: { get_param: deployment_name }
-      pnda_flavor: { get_param: PndaFlavor }
-  manager3:
-    type: OS::Pnda::manager3
-    properties:
-      Flavor: { get_param: Manager3Flavor }
-      Image: { get_param: image_id }
-      KeyName: { get_param: KeyName }
-      name:
-        str_replace:
-          template: '%stackname%-cdh-mgr3'
-          params:
-            '%stackname%': { get_param: deployment_name }
-      PrivateNet: { get_param: private_net }
-      PrivateSubnet: { get_param: private_subnet }
-      SaltmasterIP: { get_param: SaltmasterIP }
-      pnda_secgroup: { get_param: PndaSecGroup }
-      cluster_name: { get_param: deployment_name }
-      pnda_flavor: { get_param: PndaFlavor }
-  manager4:
-    type: OS::Pnda::manager4
-    properties:
-      Flavor: { get_param: Manager4Flavor }
-      Image: { get_param: image_id }
-      KeyName: { get_param: KeyName }
-      name:
-        str_replace:
-          template: '%stackname%-cdh-mgr4'
           params:
             '%stackname%': { get_param: deployment_name }
       PrivateNet: { get_param: private_net }
@@ -403,34 +215,7 @@ resources:
           cluster_name: { get_param: deployment_name }
           pnda_secgroup: { get_param: PndaSecGroup }
           pnda_flavor: { get_param: PndaFlavor }
-  opentsdb:
-    type: OS::Heat::ResourceGroup
-    properties:
-      count: { get_param: OpentsdbNodes }
-      resource_def:
-        type: OS::Pnda::opentsdb
-        properties:
-          Flavor: { get_param: OpentsdbFlavor }
-          Image: { get_param: image_id }
-          KeyName: { get_param: KeyName }
-          name:
-            str_replace:
-              template: '%stackname%-opentsdb-%index%'
-              params:
-                '%stackname%': { get_param: deployment_name }
-          NodeIndex: '%index%'
-          PrivateNet: { get_param: private_net }
-          PrivateSubnet: { get_param: private_subnet }
-          SaltmasterIP: { get_param: SaltmasterIP }
-          sec_group: { get_resource: OpentsdbSecGroup }
-          cluster_name: { get_param: deployment_name }
-          pnda_secgroup: { get_param: PndaSecGroup }
-          pnda_flavor: { get_param: PndaFlavor }
 
 outputs:
-  zookeeper_hosts:
-    value: { get_attr: [zookeeper, hosts_entry] }
   kafka_hosts:
     value: { get_attr: [kafka, hosts_entry] }
-  tools_hosts:
-    value: { get_attr: [tools, hosts_entry] }
