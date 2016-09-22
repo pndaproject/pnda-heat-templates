@@ -3,27 +3,27 @@ heat_template_version: 2014-10-16
 parameters:
   SaltmasterFlavor:
     type: string
-    description: Falvor for the salmaster nodes
+    description: Flavor for the salmaster nodes
     default: m1.large
   Manager1Flavor:
     type: string
-    description: Falvor for the manager nodes
+    description: Flavor for the manager nodes
     default: m1.xlarge
   Manager2Flavor:
     type: string
-    description: Falvor for the manager nodes
+    description: Flavor for the manager nodes
     default: m1.xlarge
   Manager3Flavor:
     type: string
-    description: Falvor for the manager nodes
+    description: Flavor for the manager nodes
     default: m1.xlarge
   Manager4Flavor:
     type: string
-    description: Falvor for the manager nodes
+    description: Flavor for the manager nodes
     default: m1.xlarge
   EdgeFlavor:
     type: string
-    description: Falvor for the edge node
+    description: Flavor for the edge node
     default: m1.xlarge
   BastionFlavor:
     type: string
@@ -43,7 +43,7 @@ parameters:
     default: m1.xlarge
   CMFlavor:
     type: string
-    description: Flavor for the data nodes
+    description: Flavor for the CM node
     default: m1.xlarge
   ToolsFlavor:
     type: string
@@ -81,10 +81,6 @@ parameters:
     type: string
   DataNodes:
     default: '4'
-    description: Number of DATA nodes
-    type: string
-  ManagerNodes:
-    default: '1'
     description: Number of DATA nodes
     type: string
   OpentsdbNodes:

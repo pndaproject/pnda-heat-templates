@@ -23,8 +23,8 @@ EOF
 
 if [ "x$cloudera_role$" != "x" ]; then
   cat >> /etc/salt/grains <<EOF
-  cloudera:
-    role: $cloudera_role$
+cloudera:
+  role: $cloudera_role$
 EOF
 fi
 

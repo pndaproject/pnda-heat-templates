@@ -2,7 +2,7 @@ heat_template_version: 2014-10-16
 
 parameters:
   Flavor:
-    description: Flavor of the saltmaster server
+    description: Flavor of the bastion server
     type: string
     default: m1.small
   KeyName:
@@ -71,38 +71,41 @@ resources:
       group: script
       config:
         str_replace:
-          template: {get_file: scripts/bastion_install.sh }
+          template: {get_file: scripts/base_install.sh }
           params:
             $flavor$: { get_param: pnda_flavor }
-            $formula: bastion
+            $roles$: 'bastion'
+            $cloudera_role$: ''
             $master_ip$: { get_param: SaltmasterIP }
             $keyname$: { get_param: 'OS::stack_name' }
             $private_key$: { get_param: private_key }
             $pnda_cluster$: { get_param: cluster_name }
   install_deployment:
     type: OS::Heat::SoftwareDeployment
-    depends_on: minion_deployment
+    depends_on: bastion_deployment
     properties:
       signal_transport: TEMP_URL_SIGNAL
       config:
         get_resource: install_config
       server:
         get_resource: server
-  minion_config:
+
+  bastion_config:
     type: OS::Heat::SoftwareConfig
     properties:
       group: script
       config:
         str_replace:
-          template: {get_file: scripts/saltminion_install.sh }
+          template: {get_file: scripts/bastion_install.sh }
           params:
-            $master_ip$: { get_param: SaltmasterIP }
-  minion_deployment:
+            $private_key$: { get_param: private_key }
+            $keyname$: { get_param: 'OS::stack_name' }            
+  bastion_deployment:
     type: OS::Heat::SoftwareDeployment
     properties:
       signal_transport: TEMP_URL_SIGNAL
       config:
-        get_resource: minion_config
+        get_resource: bastion_config
       server:
         get_resource: server
   server:

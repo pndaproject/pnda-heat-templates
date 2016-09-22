@@ -93,8 +93,6 @@ def setup_flavor_templates(flavor):
     shutil.rmtree(resources_dir)
     os.makedirs(resources_dir)
     os.chdir(resources_dir)
-    for yaml_file in glob.glob('../../templates/*.yaml'):
-        shutil.copy(yaml_file, './')
     for yaml_file in glob.glob('../../templates/%s/*.yaml' % flavor):
         shutil.copy(yaml_file, './')        
     with open('../../templates/%s/pnda.yaml' % flavor, 'r') as infile:

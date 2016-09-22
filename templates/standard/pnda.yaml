@@ -141,4 +141,5 @@ resources:
             '%stackname%': {get_param: 'OS::stack_name'}
       software_config_transport: POLL_TEMP_URL
       user_data_format: SOFTWARE_CONFIG
-      config_drive: True   
+      config_drive: True
+     

@@ -1,6 +1,6 @@
 parameter_defaults:
   CMFlavor: pnda-cm
-  Manager1Flavor: pnda-manager-small
+  Manager1Flavor: pnda-manager-large
   Manager2Flavor: pnda-manager-large
   Manager3Flavor: pnda-manager-large
   Manager4Flavor: pnda-manager-large

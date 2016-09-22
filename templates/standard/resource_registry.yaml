@@ -14,4 +14,3 @@ resource_registry:
   OS::Pnda::manager4: mgr4.yaml
   OS::Pnda::jupyter: jupyter.yaml
   OS::Pnda::opentsdb: opentsdb.yaml
-  OS::Pnda::opentsdb: saltmaster.yaml

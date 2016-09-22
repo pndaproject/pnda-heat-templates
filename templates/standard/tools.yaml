@@ -2,7 +2,7 @@ heat_template_version: 2014-10-16
 
 parameters:
   Flavor:
-    description: Flavor of the saltmaster server
+    description: Flavor of the tools server
     type: string
     default: m1.small
   KeyName:

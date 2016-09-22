@@ -4,99 +4,44 @@ parameters:
   SaltmasterFlavor:
     type: string
     description: Falvor for the salmaster nodes
-    default: m1.large
+    default: m1.micro
   Manager1Flavor:
     type: string
     description: Falvor for the manager nodes
-    default: m1.xlarge
-  Manager2Flavor:
-    type: string
-    description: Falvor for the manager nodes
-    default: m1.xlarge
-  Manager3Flavor:
-    type: string
-    description: Falvor for the manager nodes
-    default: m1.xlarge
-  Manager4Flavor:
-    type: string
-    description: Falvor for the manager nodes
-    default: m1.xlarge
+    default: m1.micro
   EdgeFlavor:
     type: string
     description: Falvor for the edge node
-    default: m1.xlarge
+    default: m1.micro
   BastionFlavor:
     type: string
     description: Flavor for the bastion nodes
-    default: m1.large
-  ZookeeperFlavor:
-    type: string
-    description: Flavor for the zookeeper nodes
-    default: m1.large
+    default: m1.micro
   KafkaFlavor:
     type: string
     description: Flavor for the kafka nodes
-    default: m1.large
+    default: m1.micro
   DatanodeFlavor:
     type: string
     description: Flavor for the data nodes
-    default: m1.xlarge
-  CMFlavor:
-    type: string
-    description: Flavor for the data nodes
-    default: m1.xlarge
-  ToolsFlavor:
-    type: string
-    description: Flavor for the tools nodes
-    default: m1.large
-  JupyterFlavor:
-    type: string
-    description: Flavor for the Jupyter nodes
-    default: m1.large
-  LogserverFlavor:
-    type: string
-    description: Flavor for the logserver node
-    default: m1.large
-  OpentsdbFlavor:
-    type: string
-    description: Flavor for the opentsdb node
-    default: m1.large
-
+    default: m1.micro
   image_id:
     type: string
     description: default image for pnda servers
     default: PndaDEV-trusty-cloud-user-x86_64
 
-  ToolsNodes:
-    default: '1'
-    description: Number of TOOLS nodes
-    type: string
-  ZookeeperNodes:
-    default: '1'
-    description: Number of ZOOKEEPER nodes
-    type: string
-  KafkaNodes:
-    default: '1'
-    description: Number of KAFKA nodes
-    type: string
   DataNodes:
-    default: '4'
-    description: Number of DATA nodes
-    type: string
-  ManagerNodes:
     default: '1'
     description: Number of DATA nodes
     type: string
-  OpentsdbNodes:
-    default: 2
-    description: Number of Opentsdb nodes
-    type: number
+
+
 
   DatanodeVolumeSize:
-    default: 200
+    default: 10
     type: number
   DatanodeMountpoint:
-    default: /dev/vdb
+    default: /dev/vdc
     type: string
 
   public_net:

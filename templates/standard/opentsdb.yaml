@@ -57,7 +57,7 @@ resources:
           template: {get_file: scripts/base_install.sh }
           params:
             $flavor$: { get_param: pnda_flavor }
-            $master_ip$: { get_param: SaltmasterIP }
+            $master_ip$: { get_param: SaltmasterIP }            
             $pnda_cluster$: { get_param: cluster_name }
             $index$: { get_param: NodeIndex }
             $roles$: 'opentsdb grafana'
