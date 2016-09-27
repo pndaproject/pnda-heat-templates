@@ -225,7 +225,7 @@ resources:
         #!/bin/bash -v
         set -e
         set -o pipefail
-        #salt -v --log-level=debug --state-output=mixed '*' state.highstate | tee salt-highstate-$(date +"%F-%T").log
+        salt -v --log-level=debug --state-output=mixed '*' state.highstate | tee salt-highstate-$(date +"%F-%T").log
   deploy_highstate:
         type: OS::Heat::SoftwareDeployment
         depends_on: [deploy_install,pnda_cluster]
@@ -250,7 +250,7 @@ resources:
           template: |
             #!/bin/bash -v
             set -e
-            #CLUSTER=cname salt-run --log-level=debug state.orchestrate orchestrate.pnda | tee salt-orchestrate-$(date +"%F-%T").log
+            CLUSTER=cname salt-run --log-level=debug state.orchestrate orchestrate.pnda | tee salt-orchestrate-$(date +"%F-%T").log
           params:
             cname: { get_param: 'OS::stack_name' }
   deploy_orchestrate:
@@ -279,8 +279,8 @@ resources:
             #!/bin/bash -v
             set -e
             set -o pipefail
-            #salt -v --log-level=debug --state-output=mixed '*' state.highstate | tee salt-highstate-$(date +"%F-%T").log
-            #CLUSTER=cname salt-run --log-level=debug state.orchestrate orchestrate.pnda-expand | tee salt-expand-$(date +"%F-%T").log
+            salt -v --log-level=debug --state-output=mixed '*' state.highstate | tee salt-highstate-$(date +"%F-%T").log
+            CLUSTER=cname salt-run --log-level=debug state.orchestrate orchestrate.pnda-expand | tee salt-expand-$(date +"%F-%T").log
           params:
             cname: { get_param: 'OS::stack_name' }
   deploy_expand:
