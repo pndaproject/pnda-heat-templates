@@ -73,6 +73,7 @@ resources:
             $volume_dev$: { get_param: log_mountpoint }
             $roles$: 'cloudera_edge console_frontend console_backend_data_logger console_backend_data_manager graphite gobblin deployment_manager package_repository data_service impala-shell yarn-gateway hbase_opentsdb_tables hdfs_cleaner master_dataset elk logserver kibana_dashboard jupyter cloudera_manager platform_testing_cdh mysql_connector'
             $cloudera_role$: 'EDGE'
+            $brokerid$: ''
 
   install_deployment:
     type: OS::Heat::SoftwareDeployment
