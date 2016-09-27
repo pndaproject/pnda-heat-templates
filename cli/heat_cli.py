@@ -130,7 +130,6 @@ def create_cluster(args):
     setup_flavor_templates(flavor)
 
     if flavor == 'standard':
-
         if datanodes == None:
             datanodes = 3
         if tsdbnodes == None:
@@ -139,6 +138,15 @@ def create_cluster(args):
             kafkanodes = 2
         if zknodes == None:
             zknodes = 3
+    elif flavor == 'pico':
+        if datanodes == None:
+            datanodes = 1
+        if tsdbnodes == None:
+            tsdbnodes = 0
+        if kafkanodes == None:
+            kafkanodes = 1
+        if zknodes == None:
+            zknodes = 0
 
     stack_params = []
 
