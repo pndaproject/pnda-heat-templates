@@ -28,6 +28,12 @@ cloudera:
 EOF
 fi
 
+if [ "x$brokerid$" != "x" ]; then
+  cat >> /etc/salt/grains <<EOF
+broker_id: $brokerid$
+EOF
+fi
+
 cat >> /etc/salt/grains <<EOF
 `printf "%b" "$a"`
 EOF
