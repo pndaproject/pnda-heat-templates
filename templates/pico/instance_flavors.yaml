@@ -4,5 +4,5 @@ parameter_defaults:
   KafkaFlavor: pico-kafka
   DatanodeFlavor: pico-dn
   BastionFlavor: pnda-micro
-  DatanodeVolumeSize: 1
+  DatanodeVolumeSize: 35
   PndaFlavor: pico
