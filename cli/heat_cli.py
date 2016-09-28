@@ -127,8 +127,6 @@ def create_cluster(args):
     keypair = args.keypair
     command = args.command
 
-    setup_flavor_templates(flavor)
-
     if flavor == 'standard':
         if datanodes == None:
             datanodes = 3
@@ -167,10 +165,12 @@ def create_cluster(args):
 
     if command == 'create':
         print CREATE_INFO
+        setup_flavor_templates(flavor)
         cmdline = 'openstack stack create --timeout 120 --wait --template {} --environment {} {}'.format('pnda.yaml',
                                                                                     'pnda_env.yaml',
                                                                                     stack_params_string)
     elif command == 'resize':
+        os.chdir('_resources_%s' % flavor)
         stack_params_string = ' '.join(stack_params)
         cmdline = 'openstack stack update --timeout 120 --wait --template {} --environment {} {}'.format('pnda.yaml',
                                                                                     'pnda_env.yaml',
