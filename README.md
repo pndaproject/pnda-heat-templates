@@ -26,7 +26,7 @@ $ cp ~/.ssh/id_rsa deploy
 
 If you do not own a keypair or if your public key value is not stored on the git server, please follow this guide to [generate a public key](https://git-scm.com/book/be/v2/Git-on-the-Server-Generating-Your-SSH-Public-Key).
 
-Also uncomment `#deploy` and specifiy url of your git repo in `pnda_env_standard.yaml` file
+Also uncomment `#deploy` and specifiy url of your git repo in `pnda_env.yaml` file
 
 ## Deploy PNDA using the CLI
 
@@ -40,13 +40,13 @@ $ . <project>-openrc.sh
 
 ### Environment configuration
 
-The Heat PNDA stack default parameters can be set in the `pnda_env_standard.yaml` file. Please refer to the file [ENVIRONMENTS.md](environments.md) in the pnda-heat-templates repository for a full description of every configuration point. 
+The Heat PNDA stack default parameters can be set in the `pnda_env.yaml` file. Please refer to the file [ENVIRONMENTS.md](environments.md) in the pnda-heat-templates repository for a full description of every configuration point. 
 
-As this file is specific to the target environment it needs to be created by the PNDA integrator. You can start by copying the example `pnda_env_standard.yaml` found in `environments_examples` or create your own following this guide and the instructions in `ENVIRONMENTS.md`.
+As this file is specific to the target environment it needs to be created by the PNDA integrator. You can start by renaming the example `pnda_env_example.yaml` to `pnda_env.yaml` or create your own following this guide and the instructions in `ENVIRONMENTS.md`.
 
 A brief summary of the main points follows.
 
-You MUST update the `KEYSTONE CREDENTIALS` section in the `pnda_env_standard.yaml` file with your openstack credentials in order for PNDA to use swift. For example:
+You MUST update the `KEYSTONE CREDENTIALS` section in the `pnda_env.yaml` file with your openstack credentials in order for PNDA to use swift. For example:
 
     keystone_user: 'pnda'
     keystone_password: '32165468321654'
