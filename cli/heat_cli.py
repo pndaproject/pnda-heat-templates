@@ -8,13 +8,11 @@ import re
 import os
 import json
 import uuid
-
+import shutil
+import yaml
+import glob
 
 name_regex = "^[\.a-zA-Z0-9-]+$"
-_standard_template_file = 'pnda_standard.yaml'
-
-_stack_environment_file = 'pnda_env.yaml'
-_standard_environment_file = 'pnda_env_standard.yaml'
 
 CREATE_INFO = """
 Please wait while your PNDA cluster is being created.
@@ -74,7 +72,7 @@ def get_args():
     parser.add_argument('-o','--opentsdb-nodes', type=int, help='How many Open TSDB nodes for the hadoop cluster')
     parser.add_argument('-k','--kafka-nodes', type=int, help='How many kafka nodes for the databus cluster')
     parser.add_argument('-z','--zk-nodes', type=int, help='How many zookeeper nodes for the databus cluster')
-    parser.add_argument('-f','--flavor', help='PNDA flavor: e.g. "standard"', choices=['standard'])
+    parser.add_argument('-f','--flavor', help='PNDA flavor: e.g. "standard"', choices=['pico', 'standard'])
     parser.add_argument('-b','--branch', help='Git branch to use (defaults to master)')
     parser.add_argument('-s','--keypair', help='keypair name for ssh to the bastion server')
     parser.add_argument('-v','--verbose', help='Be more verbose')
@@ -82,22 +80,54 @@ def get_args():
     args = parser.parse_args()
     return args
 
+def merge_dicts(base, mergein):
+    for element in mergein:
+        if element not in base:
+            base[element] = mergein[element]
+        else:
+            for child in mergein[element]:
+                base[element][child] = mergein[element][child]  
+
+def setup_flavor_templates(flavor):
+    resources_dir = '_resources_%s' % flavor
+    if os.path.isdir(resources_dir):
+        shutil.rmtree(resources_dir)
+    os.makedirs(resources_dir)
+    os.chdir(resources_dir)
+    for yaml_file in glob.glob('../../templates/%s/*.yaml' % flavor):
+        shutil.copy(yaml_file, './')        
+    with open('../../templates/%s/pnda.yaml' % flavor, 'r') as infile:
+        pnda_flavor = yaml.load(infile)
+    with open('../../templates/pnda.yaml', 'r') as infile:
+        pnda_common = yaml.load(infile)
+    merge_dicts(pnda_common, pnda_flavor)
+    with open('pnda.yaml', 'w') as outfile:
+        yaml.dump(pnda_common, outfile, default_flow_style=False)
+    with open('../../pnda_env.yaml', 'r') as infile:
+        pnda_env = yaml.load(infile)
+    with open('../../templates/%s/resource_registry.yaml' % flavor, 'r') as infile:
+        resource_registry = yaml.load(infile)
+    with open('../../templates/%s/instance_flavors.yaml' % flavor, 'r') as infile:
+        instance_flavors = yaml.load(infile)
+    merge_dicts(pnda_env, resource_registry)
+    merge_dicts(pnda_env, instance_flavors)
+    with open('pnda_env.yaml', 'w') as outfile:
+        yaml.dump(pnda_env, outfile, default_flow_style=False)        
+    shutil.copytree('../../scripts', './scripts')
+    shutil.copy('../../deploy', './')
+
 def create_cluster(args):
     pnda_cluster = args.pnda_cluster
     datanodes = args.datanodes
     tsdbnodes = args.opentsdb_nodes
     kafkanodes = args.kafka_nodes
     zknodes = args.zk_nodes
-    force = args.y
     branch = args.branch
     flavor = args.flavor
     keypair = args.keypair
     command = args.command
 
-    stack_environment_file = _standard_environment_file
     if flavor == 'standard':
-        stack_template_file = _standard_template_file
-        stack_environment_file = _standard_environment_file
         if datanodes == None:
             datanodes = 3
         if tsdbnodes == None:
@@ -106,8 +136,15 @@ def create_cluster(args):
             kafkanodes = 2
         if zknodes == None:
             zknodes = 3
-
-    os.chdir('../')
+    elif flavor == 'pico':
+        if datanodes == None:
+            datanodes = 1
+        if tsdbnodes == None:
+            tsdbnodes = 0
+        if kafkanodes == None:
+            kafkanodes = 1
+        if zknodes == None:
+            zknodes = 0
 
     stack_params = []
 
@@ -119,22 +156,24 @@ def create_cluster(args):
     stack_params.append('--parameter KeyName={}'.format(keypair))
     if branch:
         stack_params.append('--parameter GitBranch={}'.format(branch))
-    if args.command == 'resize':
+    if command == 'resize':
         an_id = uuid.uuid4()
         stack_params.append('--parameter DeploymentID={}'.format(an_id))
 
     stack_params.append(pnda_cluster)
     stack_params_string = ' '.join(stack_params)
 
-    if args.command == 'create':
+    if command == 'create':
         print CREATE_INFO
-        cmdline = 'openstack stack create --timeout 120 --wait --template {} --environment {} {}'.format(stack_template_file,
-                                                                                    stack_environment_file,
+        setup_flavor_templates(flavor)
+        cmdline = 'openstack stack create --timeout 120 --wait --template {} --environment {} {}'.format('pnda.yaml',
+                                                                                    'pnda_env.yaml',
                                                                                     stack_params_string)
-    elif args.command == 'resize':
+    elif command == 'resize':
+        os.chdir('_resources_%s' % flavor)
         stack_params_string = ' '.join(stack_params)
-        cmdline = 'openstack stack update --timeout 120 --wait --template {} --environment {} {}'.format(stack_template_file,
-                                                                                    stack_environment_file,
+        cmdline = 'openstack stack update --timeout 120 --wait --template {} --environment {} {}'.format('pnda.yaml',
+                                                                                    'pnda_env.yaml',
                                                                                     stack_params_string)
     print cmdline
     os_cmd(cmdline, print_output=True)
