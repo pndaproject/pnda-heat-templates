@@ -64,6 +64,9 @@ parameter_defaults:
 
   git_private_key_file: deploy
   
+  # Optionnal ntp servers
+  NtpServers: 'xxx.ntp.org'
+
 resource_registry:
   OS::Pnda::cluster: pnda_cluster_standard.yaml
   OS::Pnda::bastion: bastion.yaml
