@@ -143,7 +143,11 @@ parameters:
     description: URL of a mirror for anaconda parcels download
     type: string
     default: ''
-
+  NtpServers:
+    description: NTP servers
+    type: string
+    default: ''
+    
   keystone_user:
     type: string
   keystone_password:
