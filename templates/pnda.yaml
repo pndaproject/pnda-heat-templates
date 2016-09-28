@@ -56,7 +56,7 @@ parameters:
     description: NTP servers
     type: string
     default: ''
-
+    
   keystone_user:
     type: string
   keystone_password:
