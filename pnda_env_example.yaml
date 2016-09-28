@@ -38,3 +38,5 @@ parameter_defaults:
 
   git_private_key_file: deploy
 
+  # Optionnal ntp servers
+  NtpServers: 'xxx.ntp.org'

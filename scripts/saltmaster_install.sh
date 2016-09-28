@@ -98,6 +98,14 @@ anaconda:
 EOF
 fi
 
+if [ "x$ntp_servers$" != "x" ] ; then
+cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
+ntp:
+  servers:
+    - "$ntp_servers$"
+EOF
+fi
+
 if [ "x$packages_server_uri$" != "x" ] ; then
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
 packages_server:

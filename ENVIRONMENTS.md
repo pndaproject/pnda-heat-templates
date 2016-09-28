@@ -438,6 +438,15 @@ Installing the Cloudera Hadoop cluster might take some time. In an effort to red
 | *Default values:* | None |
 | *Example value:* | 'http://www.example.com/mirror/anaconda/misc/parcels/' |
 
+* **NtpServers**
+
+| *Mandatory:* | no |
+| -------------|-----|
+| *Purpose:* | NTP server |
+| *Type:* | string |
+| *Default values:* | None |
+| *Example value:* | 'europe.pool.ntp.org' |
+
 * **JavaMirror**
 
 | *Mandatory:* | no |

@@ -52,6 +52,10 @@ parameters:
     description: URL of a mirror for anaconda parcels download
     type: string
     default: ''
+  NtpServers:
+    description: NTP servers
+    type: string
+    default: ''
 
   keystone_user:
     type: string
@@ -192,6 +196,7 @@ resources:
             $java_mirror$: { get_param: JavaMirror }
             $cloudera_mirror$: { get_param: ClouderaParcelsMirror }
             $anaconda_mirror$: { get_param: AnacondaParcelsMirror }
+            $ntp_servers$: { get_param: NtpServers }
             $keystone_user$: { get_param: keystone_user }
             $keystone_password$: { get_param: keystone_password }
             $keystone_tenant$: { get_param: keystone_tenant }
