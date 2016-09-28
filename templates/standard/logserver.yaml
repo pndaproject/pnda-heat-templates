@@ -72,7 +72,6 @@ resources:
             $pnda_cluster$: { get_param: cluster_name }
             $volume_dev$: { get_param: log_mountpoint }
             $roles$: 'elk logserver kibana_dashboard'
-            $cloudera_role$: ''              
   install_deployment:
     type: OS::Heat::SoftwareDeployment
     depends_on: [ logvolume_attachment ]

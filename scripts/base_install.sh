@@ -21,23 +21,24 @@ pnda:
 pnda_cluster: $pnda_cluster$
 EOF
 
-if [ "x$cloudera_role$" != "x" ]; then
+if [ "$cloudera_role$" != "$" ]; then
   cat >> /etc/salt/grains <<EOF
 cloudera:
   role: $cloudera_role$
 EOF
 fi
 
-if [ "x$brokerid$" != "x" ]; then
+if [ "$brokerid$" != "$" ]; then
   cat >> /etc/salt/grains <<EOF
 broker_id: $brokerid$
 EOF
 fi
 
+if [ "$roles$" != "$" ]; then
 cat >> /etc/salt/grains <<EOF
 `printf "%b" "$a"`
 EOF
-
+fi
 
 service salt-minion restart
 

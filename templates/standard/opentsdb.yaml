@@ -61,7 +61,6 @@ resources:
             $pnda_cluster$: { get_param: cluster_name }
             $index$: { get_param: NodeIndex }
             $roles$: 'opentsdb grafana'
-            $cloudera_role$: ''            
   install_deployment:
     type: OS::Heat::SoftwareDeployment
     properties:

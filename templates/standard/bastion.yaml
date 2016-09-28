@@ -75,7 +75,6 @@ resources:
           params:
             $flavor$: { get_param: pnda_flavor }
             $roles$: 'bastion'
-            $cloudera_role$: ''
             $master_ip$: { get_param: SaltmasterIP }
             $keyname$: { get_param: 'OS::stack_name' }
             $private_key$: { get_param: private_key }

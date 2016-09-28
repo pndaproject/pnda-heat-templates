@@ -70,7 +70,6 @@ resources:
             $volume_dev$: { get_param: log_mountpoint }
             $roles$: 'cloudera_namenode mysql_connector oozie_database hue opentsdb grafana'
             $cloudera_role$: 'MGR01'
-            $brokerid$: ''
             
   install_deployment:
     type: OS::Heat::SoftwareDeployment
