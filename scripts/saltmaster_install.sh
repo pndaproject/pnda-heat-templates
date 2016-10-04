@@ -106,6 +106,25 @@ ntp:
 EOF
 fi
 
+if [ "$package_repository_fs_type$" == "swift" ] ; then
+cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
+package_repository:
+  fs_type: 'swift'
+EOF
+elif [ "$package_repository_fs_type$" == "s3" ] ; then
+cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
+package_repository:
+  fs_type: 's3'
+EOF
+else
+cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
+package_repository:
+  fs_type: "$package_repository_fs_type$"
+  fs_location_path: "$package_repository_fs_location_path$"
+EOF
+fi
+
+
 if [ "x$packages_server_uri$" != "x" ] ; then
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
 packages_server:

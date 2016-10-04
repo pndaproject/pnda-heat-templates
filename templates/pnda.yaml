@@ -56,6 +56,14 @@ parameters:
     description: NTP servers
     type: string
     default: ''
+  package_repository_fs_type:
+    description: Package repository FS type
+    type: string
+    default: ''
+  package_repository_fs_location_path:
+    description: Package repository FS location path
+    type: string
+    default: ''
     
   keystone_user:
     type: string
@@ -197,6 +205,8 @@ resources:
             $cloudera_mirror$: { get_param: ClouderaParcelsMirror }
             $anaconda_mirror$: { get_param: AnacondaParcelsMirror }
             $ntp_servers$: { get_param: NtpServers }
+            $package_repository_fs_type$ : { get_param: package_repository_fs_type }
+            $package_repository_fs_location_path$: { get_param: package_repository_fs_location_path }
             $keystone_user$: { get_param: keystone_user }
             $keystone_password$: { get_param: keystone_password }
             $keystone_tenant$: { get_param: keystone_tenant }

@@ -40,3 +40,7 @@ parameter_defaults:
 
   # Optional ntp servers
   NtpServers: 'xxx.ntp.org'
+
+  # package repository
+  package_repository_fs_type: 'swift'
+  package_repository_fs_location_path: '/opt/packages'
