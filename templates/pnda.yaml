@@ -258,7 +258,7 @@ resources:
   deploy_install:
         type: OS::Heat::SoftwareDeployment
         properties:
-          signal_transport: TEMP_URL_SIGNAL
+          signal_transport: { get_param: signal_transport }
           config:
             get_resource: install_config
           server:
@@ -281,7 +281,7 @@ resources:
         type: OS::Heat::SoftwareDeployment
         depends_on: [deploy_install,pnda_cluster]
         properties:
-          signal_transport: TEMP_URL_SIGNAL
+          signal_transport: { get_param: signal_transport }
           config:
             get_resource: highstate_config
           server:
@@ -308,7 +308,7 @@ resources:
         type: OS::Heat::SoftwareDeployment
         depends_on: deploy_highstate
         properties:
-          signal_transport: TEMP_URL_SIGNAL
+          signal_transport: { get_param: signal_transport }
           config:
             get_resource: orchestrate_config
           server:
@@ -338,7 +338,7 @@ resources:
         type: OS::Heat::SoftwareDeployment
         depends_on: [deploy_highstate,deploy_orchestrate,pnda_cluster]
         properties:
-          signal_transport: TEMP_URL_SIGNAL
+          signal_transport: { get_param: signal_transport }
           config:
             get_resource: expand_config
           server:
