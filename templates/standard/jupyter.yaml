@@ -26,7 +26,11 @@ parameters:
     type: string
   pnda_flavor:
     type: string
-    default: standard 
+    default: standard
+  signal_transport:
+    type: string
+  software_config_transport:
+    type: string
 
 resources:
   sec_group:
@@ -61,11 +65,11 @@ resources:
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
             $roles$: 'jupyter'
-            $cloudera_role$: 'EDGE'            
+            $cloudera_role$: 'EDGE'
   install_deployment:
     type: OS::Heat::SoftwareDeployment
     properties:
-      signal_transport: TEMP_URL_SIGNAL
+      signal_transport: { get_param: signal_transport }
       config:
         get_resource: install_config
       server:
@@ -80,7 +84,7 @@ resources:
       key_name: { get_param: KeyName }
       networks:
         - port: { get_resource: port }
-      software_config_transport: POLL_TEMP_URL
+      software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
       config_drive: True
 

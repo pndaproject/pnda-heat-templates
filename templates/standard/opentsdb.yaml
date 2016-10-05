@@ -37,7 +37,11 @@ parameters:
     type: string
   pnda_flavor:
     type: string
-    default: standard 
+    default: standard
+  signal_transport:
+    type: string
+  software_config_transport:
+    type: string
 
 
 resources:
@@ -57,14 +61,14 @@ resources:
           template: {get_file: scripts/base_install.sh }
           params:
             $flavor$: { get_param: pnda_flavor }
-            $master_ip$: { get_param: SaltmasterIP }            
+            $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
             $index$: { get_param: NodeIndex }
             $roles$: 'opentsdb grafana'
   install_deployment:
     type: OS::Heat::SoftwareDeployment
     properties:
-      signal_transport: TEMP_URL_SIGNAL
+      signal_transport: { get_param: signal_transport }
       config:
         get_resource: install_config
       server:
@@ -79,7 +83,7 @@ resources:
       key_name: { get_param: KeyName }
       networks: [{ network: {get_param: PrivateNet}}]
       security_groups: [{ get_param: sec_group }, { get_param: pnda_secgroup }]
-      software_config_transport: POLL_TEMP_URL
+      software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
       config_drive: True
 

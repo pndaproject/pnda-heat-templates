@@ -32,6 +32,10 @@ parameters:
     default: standard
   pnda_secgroup:
     type: string
+  signal_transport:
+    type: string
+  software_config_transport:
+    type: string
 
 resources:
   sec_group:
@@ -83,7 +87,7 @@ resources:
     type: OS::Heat::SoftwareDeployment
     depends_on: bastion_deployment
     properties:
-      signal_transport: TEMP_URL_SIGNAL
+      signal_transport: { get_param: signal_transport }
       config:
         get_resource: install_config
       server:
@@ -98,11 +102,11 @@ resources:
           template: {get_file: scripts/bastion_install.sh }
           params:
             $private_key$: { get_param: private_key }
-            $keyname$: { get_param: 'OS::stack_name' }            
+            $keyname$: { get_param: 'OS::stack_name' }
   bastion_deployment:
     type: OS::Heat::SoftwareDeployment
     properties:
-      signal_transport: TEMP_URL_SIGNAL
+      signal_transport: { get_param: signal_transport }
       config:
         get_resource: bastion_config
       server:
@@ -117,7 +121,7 @@ resources:
       key_name: { get_param: KeyName }
       networks:
         - port: { get_resource: port }
-      software_config_transport: POLL_TEMP_URL
+      software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
       config_drive: True
 
