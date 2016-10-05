@@ -53,14 +53,14 @@ if [ -b $volume_dev$ ]; then
 EOF
 fi
 
-for i in $roles; do 
+for i in $roles$; do 
   if [ $i == "package_repository" ]; then
     if [ -b $volume_pr$ ]; then
       umount $volume_pr$ || echo 'not mounted'  
       mkfs.xfs $volume_pr$
-      mkdir -p /mnt/packages
+      mkdir -p $package_repository_fs_location_path$
       cat >> /etc/fstab <<EOF
-      $volume_pr$  /mnt/packages xfs defaults  0 0
+      $volume_pr$  $package_repository_fs_location_path$ xfs defaults  0 0
 EOF
     fi
   fi    
