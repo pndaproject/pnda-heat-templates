@@ -36,6 +36,12 @@ parameters:
   log_mountpoint:
     type: string
     default: /dev/vdb
+  pr_mountpoint:
+    type: string
+    default: /dev/vde
+  prvolume_size:
+    type: number
+    default: 10
 
 resources:
   sec_group:
@@ -71,12 +77,13 @@ resources:
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
             $volume_dev$: { get_param: log_mountpoint }
+            $volume_pr$: { get_param: pr_mountpoint }
             $roles$: 'cloudera_edge console_frontend console_backend_data_logger console_backend_data_manager graphite gobblin deployment_manager package_repository data_service impala-shell yarn-gateway hbase_opentsdb_tables hdfs_cleaner master_dataset'
             $cloudera_role$: 'EDGE'
 
   install_deployment:
     type: OS::Heat::SoftwareDeployment
-    depends_on: [ logvolume_attachment ]
+    depends_on: [ logvolume_attachment ,  prvolume_attachment]
     properties:
       signal_transport: TEMP_URL_SIGNAL
       config:
@@ -96,6 +103,17 @@ resources:
     properties:
       size: { get_param: logvolume_size }
       description: Volume for edge logs
+  prvolume:
+    type: OS::Cinder::Volume
+    properties:
+      size: { get_param: prvolume_size }
+      description: Volume for package repository
+  prvolume_attachment:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_resource: prvolume }
+      instance_uuid: { get_resource: server }
+      mountpoint: { get_param: pr_mountpoint }
 
   logvolume_attachment:
     type: OS::Cinder::VolumeAttachment
