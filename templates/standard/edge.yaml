@@ -42,7 +42,11 @@ parameters:
   prvolume_size:
     type: number
     default: 10
-
+  package_repository_fs_location_path:
+    description: Package repository FS location path
+    type: string
+    default: ''
+    
 resources:
   sec_group:
     type: OS::Neutron::SecurityGroup
