@@ -113,8 +113,24 @@ package_repository:
 EOF
 elif [ "$package_repository_fs_type" == "s3" ] ; then
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
+aws.region: '$AWS_REGION'
+aws.key: '$S3_ACCESS_KEY_ID'
+aws.secret: '$S3_SECRET_ACCESS_KEY'
 package_repository:
   fs_type: 's3'
+EOF
+elif [ "$package_repository_fs_type" == "sshfs" ] ; then
+cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
+package_repository:
+  fs_type: "sshfs"
+  fs_location_path: "$package_repository_fs_location_path"
+  sshfs_user: "$package_repository_sshfs_user"
+  sshfs_host: "$package_repository_sshfs_host"
+  sshfs_path: "$package_repository_sshfs_path"
+  sshfs_key: "$package_repository_sshfs_key"
+EOF
+cat << EOF > /opt/pnda/$package_repository_sshfs_key$
+$package_repository_sshfs_key_file$
 EOF
 else
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls

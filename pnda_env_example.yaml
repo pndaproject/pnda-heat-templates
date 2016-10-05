@@ -43,4 +43,13 @@ parameter_defaults:
 
   # package repository
   package_repository_fs_type: 'swift'
-  package_repository_fs_location_path: '/opt/packages'
+  #package_repository_fs_location_path: '/opt/packages'
+  #package_repository_sshfs_user: 'cloud-user'
+  #package_repository_sshfs_host: '127.0.0.1'
+  #package_repository_sshfs_path: '/mnt/packages'
+  #package_repository_sshfs_key: 'pr_key'
+
+  # AWS configuration
+  #S3_ACCESS_KEY_ID=xxxx
+  #S3_SECRET_ACCESS_KEY=xxxx
+  #AWS_REGION=xxxx

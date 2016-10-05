@@ -1,4 +1,5 @@
 deploy
+pr_key
 .project
 alternate_envs/
 _resources_*
