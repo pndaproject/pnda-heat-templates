@@ -53,6 +53,19 @@ if [ -b $volume_dev$ ]; then
 EOF
 fi
 
+for i in $roles; do 
+  if [ $i == "package_repository" ]; then
+    if [ -b $volume_pr$ ]; then
+      umount $volume_pr$ || echo 'not mounted'  
+      mkfs.xfs $volume_pr$
+      mkdir -p /mnt/packages
+      cat >> /etc/fstab <<EOF
+      $volume_pr$  /mnt/packages xfs defaults  0 0
+EOF
+    fi
+  fi    
+done
+
 DISKS="vdc vdd vde"
 DISK_IDX=0
 for DISK in $DISKS; do
