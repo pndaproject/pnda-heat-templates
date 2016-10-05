@@ -115,7 +115,8 @@ def setup_flavor_templates(flavor):
         yaml.dump(pnda_env, outfile, default_flow_style=False)        
     shutil.copytree('../../scripts', './scripts')
     shutil.copy('../../deploy', './')
-    shutil.copy('../../pr_key', './')
+    if(os.path.isfile('../../pr_key'))
+        shutil.copy('../../pr_key', './')
 
 def create_cluster(args):
     pnda_cluster = args.pnda_cluster
