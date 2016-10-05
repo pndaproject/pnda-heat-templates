@@ -86,16 +86,16 @@ def merge_dicts(base, mergein):
             base[element] = mergein[element]
         else:
             for child in mergein[element]:
-                base[element][child] = mergein[element][child]  
+                base[element][child] = mergein[element][child]
 
-def setup_flavor_templates(flavor):
-    resources_dir = '_resources_%s' % flavor
+def setup_flavor_templates(flavor, cname):
+    resources_dir = '_resources_{}-{}'.format(flavor, cname)
     if os.path.isdir(resources_dir):
         shutil.rmtree(resources_dir)
     os.makedirs(resources_dir)
     os.chdir(resources_dir)
     for yaml_file in glob.glob('../../templates/%s/*.yaml' % flavor):
-        shutil.copy(yaml_file, './')        
+        shutil.copy(yaml_file, './')
     with open('../../templates/%s/pnda.yaml' % flavor, 'r') as infile:
         pnda_flavor = yaml.load(infile)
     with open('../../templates/pnda.yaml', 'r') as infile:
@@ -112,7 +112,7 @@ def setup_flavor_templates(flavor):
     merge_dicts(pnda_env, resource_registry)
     merge_dicts(pnda_env, instance_flavors)
     with open('pnda_env.yaml', 'w') as outfile:
-        yaml.dump(pnda_env, outfile, default_flow_style=False)        
+        yaml.dump(pnda_env, outfile, default_flow_style=False)
     shutil.copytree('../../scripts', './scripts')
     shutil.copy('../../deploy', './')
     if os.path.isfile('../../pr_key'):
@@ -167,12 +167,12 @@ def create_cluster(args):
 
     if command == 'create':
         print CREATE_INFO
-        setup_flavor_templates(flavor)
+        setup_flavor_templates(flavor, pnda_cluster)
         cmdline = 'openstack stack create --timeout 120 --wait --template {} --environment {} {}'.format('pnda.yaml',
                                                                                     'pnda_env.yaml',
                                                                                     stack_params_string)
     elif command == 'resize':
-        os.chdir('_resources_%s' % flavor)
+        os.chdir('_resources_{}-{}'.format(flavor, pnda_cluster))
         stack_params_string = ' '.join(stack_params)
         cmdline = 'openstack stack update --timeout 120 --wait --template {} --environment {} {}'.format('pnda.yaml',
                                                                                     'pnda_env.yaml',
