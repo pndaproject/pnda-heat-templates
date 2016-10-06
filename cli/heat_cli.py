@@ -129,9 +129,11 @@ def setup_flavor_templates(flavor, cname, dir, is_bare):
     if is_bare:
         templateVars['create_network'] = 0
         templateVars['create_volumes'] = 0
+        templateVars['create_bastion'] = 0
     else:
         templateVars['create_network'] = 1
         templateVars['create_volumes'] = 1
+        templateVars['create_bastion'] = 1
 
     process_templates_from_dir( flavor, cname,
                                 os.path.abspath( '../../templates/%s' % flavor ),
