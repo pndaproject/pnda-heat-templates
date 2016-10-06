@@ -8,6 +8,7 @@ parameters:
   KeyName:
     description: Name of an existing ssh keypair
     type: string
+{%if create_network is equalto 1 %}
   PrivateNet:
     description: Private network for pnda deployment
     type: string
@@ -17,6 +18,7 @@ parameters:
   PublicNet:
     description: Private network for pnda deployment
     type: string
+{%endif%}
   Image:
     type: string
   name:

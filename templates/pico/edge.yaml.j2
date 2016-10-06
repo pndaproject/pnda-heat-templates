@@ -8,12 +8,16 @@ parameters:
   KeyName:
     description: Name of an existing ssh keypair
     type: string
+{%if create_network is equalto 1 %}
   PrivateNet:
     description: Private network for pnda deployment
     type: string
   PrivateSubnet:
     description: Private network for pnda deployment
     type: string
+  pnda_secgroup:
+    type: string
+{%endif%}
   Image:
     type: string
   name:
@@ -24,8 +28,6 @@ parameters:
     type: number
     default: 0
   cluster_name:
-    type: string
-  pnda_secgroup:
     type: string
   pnda_flavor:
     type: string

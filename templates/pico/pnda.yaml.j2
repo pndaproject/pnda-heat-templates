@@ -74,6 +74,8 @@ resources:
       KeyName: { get_resource: Key }
       PndaSecGroup: { get_resource: PndaSecGroup }
       private_key: { get_attr: ['Key','private_key'] }
+  {%else%}
+      KeyName: { get_param: KeyName }
   {%endif%}
       BastionKeyName: { get_param: KeyName }
       deployment_name: { get_param: 'OS::stack_name' }
