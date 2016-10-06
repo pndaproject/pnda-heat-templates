@@ -2,7 +2,7 @@ heat_template_version: 2014-10-16
 
 parameters:
   Flavor:
-    description: Flavor of the edge server
+    description: Flavor of the manager1 server
     type: string
     default: m1.xlarge
   KeyName:
@@ -20,9 +20,6 @@ parameters:
     type: string
   SaltmasterIP:
     type: string
-  NodeIndex:
-    type: number
-    default: 0
   cluster_name:
     type: string
   pnda_secgroup:
@@ -36,29 +33,38 @@ parameters:
   log_mountpoint:
     type: string
     default: /dev/vdb
+  signal_transport:
+    type: string
+    default: TEMP_URL_SIGNAL
+  software_config_transport:
+    type: string
+    default: POLL_TEMP_URL
+
 
 resources:
+{%if create_network is equalto 1 %}
   sec_group:
     type: OS::Neutron::SecurityGroup
     properties:
-      description: Edge SecurityGroup
+      description: CDH Manager SecurityGroup
       name:
         str_replace:
           template:
-            cname-edge
-          params :
+            cname-cdh-mgr1
+          params:
             cname: { get_param: cluster_name }
       rules:
         - remote_ip_prefix: 0.0.0.0/0
           protocol: icmp
-        - remote_ip_prefix: 0.0.0.0/0
-          protocol: tcp
-          port_range_min: 22
-          port_range_max: 22
-        - remote_ip_prefix: 0.0.0.0/0
-          protocol: tcp
-          port_range_min: 8888
-          port_range_max: 8888
+  port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: PrivateNet }
+      fixed_ips:
+        - subnet_id: { get_param: PrivateSubnet }
+      security_groups: [{ get_resource: sec_group }, { get_param: pnda_secgroup }]
+{%endif%}
+
   install_config:
     type: OS::Heat::SoftwareConfig
     properties:
@@ -67,35 +73,30 @@ resources:
         str_replace:
           template: {get_file: scripts/base_install.sh }
           params:
-            $flavor$: { get_param: pnda_flavor }
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
+            $flavor$: { get_param: pnda_flavor }
             $volume_dev$: { get_param: log_mountpoint }
-            $roles$: 'cloudera_edge console_frontend console_backend_data_logger console_backend_data_manager graphite gobblin deployment_manager package_repository data_service impala-shell yarn-gateway hbase_opentsdb_tables hdfs_cleaner master_dataset elk logserver kibana_dashboard jupyter cloudera_manager platform_testing_cdh mysql_connector'
-            $cloudera_role$: 'EDGE'
+            $roles$: 'cloudera_namenode mysql_connector oozie_database hue opentsdb grafana'
+            $cloudera_role$: 'MGR01'
 
   install_deployment:
     type: OS::Heat::SoftwareDeployment
+{%if create_volumes is equalto 1 %}
     depends_on: [ logvolume_attachment ]
+{%endif%}
     properties:
-      signal_transport: TEMP_URL_SIGNAL
+      signal_transport: { get_param: signal_transport }
       config:
         get_resource: install_config
       server:
         get_resource: server
-
-  port:
-    type: OS::Neutron::Port
-    properties:
-      network: { get_param: PrivateNet }
-      fixed_ips:
-        - subnet_id: { get_param: PrivateSubnet }
-      security_groups: [{ get_resource: sec_group }, { get_param: pnda_secgroup }]
+{%if create_volumes is equalto 1 %}
   logvolume:
     type: OS::Cinder::Volume
     properties:
       size: { get_param: logvolume_size }
-      description: Volume for edge logs
+      description: Volume for manager1 logs
 
   logvolume_attachment:
     type: OS::Cinder::VolumeAttachment
@@ -103,38 +104,25 @@ resources:
       volume_id: { get_resource: logvolume }
       instance_uuid: { get_resource: server }
       mountpoint: { get_param: log_mountpoint }
-
+{%endif%}
 
   server:
     type: OS::Nova::Server
     properties:
       name: { get_param: name }
       image: { get_param: Image }
-      flavor: { get_param: Flavor }
+      flavor: { get_param: Flavor}
       key_name: { get_param: KeyName }
-      networks: [{ network: {get_param: PrivateNet}}]
-      security_groups: [{ get_resource: sec_group }, { get_param: pnda_secgroup }]
-
-      software_config_transport: POLL_TEMP_URL
+{%if create_network is equalto 1 %}
+      networks:
+        - port: { get_resource: port }
+{%endif%}
+      software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
       config_drive: True
 
 outputs:
-  port_resource:
-    description: Heat resource handle for the Neutron port
-    value:
-      { get_resource: port }
   server_resource:
     description: Heat resource handle for the Nova compute server
     value:
       {get_resource: server}
-  hosts_entry:
-    description: >
-      Server's IP address and hostname in the /etc/hosts format
-    value:
-      str_replace:
-        template: |
-          PRIMARYIP PRIMARYHOST
-        params:
-          PRIMARYIP: {get_attr: [server, first_address]}
-          PRIMARYHOST: {get_attr: [server, name]}

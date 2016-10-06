@@ -47,20 +47,34 @@ parameters:
     description: pnda flavor
     type: string
     default: pico
+  signal_transport:
+    type: string
+    default: TEMP_URL_SIGNAL
+  software_config_transport:
+    type: string
+    default: POLL_TEMP_URL
 
 resources:
   pnda_cluster:
     type: OS::Pnda::cluster
+  {%if create_network is equalto 1 %}
     depends_on: [ router_interface, deploy_install, saltmaster_server ]
+  {%else%}
+    depends_on: [ deploy_install, saltmaster_server ]
+  {%endif%}
     properties:
+  {%if create_network is equalto 1 %}
       private_net: { get_resource: private_net }
       private_subnet: { get_resource: private_subnet }
+  {%endif%}
       git_private_key_file: { get_param: git_private_key_file }
+      SaltmasterIP: { get_attr: ['saltmaster_server','first_address']}
+  {%if create_network is equalto 1 %}
       public_net: { get_param: public_net }
       KeyName: { get_resource: Key }
-      SaltmasterIP: { get_attr: ['saltmaster_server','first_address']}
       PndaSecGroup: { get_resource: PndaSecGroup }
       private_key: { get_attr: ['Key','private_key'] }
+  {%endif%}
       BastionKeyName: { get_param: KeyName }
       deployment_name: { get_param: 'OS::stack_name' }
       image_id: { get_param: image_id }
@@ -71,21 +85,27 @@ resources:
       Manager1Flavor: { get_param: Manager1Flavor }
       DataNodes: { get_param: DataNodes }
       DatanodeVolumeSize : { get_param: DatanodeVolumeSize }
+      signal_transport: { get_param: signal_transport }
+      software_config_transport: { get_param: software_config_transport }
 
   saltmaster_server:
     type: OS::Nova::Server
+  {%if create_network is equalto 1 %}
     depends_on: [ router, private_subnet ]
+  {%endif%}
     properties:
       image: { get_param: image_id }
       flavor: { get_param: SaltmasterFlavor }
+  {%if create_network is equalto 1 %}
       key_name: { get_resource: Key }
       networks:
         - port: { get_resource: saltmaster_port }
+  {%endif%}
       name:
         str_replace:
           template: '%stackname%-saltmaster'
           params:
             '%stackname%': {get_param: 'OS::stack_name'}
-      software_config_transport: POLL_TEMP_URL
+      software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
       config_drive: True
