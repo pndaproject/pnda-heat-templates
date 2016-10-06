@@ -38,7 +38,7 @@ parameters:
     default: /dev/vdb
   pr_mountpoint:
     type: string
-    default: /dev/vde
+    default: /dev/vdc
   prvolume_size:
     type: number
     default: 10
@@ -46,7 +46,7 @@ parameters:
     description: Package repository FS location path
     type: string
     default: ''
-    
+
 resources:
   sec_group:
     type: OS::Neutron::SecurityGroup
