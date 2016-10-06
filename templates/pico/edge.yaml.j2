@@ -103,7 +103,7 @@ resources:
       network: { get_param: PrivateNet }
       fixed_ips:
         - subnet_id: { get_param: PrivateSubnet }
-        security_groups: [{ get_resource: sec_group }, { get_param: pnda_secgroup }]
+      security_groups: [{ get_resource: sec_group }, { get_param: pnda_secgroup }]
 {%endif%}
 {%if create_volumes is equalto 1 %}
   logvolume:
