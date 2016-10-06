@@ -133,6 +133,7 @@ mkdir -p /srv/salt/platform-salt/salt/package-repository/files/
 cat << EOF > /srv/salt/platform-salt/salt/package-repository/files/$package_repository_sshfs_key$
 $package_repository_sshfs_key_file$
 EOF
+chmod 600 /srv/salt/platform-salt/salt/package-repository/files/$package_repository_sshfs_key$
 else
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
 package_repository:
