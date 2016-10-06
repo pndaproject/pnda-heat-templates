@@ -96,7 +96,6 @@ resources:
     properties:
       size: { get_param: logvolume_size }
       description: Volume for edge logs
-
   logvolume_attachment:
     type: OS::Cinder::VolumeAttachment
     properties:

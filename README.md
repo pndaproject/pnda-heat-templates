@@ -68,6 +68,55 @@ You can optionally add the `JavaMirror`, `ClouderaParcelsMirror` and `AnacondaPa
     JavaMirror: 'http://pnda-mirror.example.com/java/jdk/8u74-b02/jdk-8u74-linux-x64.tar.gz'
     ClouderaParcelsMirror: 'http://pnda-mirror.example.com/mirror/archive.cloudera.com/cdh5/parcels/5.5.2/'
 
+### Package repository 
+
+The default backend storage for the package repository is Swift and so you should have the containers created as defined with the parameters 'pnda_apps_container' and 'pnda_apps_folder' as describe just above.
+So then, for the package repository backend storage type, defined by the parameter package_repository_fs_type, it could be either:
+
+- 'swift': in case you will store your packages within Swift so the configuration will be:
+```
+  package_repository_fs_type: 'swift'
+```
+
+- 's3': in case you will want to use AWS S3 so the configuration will be:
+```
+  package_repository_fs_type: 's3'
+
+  # AWS configuration
+  S3_ACCESS_KEY_ID=xxxx
+  S3_SECRET_ACCESS_KEY=xxxx
+  AWS_REGION=xxxx
+```
+- 'sshfs': if you want to have the packages on another host which will be connected from the package repository host. For more information about sshfs, go to [SSHFS libfuse](https://github.com/libfuse/sshfs). The configuration will be:
+
+```
+  package_repository_fs_type: 'sshfs'
+  package_repository_fs_location_path: '/opt/pnda/packages'
+  package_repository_sshfs_user: 'cloud-user'
+  package_repository_sshfs_host: '127.0.0.1'
+  package_repository_sshfs_path: '/mnt/packages'
+  package_repository_sshfs_key: pr_key
+```
+
+- 'volume': in case of the standard flavor, we have attached a volume in order to be able to store lot of packages and this is mount by default on the edge node. The configuration will be:
+
+```
+  package_repository_fs_type: 'volume'
+  package_repository_fs_location_path: '/mnt/packages'
+```
+
+- 'local': if you want the packages to be store localy on the package repository node. The configuration will be:
+
+```
+  package_repository_fs_type: 'local'
+  package_repository_fs_location_path: '/opt/pnda/packages'
+```
+
+Do not forget also to copy the key.pem file used by sshfs to connect to the remote host:
+```
+$ cd pnda-heat-templates
+$ cp PATH/key.pem pr_key
+```
 
 ### The CLI
 
