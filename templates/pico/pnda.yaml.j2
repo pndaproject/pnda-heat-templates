@@ -102,6 +102,8 @@ resources:
       key_name: { get_resource: Key }
       networks:
         - port: { get_resource: saltmaster_port }
+  {%else%}
+      key_name: { get_param: KeyName }
   {%endif%}
       name:
         str_replace:
