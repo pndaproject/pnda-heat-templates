@@ -129,6 +129,7 @@ package_repository:
   sshfs_path: "$package_repository_sshfs_path$"
   sshfs_key: "$package_repository_sshfs_key$"
 EOF
+mkdir -p /srv/salt/platform-salt/salt/package-repository/files/
 cat << EOF > /srv/salt/platform-salt/salt/package-repository/files/$package_repository_sshfs_key$
 $package_repository_sshfs_key_file$
 EOF
