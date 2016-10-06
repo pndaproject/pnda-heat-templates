@@ -101,6 +101,7 @@ def process_templates_from_dir(flavor, cname, from_dir, to_dir, vars):
     print vars
 
     for j2_file in glob.glob('%s/*.j2' % from_dir):
+        print 'processing template file: %s' % j2_file
         template = templateEnv.get_template( j2_file )
         yaml_file_content = yaml.load( template.render( templateVars ) )
         #print yaml_file_content
@@ -126,7 +127,7 @@ def setup_flavor_templates(flavor, cname, dir, is_bare):
     os.chdir(resources_dir)
 
     templateVars = {}
-    if is_bare:
+    if is_bare == 'true':
         templateVars['create_network'] = 0
         templateVars['create_volumes'] = 0
         templateVars['create_bastion'] = 0
@@ -134,6 +135,9 @@ def setup_flavor_templates(flavor, cname, dir, is_bare):
         templateVars['create_network'] = 1
         templateVars['create_volumes'] = 1
         templateVars['create_bastion'] = 1
+
+    for yaml_file in glob.glob('../../templates/%s/*.yaml' % flavor):
+        shutil.copy(yaml_file, './')
 
     process_templates_from_dir( flavor, cname,
                                 os.path.abspath( '../../templates/%s' % flavor ),
@@ -145,9 +149,6 @@ def setup_flavor_templates(flavor, cname, dir, is_bare):
         templateVars = { }
     else:
         templateVars = { "create_network": "1" }
-
-    for yaml_file in glob.glob('../../templates/%s/*.yaml' % flavor):
-        shutil.copy(yaml_file, './')
 
     with open('../../pnda_env.yaml', 'r') as infile:
         pnda_env = yaml.load(infile)
