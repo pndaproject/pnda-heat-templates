@@ -121,6 +121,7 @@ resources:
         - remote_ip_prefix: 0.0.0.0/0
           protocol: icmp
 {% endif %}
+{%if create_bastion is equalto 1 %}
   bastion:
     type: OS::Pnda::bastion
     properties:
@@ -142,6 +143,7 @@ resources:
       SaltmasterIP: { get_param: SaltmasterIP }
       cluster_name: { get_param: deployment_name }
       pnda_flavor: { get_param: PndaFlavor }
+{%endif%}
 
   kafka:
     type: OS::Heat::ResourceGroup
