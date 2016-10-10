@@ -46,6 +46,10 @@ parameters:
     description: Package repository FS location path
     type: string
     default: ''
+  signal_transport:
+    type: string
+  software_config_transport:
+    type: string
 
 resources:
   sec_group:
@@ -90,7 +94,7 @@ resources:
     type: OS::Heat::SoftwareDeployment
     depends_on: [ logvolume_attachment ,  prvolume_attachment]
     properties:
-      signal_transport: TEMP_URL_SIGNAL
+      signal_transport: { get_param: signal_transport }
       config:
         get_resource: install_config
       server:
@@ -138,7 +142,7 @@ resources:
       networks: [{ network: {get_param: PrivateNet}}]
       security_groups: [{ get_resource: sec_group }, { get_param: pnda_secgroup }]
 
-      software_config_transport: POLL_TEMP_URL
+      software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
       config_drive: True
 

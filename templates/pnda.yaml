@@ -132,8 +132,15 @@ parameters:
     default: ''
     description: |
       uri to the platform-salt upstream git repository
+  signal_transport:
+    type: string
+    default: TEMP_URL_SIGNAL
+  software_config_transport:
+    type: string
+    default: POLL_TEMP_URL
 
 resources:
+{%if create_network is equalto 1 %}
   Key:
     type: OS::Nova::KeyPair
     properties:
@@ -217,6 +224,7 @@ resources:
       fixed_ips:
         - subnet_id: { get_resource: private_subnet }
       security_groups: [{ get_resource: saltmaster_sec_group }, { get_resource: PndaSecGroup }]
+{% endif %}
   install_config:
     type: OS::Heat::SoftwareConfig
     properties:
@@ -258,7 +266,7 @@ resources:
   deploy_install:
         type: OS::Heat::SoftwareDeployment
         properties:
-          signal_transport: TEMP_URL_SIGNAL
+          signal_transport: { get_param: signal_transport }
           config:
             get_resource: install_config
           server:
@@ -281,7 +289,7 @@ resources:
         type: OS::Heat::SoftwareDeployment
         depends_on: [deploy_install,pnda_cluster]
         properties:
-          signal_transport: TEMP_URL_SIGNAL
+          signal_transport: { get_param: signal_transport }
           config:
             get_resource: highstate_config
           server:
@@ -308,7 +316,7 @@ resources:
         type: OS::Heat::SoftwareDeployment
         depends_on: deploy_highstate
         properties:
-          signal_transport: TEMP_URL_SIGNAL
+          signal_transport: { get_param: signal_transport }
           config:
             get_resource: orchestrate_config
           server:
@@ -338,7 +346,7 @@ resources:
         type: OS::Heat::SoftwareDeployment
         depends_on: [deploy_highstate,deploy_orchestrate,pnda_cluster]
         properties:
-          signal_transport: TEMP_URL_SIGNAL
+          signal_transport: { get_param: signal_transport }
           config:
             get_resource: expand_config
           server:
@@ -348,10 +356,12 @@ resources:
             deployment_id: { get_param: DeploymentID }
 
 outputs:
+{%if create_network is equalto 1 %}
   private_key:
     value: { get_attr: [Key, private_key]}
     description: |
       The dynamically created keypair's private key value
+{% endif %}
   DeploymentID:
     value: { get_param: DeploymentID }
     description: |

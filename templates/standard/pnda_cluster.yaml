@@ -126,6 +126,10 @@ parameters:
     type: string
   deployment_name:
     type: string
+  signal_transport:
+    type: string
+  software_config_transport:
+    type: string
 
 resources:
   ZKSecGroup:

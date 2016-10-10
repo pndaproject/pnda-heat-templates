@@ -86,7 +86,11 @@ parameters:
   PndaFlavor:
     description: pnda flavor
     type: string
-    default: standard 
+    default: standard
+  signal_transport:
+    type: string
+  software_config_transport:
+    type: string
 
 resources:
   pnda_cluster:
@@ -139,7 +143,6 @@ resources:
           template: '%stackname%-saltmaster'
           params:
             '%stackname%': {get_param: 'OS::stack_name'}
-      software_config_transport: POLL_TEMP_URL
+      software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
       config_drive: True
-     

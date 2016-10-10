@@ -26,13 +26,17 @@ parameters:
     type: string
   pnda_flavor:
     type: string
-    default: standard 
+    default: standard
   logvolume_size:
     type: number
     default: 500
   log_mountpoint:
     type: string
     default: /dev/vdb
+  signal_transport:
+    type: string
+  software_config_transport:
+    type: string
 
 resources:
   sec_group:
@@ -76,7 +80,7 @@ resources:
     type: OS::Heat::SoftwareDeployment
     depends_on: [ logvolume_attachment ]
     properties:
-      signal_transport: TEMP_URL_SIGNAL
+      signal_transport: { get_param: signal_transport }
       config:
         get_resource: install_config
       server:
@@ -104,7 +108,7 @@ resources:
       key_name: { get_param: KeyName }
       networks:
         - port: { get_resource: port }
-      software_config_transport: POLL_TEMP_URL
+      software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
       config_drive: True
 

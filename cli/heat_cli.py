@@ -11,6 +11,7 @@ import uuid
 import shutil
 import yaml
 import glob
+import jinja2
 
 name_regex = "^[\.a-zA-Z0-9-]+$"
 
@@ -76,6 +77,8 @@ def get_args():
     parser.add_argument('-b','--branch', help='Git branch to use (defaults to master)')
     parser.add_argument('-s','--keypair', help='keypair name for ssh to the bastion server')
     parser.add_argument('-v','--verbose', help='Be more verbose')
+    parser.add_argument('-bare', '--bare', help='Assume baremetal environment')
+    parser.add_argument('-t', '--templates', help='path to the templates directory')
 
     args = parser.parse_args()
     return args
@@ -86,23 +89,67 @@ def merge_dicts(base, mergein):
             base[element] = mergein[element]
         else:
             for child in mergein[element]:
-                base[element][child] = mergein[element][child]  
+                base[element][child] = mergein[element][child]
 
-def setup_flavor_templates(flavor):
-    resources_dir = '_resources_%s' % flavor
+def process_templates_from_dir(flavor, cname, from_dir, to_dir, vars):
+
+    templateVars = vars
+    templateEnv = jinja2.Environment( loader=jinja2.FileSystemLoader( searchpath='/' ) )
+
+    print from_dir
+    print to_dir
+    print vars
+
+    for j2_file in glob.glob('%s/*.j2' % from_dir):
+        print 'processing template file: %s' % j2_file
+        template = templateEnv.get_template( j2_file )
+        yaml_file_content = yaml.load( template.render( templateVars ) )
+        #print yaml_file_content
+        yaml_file = '{}/{}'.format( to_dir, os.path.basename( j2_file[:-3] ) )
+        with open(yaml_file, 'w') as outfile:
+            yaml.dump(yaml_file_content, outfile, default_flow_style=False)
+
+    with open('%s/pnda.yaml' % to_dir, 'r') as infile:
+        pnda_flavor = yaml.load(infile)
+    template = templateEnv.get_template( os.path.abspath( '../../templates/pnda.yaml' ) )
+    pnda_common = yaml.load( template.render( templateVars ) )
+    merge_dicts(pnda_common, pnda_flavor)
+    with open('%s/pnda.yaml' % to_dir, 'w') as outfile:
+        yaml.dump(pnda_common, outfile, default_flow_style=False)
+
+def setup_flavor_templates(flavor, cname, dir, is_bare):
+
+    resources_dir = '_resources_{}-{}'.format(flavor, cname)
+    dest_dir = '{}/{}'.format(os.getcwd(), resources_dir)
     if os.path.isdir(resources_dir):
         shutil.rmtree(resources_dir)
     os.makedirs(resources_dir)
     os.chdir(resources_dir)
+
+    templateVars = {}
+    if is_bare == 'true':
+        templateVars['create_network'] = 0
+        templateVars['create_volumes'] = 0
+        templateVars['create_bastion'] = 0
+    else:
+        templateVars['create_network'] = 1
+        templateVars['create_volumes'] = 1
+        templateVars['create_bastion'] = 1
+
     for yaml_file in glob.glob('../../templates/%s/*.yaml' % flavor):
-        shutil.copy(yaml_file, './')        
-    with open('../../templates/%s/pnda.yaml' % flavor, 'r') as infile:
-        pnda_flavor = yaml.load(infile)
-    with open('../../templates/pnda.yaml', 'r') as infile:
-        pnda_common = yaml.load(infile)
-    merge_dicts(pnda_common, pnda_flavor)
-    with open('pnda.yaml', 'w') as outfile:
-        yaml.dump(pnda_common, outfile, default_flow_style=False)
+        shutil.copy(yaml_file, './')
+
+    process_templates_from_dir( flavor, cname,
+                                os.path.abspath( '../../templates/%s' % flavor ),
+                                os.path.abspath( dest_dir ),
+                                templateVars)
+
+    templateEnv = jinja2.Environment( loader=jinja2.FileSystemLoader( searchpath='/' ) )
+    if is_bare == 'true':
+        templateVars = { }
+    else:
+        templateVars = { "create_network": "1" }
+
     with open('../../pnda_env.yaml', 'r') as infile:
         pnda_env = yaml.load(infile)
     with open('../../templates/%s/resource_registry.yaml' % flavor, 'r') as infile:
@@ -112,7 +159,7 @@ def setup_flavor_templates(flavor):
     merge_dicts(pnda_env, resource_registry)
     merge_dicts(pnda_env, instance_flavors)
     with open('pnda_env.yaml', 'w') as outfile:
-        yaml.dump(pnda_env, outfile, default_flow_style=False)        
+        yaml.dump(pnda_env, outfile, default_flow_style=False)
     shutil.copytree('../../scripts', './scripts')
     shutil.copy('../../deploy', './')
     if os.path.isfile('../../pr_key'):
@@ -128,6 +175,7 @@ def create_cluster(args):
     flavor = args.flavor
     keypair = args.keypair
     command = args.command
+    is_bare = args.bare
 
     if flavor == 'standard':
         if datanodes == None:
@@ -165,14 +213,16 @@ def create_cluster(args):
     stack_params.append(pnda_cluster)
     stack_params_string = ' '.join(stack_params)
 
+    templates_directory = args.templates
+
     if command == 'create':
         print CREATE_INFO
-        setup_flavor_templates(flavor)
+        setup_flavor_templates(flavor, pnda_cluster, templates_directory, is_bare)
         cmdline = 'openstack stack create --timeout 120 --wait --template {} --environment {} {}'.format('pnda.yaml',
                                                                                     'pnda_env.yaml',
                                                                                     stack_params_string)
     elif command == 'resize':
-        os.chdir('_resources_%s' % flavor)
+        os.chdir('_resources_{}-{}'.format(flavor, pnda_cluster))
         stack_params_string = ' '.join(stack_params)
         cmdline = 'openstack stack update --timeout 120 --wait --template {} --environment {} {}'.format('pnda.yaml',
                                                                                     'pnda_env.yaml',
