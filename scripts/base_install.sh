@@ -64,6 +64,8 @@ if [[ "$roles$" =~ "package_repository" ]]; then
     /dev/$volume_pr$  $package_repository_fs_location_path$ xfs defaults  0 0
 EOF
   fi
+else
+  PRDISK=${PRDISK/\/dev\//}
 fi    
 
 

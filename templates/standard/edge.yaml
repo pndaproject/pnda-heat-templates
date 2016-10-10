@@ -38,7 +38,7 @@ parameters:
     default: /dev/vdb
   pr_mountpoint:
     type: string
-    default: vdc
+    default: /dev/vdc
   prvolume_size:
     type: number
     default: 10
