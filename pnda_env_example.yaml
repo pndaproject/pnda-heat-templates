@@ -53,3 +53,7 @@ parameter_defaults:
   #S3_ACCESS_KEY_ID=xxxx
   #S3_SECRET_ACCESS_KEY=xxxx
   #AWS_REGION=xxxx
+
+  # software deployment syncrho
+  signal_transport: TEMP_URL_SIGNAL
+  software_config_transport: POLL_TEMP_URL
