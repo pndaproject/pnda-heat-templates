@@ -42,7 +42,6 @@ parameter_defaults:
   NtpServers: 'xxx.ntp.org'
 
   # package repository
-  package_repository_fs_type: 'swift'
   #package_repository_fs_location_path: '/mnt/packages'
   #package_repository_sshfs_user: 'cloud-user'
   #package_repository_sshfs_host: '127.0.0.1'
