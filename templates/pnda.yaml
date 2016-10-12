@@ -239,11 +239,11 @@ resources:
             $ntp_servers$: { get_param: NtpServers }
             $package_repository_fs_type$ : {{ package_repository_fs_type }}
             $package_repository_fs_location_path$: { get_param: package_repository_fs_location_path }
+{%if package_repository_fs_type == 'sshfs' %}
             $package_repository_sshfs_user$: { get_param: package_repository_sshfs_user }
             $package_repository_sshfs_host$: { get_param: package_repository_sshfs_host }
             $package_repository_sshfs_path$: { get_param: package_repository_sshfs_path }
             $package_repository_sshfs_key$: { get_param: package_repository_sshfs_key }
-{%if package_repository_fs_type == 'sshfs' %}
             $package_repository_sshfs_key_file$: { get_file: pr_key }
 {% endif %}
             $S3_ACCESS_KEY_ID$: { get_param: S3_ACCESS_KEY_ID }
