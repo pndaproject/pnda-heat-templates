@@ -78,6 +78,7 @@ def get_args():
     parser.add_argument('-s','--keypair', help='keypair name for ssh to the bastion server')
     parser.add_argument('-v','--verbose', help='Be more verbose')
     parser.add_argument('-bare', '--bare', help='Assume baremetal environment')
+    parser.add_argument('-fstype', '--fstype', help='FS type for package repository')
     parser.add_argument('-t', '--templates', help='path to the templates directory')
 
     args = parser.parse_args()
@@ -117,7 +118,7 @@ def process_templates_from_dir(flavor, cname, from_dir, to_dir, vars):
     with open('%s/pnda.yaml' % to_dir, 'w') as outfile:
         yaml.dump(pnda_common, outfile, default_flow_style=False)
 
-def setup_flavor_templates(flavor, cname, dir, is_bare):
+def setup_flavor_templates(flavor, cname, dir, is_bare, fs_type):
 
     resources_dir = '_resources_{}-{}'.format(flavor, cname)
     dest_dir = '{}/{}'.format(os.getcwd(), resources_dir)
@@ -135,6 +136,8 @@ def setup_flavor_templates(flavor, cname, dir, is_bare):
         templateVars['create_network'] = 1
         templateVars['create_volumes'] = 1
         templateVars['create_bastion'] = 1
+
+    templateVars['package_repository_fs_type'] = fs_type
 
     for yaml_file in glob.glob('../../templates/%s/*.yaml' % flavor):
         shutil.copy(yaml_file, './')
@@ -177,6 +180,11 @@ def create_cluster(args):
     command = args.command
     is_bare = args.bare
 
+    if not args.fstype:
+        fs_type = 'swift'
+    else:
+        fs_type = args.fstype
+
     if flavor == 'standard':
         if datanodes == None:
             datanodes = 3
@@ -217,7 +225,7 @@ def create_cluster(args):
 
     if command == 'create':
         print CREATE_INFO
-        setup_flavor_templates(flavor, pnda_cluster, templates_directory, is_bare)
+        setup_flavor_templates(flavor, pnda_cluster, templates_directory, is_bare, fs_type)
         cmdline = 'openstack stack create --timeout 120 --wait --template {} --environment {} {}'.format('pnda.yaml',
                                                                                     'pnda_env.yaml',
                                                                                     stack_params_string)
