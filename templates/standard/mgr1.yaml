@@ -72,7 +72,7 @@ resources:
             $pnda_cluster$: { get_param: cluster_name }
             $flavor$: { get_param: pnda_flavor }
             $volume_dev$: { get_param: log_mountpoint }
-            $roles$: 'cloudera_namenode mysql_connector'
+            $roles$: 'cloudera_namenode,mysql_connector'
             $cloudera_role$: 'MGR01'
   install_deployment:
     type: OS::Heat::SoftwareDeployment

@@ -72,7 +72,7 @@ resources:
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
             $volume_dev$: { get_param: log_mountpoint }
-            $roles$: 'cloudera_namenode mysql_connector'
+            $roles$: 'cloudera_namenode,mysql_connector'
             $cloudera_role$: 'MGR02'
 
   install_deployment:
