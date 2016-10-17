@@ -54,5 +54,5 @@ parameter_defaults:
   #AWS_REGION=xxxx
 
   # software deployment syncrho
-  signal_transport: TEMP_URL_SIGNAL
-  software_config_transport: POLL_TEMP_URL
+  #signal_transport: TEMP_URL_SIGNAL
+  #software_config_transport: POLL_TEMP_URL

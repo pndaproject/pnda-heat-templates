@@ -89,8 +89,11 @@ parameters:
     default: standard
   signal_transport:
     type: string
+    default: TEMP_URL_SIGNAL
   software_config_transport:
     type: string
+    default: POLL_TEMP_URL
+
 
 resources:
   pnda_cluster:
@@ -128,6 +131,8 @@ resources:
       DataNodes: { get_param: DataNodes }
       OpentsdbNodes: { get_param: OpentsdbNodes }
       DatanodeVolumeSize : { get_param: DatanodeVolumeSize }
+      signal_transport: { get_param: signal_transport }
+      software_config_transport: { get_param: software_config_transport }
 
   saltmaster_server:
     type: OS::Nova::Server
