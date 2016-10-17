@@ -128,8 +128,10 @@ parameters:
     type: string
   signal_transport:
     type: string
+    default: TEMP_URL_SIGNAL
   software_config_transport:
     type: string
+    default: POLL_TEMP_URL
 
 resources:
   ZKSecGroup:
@@ -212,6 +214,8 @@ resources:
   bastion:
     type: OS::Pnda::bastion
     properties:
+      signal_transport: { get_param: signal_transport }
+      software_config_transport: { get_param: software_config_transport }
       Flavor: { get_param: BastionFlavor }
       Image: { get_param: image_id }
       KeyName: { get_param: BastionKeyName }
@@ -235,6 +239,8 @@ resources:
       resource_def:
         type: OS::Pnda::zookeeper
         properties:
+          signal_transport: { get_param: signal_transport }
+          software_config_transport: { get_param: software_config_transport }
           Flavor: { get_param: ZookeeperFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }
@@ -258,6 +264,8 @@ resources:
       resource_def:
         type: OS::Pnda::kafka
         properties:
+          signal_transport: { get_param: signal_transport }
+          software_config_transport: { get_param: software_config_transport }
           Flavor: { get_param: KafkaFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }
@@ -281,6 +289,8 @@ resources:
       resource_def:
         type: OS::Pnda::tools
         properties:
+          signal_transport: { get_param: signal_transport }
+          software_config_transport: { get_param: software_config_transport }
           Flavor: { get_param: ToolsFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }
@@ -300,6 +310,8 @@ resources:
   cm:
     type: OS::Pnda::cm
     properties:
+      signal_transport: { get_param: signal_transport }
+      software_config_transport: { get_param: software_config_transport }
       Flavor: { get_param: CMFlavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -317,6 +329,8 @@ resources:
   logserver:
     type: OS::Pnda::logserver
     properties:
+      signal_transport: { get_param: signal_transport }
+      software_config_transport: { get_param: software_config_transport }
       Flavor: { get_param: LogserverFlavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -334,6 +348,8 @@ resources:
   jupyter:
     type: OS::Pnda::jupyter
     properties:
+      signal_transport: { get_param: signal_transport }
+      software_config_transport: { get_param: software_config_transport }
       Flavor: { get_param: JupyterFlavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -351,6 +367,8 @@ resources:
   manager1:
     type: OS::Pnda::manager1
     properties:
+      signal_transport: { get_param: signal_transport }
+      software_config_transport: { get_param: software_config_transport }
       Flavor: { get_param: Manager1Flavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -368,6 +386,8 @@ resources:
   manager2:
     type: OS::Pnda::manager2
     properties:
+      signal_transport: { get_param: signal_transport }
+      software_config_transport: { get_param: software_config_transport }
       Flavor: { get_param: Manager2Flavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -385,6 +405,8 @@ resources:
   manager3:
     type: OS::Pnda::manager3
     properties:
+      signal_transport: { get_param: signal_transport }
+      software_config_transport: { get_param: software_config_transport }
       Flavor: { get_param: Manager3Flavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -402,6 +424,8 @@ resources:
   manager4:
     type: OS::Pnda::manager4
     properties:
+      signal_transport: { get_param: signal_transport }
+      software_config_transport: { get_param: software_config_transport }
       Flavor: { get_param: Manager4Flavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -419,6 +443,8 @@ resources:
   edge:
     type: OS::Pnda::edge
     properties:
+      signal_transport: { get_param: signal_transport }
+      software_config_transport: { get_param: software_config_transport }
       Flavor: { get_param: EdgeFlavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -440,6 +466,8 @@ resources:
       resource_def:
         type: OS::Pnda::dn
         properties:
+          signal_transport: { get_param: signal_transport }
+          software_config_transport: { get_param: software_config_transport }
           Flavor: { get_param: DatanodeFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }
@@ -465,6 +493,8 @@ resources:
       resource_def:
         type: OS::Pnda::opentsdb
         properties:
+          signal_transport: { get_param: signal_transport }
+          software_config_transport: { get_param: software_config_transport }
           Flavor: { get_param: OpentsdbFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }
