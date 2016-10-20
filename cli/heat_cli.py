@@ -14,8 +14,6 @@ import glob
 import jinja2
 import time
 
-global RUNFILE
-
 name_regex = "^[\.a-zA-Z0-9-]+$"
 
 CREATE_INFO = """
