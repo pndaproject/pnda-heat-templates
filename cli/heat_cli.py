@@ -12,6 +12,9 @@ import shutil
 import yaml
 import glob
 import jinja2
+import time
+
+global RUNFILE
 
 name_regex = "^[\.a-zA-Z0-9-]+$"
 
@@ -20,6 +23,21 @@ Please wait while your PNDA cluster is being created.
 
 This process can last for 1 or 2 hours.
 """
+
+RUNFILE = None
+def init_runfile(cluster):
+    global RUNFILE
+    RUNFILE = 'logs/%s.%s.run' % (cluster, int(time.time()))
+
+def to_runfile(pairs):
+    '''
+    Append arbitrary pairs to a JSON dict on disk from anywhere in the code
+    '''
+    mode = 'w' if not os.path.isfile(RUNFILE) else 'r'
+    with open(RUNFILE, mode) as rf:
+        jrf = json.load(rf) if mode == 'r' else {}
+        jrf.update(pairs)
+        json.dump(jrf, rf)
 
 def name_string(v):
     try:
@@ -169,6 +187,12 @@ def setup_flavor_templates(flavor, cname, dir, is_bare, fs_type):
         shutil.copy('../../pr_key', './')
 
 def create_cluster(args):
+
+    # TODO add bastion/saltmaster endpoints to runfile
+    init_runfile(args.pnda_cluster)
+
+    to_runfile({'cmdline':sys.argv})
+
     pnda_cluster = args.pnda_cluster
     datanodes = args.datanodes
     tsdbnodes = args.opentsdb_nodes
