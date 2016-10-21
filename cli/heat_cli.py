@@ -78,7 +78,6 @@ def get_args():
     parser.add_argument('-v','--verbose', help='Be more verbose')
     parser.add_argument('-bare', '--bare', help='Assume baremetal environment')
     parser.add_argument('-fstype', '--fstype', help='FS type for package repository')
-    parser.add_argument('-t', '--templates', help='path to the templates directory')
 
     args = parser.parse_args()
     return args
@@ -117,7 +116,7 @@ def process_templates_from_dir(flavor, cname, from_dir, to_dir, vars):
     with open('%s/pnda.yaml' % to_dir, 'w') as outfile:
         yaml.dump(pnda_common, outfile, default_flow_style=False)
 
-def setup_flavor_templates(flavor, cname, dir, is_bare, fs_type):
+def setup_flavor_templates(flavor, cname, is_bare, fs_type):
 
     resources_dir = '_resources_{}-{}'.format(flavor, cname)
     dest_dir = '{}/{}'.format(os.getcwd(), resources_dir)
@@ -220,11 +219,9 @@ def create_cluster(args):
     stack_params.append(pnda_cluster)
     stack_params_string = ' '.join(stack_params)
 
-    templates_directory = args.templates
-
     if command == 'create':
         print CREATE_INFO
-        setup_flavor_templates(flavor, pnda_cluster, templates_directory, is_bare, fs_type)
+        setup_flavor_templates(flavor, pnda_cluster, is_bare, fs_type)
         cmdline = 'openstack stack create --timeout 120 --wait --template {} --environment {} {}'.format('pnda.yaml',
                                                                                     'pnda_env.yaml',
                                                                                     stack_params_string)
