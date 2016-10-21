@@ -52,7 +52,7 @@ def os_cmd(cmdline, print_output=False, verbose=False):
 def get_args():
     epilog = """examples:
   - create cluster
-    $ ./heat_cli.py create -e squirrel-land -f standard -n 5 -o 1 -k 2 -z 3 -s pnda -y
+    $ ./heat_cli.py create -e squirrel-land -f standard -n 5 -o 1 -k 2 -z 3 -s pnda
 
   - destroy existing cluster:
     $ ./heat_cli.py destroy -e squirrel-land
@@ -67,7 +67,6 @@ def get_args():
     banner()
 
     parser.add_argument('command', help='Mode of operation', choices=['create', 'resize', 'destroy', 'status', 'logs'])
-    parser.add_argument('-y', action='store_true', help='Do not prompt for confirmation before creating or destroying VMs')
     parser.add_argument('-e','--pnda-cluster', type=name_string, help='Namespaced environment for machines in this cluster')
     parser.add_argument('-n','--datanodes', type=int, help='How many datanodes for the hadoop cluster')
     parser.add_argument('-o','--opentsdb-nodes', type=int, help='How many Open TSDB nodes for the hadoop cluster')
