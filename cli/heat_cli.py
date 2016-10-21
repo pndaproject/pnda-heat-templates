@@ -202,6 +202,11 @@ def create_cluster(args):
         if zknodes == None:
             zknodes = 0
 
+    if not os.path.isfile('../deploy'):
+        with open('../deploy', 'w') as git_key_file:
+            git_key_file.write('If authenticated access to the platform-salt git repository is required then' +
+                               ' replace this file with a key that grants access to the git server.\n')
+
     stack_params = []
 
     stack_params.append('--parameter ZookeeperNodes={}'.format(zknodes))
