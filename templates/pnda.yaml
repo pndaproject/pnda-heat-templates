@@ -1,0 +1,387 @@
+heat_template_version: 2014-10-16
+
+parameters:
+  image_id:
+    type: string
+    description: default image for pnda servers
+    default: ubuntu1404
+  DatanodeMountpoint:
+    default: /dev/vdb
+    type: string
+  public_net:
+    type: string
+    description: >
+      ID or name of public network for which floating IP addresses will be allocated
+  private_net_name:
+    type: string
+    description: Name of private network to be created
+  private_net_cidr:
+    type: string
+    description: Private network address (CIDR notation)
+  private_net_gateway:
+    type: string
+    description: Private network gateway address
+  private_net_pool_start:
+    type: string
+    description: Start of private network IP address allocation pool
+  private_net_pool_end:
+    type: string
+    description: End of private network IP address allocation pool
+  name_servers:
+    description: List of name name servers
+    type: string
+  KeyName:
+    description: Name of an existing KeyPair to enable SSH access to the instances
+    type: string
+  git_private_key_file:
+    description: private key file for cloning from git
+    type: string
+  GitBranch:
+    description: Branch of the salt repository
+    type: string
+    default: master
+  JavaMirror:
+    description: URL of a mirror for java release download
+    type: string
+    default: ''
+  ClouderaParcelsMirror:
+    description: URL of a mirror for cloudera parcels download
+    type: string
+    default: ''
+  AnacondaParcelsMirror:
+    description: URL of a mirror for anaconda parcels download
+    type: string
+    default: ''
+  NtpServers:
+    description: NTP servers
+    type: string
+    default: ''
+  package_repository_fs_location_path:
+    description: Package repository FS location path
+    type: string
+    default: ''
+  package_repository_sshfs_user:
+    description: Package repository SSH FS user
+    type: string
+    default: ''
+  package_repository_sshfs_host:
+    description: Package repository SSH FS host
+    type: string
+    default: ''
+  package_repository_sshfs_path:
+    description: Package repository SSH FS path
+    type: string
+    default: ''
+  package_repository_sshfs_key:
+    description: Package repository SSH FS key
+    type: string
+    default: ''
+  S3_ACCESS_KEY_ID:
+    description: AWS S3 access key id
+    type: string
+    default: ''
+  S3_SECRET_ACCESS_KEY:
+    description: AWS S3 secret access key id
+    type: string
+    default: ''
+  AWS_REGION:
+    description: AWS region
+    type: string
+    default: ''
+
+  keystone_user:
+    type: string
+  keystone_password:
+    type: string
+  keystone_tenant:
+    type: string
+  keystone_auth_url:
+    type: string
+  keystone_region_name:
+    type: string
+  pnda_apps_container:
+    type: string
+  pnda_apps_folder:
+    type: string
+  pnda_archive_container:
+    type: string
+
+  DeploymentID:
+    type: string
+    default: ''
+    description: |
+      DeploymentID for this deployment. To trigger a scaling, the stack shall be updated using a different value passed as a parameter.
+      Otherwise, orchestration steps necessary to properly the scale the clusters will not be executed.
+
+  packages_server_uri:
+    type: string
+    default: ''
+    description: |
+      Base URI for retrieving packages
+  platform_uri:
+    type: string
+    default: ''
+    description: |
+      Uri to retrieve a platform-salt release zip file
+  platform_git_repo_uri:
+    type: string
+    default: ''
+    description: |
+      uri to the platform-salt upstream git repository
+  signal_transport:
+    type: string
+    default: TEMP_URL_SIGNAL
+  software_config_transport:
+    type: string
+    default: POLL_TEMP_URL
+
+resources:
+{%if create_network is equalto 1 %}
+  Key:
+    type: OS::Nova::KeyPair
+    properties:
+      save_private_key: true
+      name: { get_param: 'OS::stack_name' }
+  private_net:
+    type: OS::Neutron::Net
+    properties:
+      name:
+        str_replace:
+          template: '%stackname%-net'
+          params:
+            '%stackname%': { get_param: 'OS::stack_name' }
+  private_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: private_net }
+      cidr: { get_param: private_net_cidr }
+      gateway_ip: { get_param: private_net_gateway }
+      allocation_pools:
+        - start: { get_param: private_net_pool_start }
+          end: { get_param: private_net_pool_end }
+      dns_nameservers: { get_param: name_servers }
+  router:
+    type: OS::Neutron::Router
+    properties:
+      external_gateway_info:
+        network: { get_param: public_net }
+  router_interface:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: router }
+      subnet_id: { get_resource: private_subnet }
+  PndaSecGroup:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      description: Add security group rules for pnda deployment
+      name:
+        str_replace:
+          template:
+            cname-pnda-cluster
+          params:
+            cname: { get_param: 'OS::stack_name' }
+      rules:
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: tcp
+          port_range_min: 22
+          port_range_max: 22
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: icmp
+        - remote_mode: remote_group_id
+          protocol: tcp
+          port_range_min: 1
+          port_range_max: 65535
+
+
+  saltmaster_sec_group:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      description: Bastion SecurityGroup
+      name:
+        str_replace:
+          template: '%stackname%-saltmaster'
+          params:
+            '%stackname%': {get_param: 'OS::stack_name'}
+      rules:
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: icmp
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: tcp
+          port_range_min: 22
+          port_range_max: 22
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: tcp
+          port_range_min: 4505
+          port_range_max: 4506
+  saltmaster_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: private_net }
+      fixed_ips:
+        - subnet_id: { get_resource: private_subnet }
+      security_groups: [{ get_resource: saltmaster_sec_group }, { get_resource: PndaSecGroup }]
+{% endif %}
+  install_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      outputs:
+        - name: result
+      config:
+        str_replace:
+          template: { get_file: scripts/saltmaster_install.sh }
+          params:
+            $git_private_key$: { get_file: deploy }
+            $git_branch$: { get_param: GitBranch }
+            $java_mirror$: { get_param: JavaMirror }
+            $cloudera_mirror$: { get_param: ClouderaParcelsMirror }
+            $anaconda_mirror$: { get_param: AnacondaParcelsMirror }
+            $ntp_servers$: { get_param: NtpServers }
+            $package_repository_fs_type$ : {{ package_repository_fs_type }}
+            $package_repository_fs_location_path$: { get_param: package_repository_fs_location_path }
+{%if package_repository_fs_type == 'sshfs' %}
+            $package_repository_sshfs_user$: { get_param: package_repository_sshfs_user }
+            $package_repository_sshfs_host$: { get_param: package_repository_sshfs_host }
+            $package_repository_sshfs_path$: { get_param: package_repository_sshfs_path }
+            $package_repository_sshfs_key$: { get_param: package_repository_sshfs_key }
+            $package_repository_sshfs_key_file$: { get_file: pr_key }
+{% endif %}
+            $S3_ACCESS_KEY_ID$: { get_param: S3_ACCESS_KEY_ID }
+            $S3_SECRET_ACCESS_KEY$: { get_param: S3_SECRET_ACCESS_KEY }
+            $AWS_REGION$: { get_param: AWS_REGION }
+            $keystone_user$: { get_param: keystone_user }
+            $keystone_password$: { get_param: keystone_password }
+            $keystone_tenant$: { get_param: keystone_tenant }
+            $keystone_auth_url$: { get_param: keystone_auth_url }
+            $keystone_region_name$: { get_param: keystone_region_name }
+            $packages_server_uri$: { get_param: packages_server_uri }
+            $platform_uri$: { get_param: platform_uri }
+            $platform_git_repo_uri$: { get_param: platform_git_repo_uri }
+            $pnda_apps_container$: { get_param: pnda_apps_container }
+            $pnda_apps_folder$: { get_param: pnda_apps_folder }
+            $pnda_archive_container$: { get_param: pnda_archive_container }
+
+  deploy_install:
+        type: OS::Heat::SoftwareDeployment
+        properties:
+          signal_transport: { get_param: signal_transport }
+          config:
+            get_resource: install_config
+          server:
+            get_resource: saltmaster_server
+          actions:
+            - CREATE
+
+  highstate_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      outputs:
+        - name: result
+      config: |
+        #!/bin/bash -v
+        set -e
+        set -o pipefail
+        salt -v --log-level=debug --timeout=120 --state-output=mixed '*' state.highstate | tee salt-highstate-$(date +"%F-%T").log
+  deploy_highstate:
+        type: OS::Heat::SoftwareDeployment
+        depends_on: [deploy_install,pnda_cluster]
+        properties:
+          signal_transport: { get_param: signal_transport }
+          config:
+            get_resource: highstate_config
+          server:
+            get_resource: saltmaster_server
+          actions:
+          - CREATE
+          - UPDATE
+
+  orchestrate_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      outputs:
+        - name: result
+      config:
+        str_replace:
+          template: |
+            #!/bin/bash -v
+            set -e
+            CLUSTER=cname salt-run --log-level=debug state.orchestrate orchestrate.pnda | tee salt-orchestrate-$(date +"%F-%T").log
+          params:
+            cname: { get_param: 'OS::stack_name' }
+  deploy_orchestrate:
+        type: OS::Heat::SoftwareDeployment
+        depends_on: deploy_highstate
+        properties:
+          signal_transport: { get_param: signal_transport }
+          config:
+            get_resource: orchestrate_config
+          server:
+            get_resource: saltmaster_server
+          actions:
+          - CREATE
+
+  expand_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      inputs:
+        - name: deployment_id
+      outputs:
+        - name: result
+      config:
+       str_replace:
+          template: |
+            #!/bin/bash -v
+            set -e
+            set -o pipefail
+            salt -v --log-level=debug --timeout=120 --state-output=mixed '*' state.highstate | tee salt-highstate-$(date +"%F-%T").log
+            CLUSTER=cname salt-run --log-level=debug state.orchestrate orchestrate.pnda-expand | tee salt-expand-$(date +"%F-%T").log
+          params:
+            cname: { get_param: 'OS::stack_name' }
+  deploy_expand:
+        type: OS::Heat::SoftwareDeployment
+        depends_on: [deploy_highstate,deploy_orchestrate,pnda_cluster]
+        properties:
+          signal_transport: { get_param: signal_transport }
+          config:
+            get_resource: expand_config
+          server:
+            get_resource: saltmaster_server
+          actions: [ UPDATE ]
+          input_values:
+            deployment_id: { get_param: DeploymentID }
+
+outputs:
+{%if create_network is equalto 1 %}
+  private_key:
+    value: { get_attr: [Key, private_key]}
+    description: |
+      The dynamically created keypair's private key value
+{% endif %}
+  DeploymentID:
+    value: { get_param: DeploymentID }
+    description: |
+      Last DeploymentID used. To trigger a scaling, the stack shall be updated using a different value passed as a parameter.
+      Otherwise, orchestration steps necessary to properly the scale the clusters will not be executed.
+  salt_highstate:
+    description: Output of the Salt highstate command
+    value:
+      get_attr: [deploy_highstate, deploy_stdout]
+  salt_orchestrate:
+    description: Output of the Salt orchestrate command
+    value:
+      get_attr: [deploy_orchestrate, deploy_stdout]
+  install_stdout:
+    value:
+      get_attr: [deploy_install, deploy_stdout]
+  install_stderr:
+    value:
+      get_attr: [deploy_install, deploy_stderr]
+  install_status_code:
+    value:
+      get_attr: [deploy_install, deploy_status_code]
+  install_result:
+    value:
+      get_attr: [deploy_install, result]
