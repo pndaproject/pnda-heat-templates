@@ -1,7 +1,12 @@
 #!/bin/bash -v
 
+# This script runs on instances with a node_type tag of "saltmaster"
+# The base.sh script does not run on this instance type
+# It mounts the disks and installs a salt master
+
 set -ex
 
+# Install the saltmaster, plus saltmaster config
 export DEBIAN_FRONTEND=noninteractive
 apt-get update && apt-get -y install python-pip
 apt-get -y install python-git
@@ -43,6 +48,9 @@ file_recv: True
 failhard: True
 EOF
 
+# Set up ssh access to the platform-salt git repo
+# if secure access is required this key will be used automatically.
+# This mode is not normally used now the public github is available
 mkdir -p /root/.ssh
 
 cat << EOF > /root/.ssh/id_rsa
@@ -51,9 +59,9 @@ EOF
 chmod 400 /root/.ssh/id_rsa
 echo "StrictHostKeyChecking no" >> /root/.ssh/config
 
+# Set up platform-salt that contains the scripts the saltmaster runs to install software
 mkdir -p /srv/salt
 cd /srv/salt
-
 
 if [ "x$platform_git_repo_uri$" != "x" ]; then
   git clone --branch $git_branch$ $platform_git_repo_uri$
@@ -65,6 +73,7 @@ else
   exit 2
 fi
 
+# Push pillar config into platform-salt for environment specific config
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
 keystone.user: '$keystone_user$'
 keystone.password: '$keystone_password$'
