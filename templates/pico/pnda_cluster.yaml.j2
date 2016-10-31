@@ -1,3 +1,12 @@
+# pnda_cluster.yaml defines the instances to create for this flavor of PNDA
+# The resource_registry.yaml file defines which yaml template to apply to
+# each instance type, and these specific yaml files configure the
+# instance as required for that type of node.
+
+# It is processed as a jinja2 template with the following parameters:
+#   - create_network: 0|1. Set to 1 to create network related resources or to 0 when running
+#                          for an openstack ironic bare-metal install
+
 heat_template_version: 2014-10-16
 
 parameters:
