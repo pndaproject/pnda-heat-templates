@@ -1,3 +1,6 @@
+# instance_flavors.yaml contains the default instance type for each
+# PNDA instance type
+
 parameter_defaults:
   CMFlavor: pnda-cm
   Manager1Flavor: pnda-manager-large

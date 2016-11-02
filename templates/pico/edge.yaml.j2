@@ -1,3 +1,11 @@
+# Definition for the edge instance type
+# Specifies which bootstrap script to run to set up this instance type and which roles
+# to apply to this instance type
+
+# It is processed as a jinja2 template with the following parameters:
+#   - create_network: 0|1. Set to 1 to create network related resources or to 0 when running
+#                          for an openstack ironic bare-metal install
+
 heat_template_version: 2014-10-16
 
 parameters:

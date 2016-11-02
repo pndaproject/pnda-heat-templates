@@ -1,3 +1,7 @@
+# Definition for the logserver instance type
+# Specifies which bootstrap script to run to set up this instance type and which roles
+# to apply to this instance type
+
 heat_template_version: 2014-10-16
 
 parameters:

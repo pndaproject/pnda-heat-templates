@@ -1,3 +1,6 @@
+# This flavor specific pnda.yaml defines a saltmaster to run the salt commands
+# defined in the base pnda.yaml and a pnda-cluster sub stack containing the 
+# rest of the instances
 
 parameters:
   SaltmasterFlavor:
