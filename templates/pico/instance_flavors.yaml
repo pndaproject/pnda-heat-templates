@@ -5,6 +5,7 @@ parameter_defaults:
   EdgeFlavor: pico-edge
   KafkaFlavor: pico-kafka
   DatanodeFlavor: pico-dn
-  BastionFlavor: pnda-micro
+  BastionFlavor: pico-bastion
+  SaltmasterFlavor: pico-saltmaster
   DatanodeVolumeSize: 35
   PndaFlavor: pico
