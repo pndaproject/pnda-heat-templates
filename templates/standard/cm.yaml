@@ -80,7 +80,7 @@ resources:
             $pnda_cluster$: { get_param: cluster_name }
             $volume_dev$: { get_param: log_mountpoint }
             $roles$: 'cloudera_manager,platform_testing_cdh,mysql_connector'
-            $cloudera_role$: 'CM'
+            $cloudera_role$: 'CM,pnda_restart'
   install_deployment:
     type: OS::Heat::SoftwareDeployment
     depends_on: [ logvolume_attachment ]
