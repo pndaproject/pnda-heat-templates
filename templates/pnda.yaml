@@ -252,6 +252,8 @@ resources:
         str_replace:
           template: { get_file: scripts/saltmaster_install.sh }
           params:
+            $flavor$: { get_param: PndaFlavor }
+            $pnda_cluster$: {get_param: 'OS::stack_name'}
             $git_private_key$: { get_file: deploy }
             $git_branch$: { get_param: GitBranch }
             $java_mirror$: { get_param: JavaMirror }

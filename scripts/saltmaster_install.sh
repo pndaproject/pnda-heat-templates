@@ -160,3 +160,17 @@ EOF
 fi
 
 restart salt-master
+
+# Set up a salt minion on the saltmaster too
+cat >> /etc/hosts <<EOF
+127.0.0.1 saltmaster salt
+EOF
+
+# Set up the minion grains
+cat > /etc/salt/grains <<EOF
+pnda:
+  flavor: $flavor$
+pnda_cluster: $pnda_cluster$
+EOF
+
+restart salt-minion
