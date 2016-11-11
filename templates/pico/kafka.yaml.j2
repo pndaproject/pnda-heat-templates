@@ -45,9 +45,6 @@ parameters:
   logvolume_size:
     type: number
     default: 10
-  log_mountpoint:
-    type: string
-    default: /dev/vdb
   signal_transport:
     type: string
     default: TEMP_URL_SIGNAL
@@ -77,7 +74,7 @@ resources:
             $master_ip$: { get_param: SaltmasterIP }
             $brokerid$: { get_param: NodeIndex}
             $pnda_cluster$: { get_param: cluster_name }
-            $volume_dev$: { get_param: log_mountpoint }
+            $log_volume_id$: { get_resource: logvolume }
             $roles$: 'kafka,kafka_manager,platform_testing_general,elk,zookeeper'
   install_deployment:
     type: OS::Heat::SoftwareDeployment
@@ -103,7 +100,6 @@ resources:
     properties:
       volume_id: { get_resource: logvolume }
       instance_uuid: { get_resource: server }
-      mountpoint: { get_param: log_mountpoint }
 {%endif%}
 
   server:

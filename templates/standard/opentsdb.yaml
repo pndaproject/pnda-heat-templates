@@ -32,9 +32,6 @@ parameters:
   volume_size:
     type: number
     default: 200
-  mountpoint:
-    type: string
-    default: /dev/vdb
   cluster_name:
     type: string
   pnda_secgroup:

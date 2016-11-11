@@ -34,9 +34,6 @@ parameters:
   logvolume_size:
     type: number
     default: 250
-  log_mountpoint:
-    type: string
-    default: /dev/vdb
   signal_transport:
     type: string
   software_config_transport:
@@ -75,7 +72,7 @@ resources:
             $flavor$: { get_param: pnda_flavor }
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
-            $volume_dev$: { get_param: log_mountpoint }
+            $log_volume_id$: { get_resource: logvolume }
             $roles$: 'oozie_database,mysql_connector,hue'
             $cloudera_role$: 'MGR04'
   install_deployment:
@@ -99,7 +96,6 @@ resources:
     properties:
       volume_id: { get_resource: logvolume }
       instance_uuid: { get_resource: server }
-      mountpoint: { get_param: log_mountpoint }
 
 
   server:
