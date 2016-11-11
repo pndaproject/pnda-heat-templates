@@ -99,7 +99,7 @@ parameter_defaults:
   # ClouderaParcelsMirror: A mirror of the CDH repo. This is optional but can speed up provisioning
   # if the network connection to the Cloudera hosted repo is slow, as the download is 1.5GB
   #  
-  ClouderaParcelsMirror: 'http://x.x.x.x/mirror/archive.cloudera.com/cdh5/parcels/5.5.2/'
+  ClouderaParcelsMirror: 'http://x.x.x.x/mirror/archive.cloudera.com/cdh5/parcels/5.9.0/'
 
   #
   # git_private_key_file: If authenticated access to platform_git_repo_uri is required then this key should be
