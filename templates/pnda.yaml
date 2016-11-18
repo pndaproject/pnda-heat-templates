@@ -20,9 +20,6 @@ parameters:
     type: string
     description: default image for pnda servers
     default: ubuntu1404
-  DatanodeMountpoint:
-    default: /dev/vdb
-    type: string
   public_net:
     type: string
     description: >

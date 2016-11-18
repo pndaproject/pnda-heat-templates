@@ -47,9 +47,6 @@ parameters:
   DatanodeVolumeSize:
     default: 10
     type: number
-  DatanodeMountpoint:
-    default: /dev/vdc
-    type: string
 
 {%if create_network is equalto 1 %}
   public_net:
@@ -249,7 +246,6 @@ resources:
           PrivateSubnet: { get_param: private_subnet }
           sec_group: { get_resource: DNSecGroup }
           volume_size: { get_param: DatanodeVolumeSize }
-          mountpoint: { get_param: DatanodeMountpoint }
           pnda_secgroup: { get_param: PndaSecGroup }
 {% endif %}
           KeyName: { get_param: KeyName }
