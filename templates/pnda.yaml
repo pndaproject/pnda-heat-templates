@@ -24,9 +24,6 @@ parameters:
     type: string
     description: >
       ID or name of public network for which floating IP addresses will be allocated
-  private_net_name:
-    type: string
-    description: Name of private network to be created
   private_net_cidr:
     type: string
     description: Private network address (CIDR notation)
