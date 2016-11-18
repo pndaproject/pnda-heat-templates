@@ -38,7 +38,7 @@ parameters:
     default: standard
   logvolume_size:
     type: number
-    default: 250
+    default: 120
   signal_transport:
     type: string
   software_config_transport:

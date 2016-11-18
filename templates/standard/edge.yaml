@@ -36,7 +36,7 @@ parameters:
     default: standard
   logvolume_size:
     type: number
-    default: 250
+    default: 120
   prvolume_size:
     type: number
     default: 10
