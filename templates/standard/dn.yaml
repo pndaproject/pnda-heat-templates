@@ -31,7 +31,7 @@ parameters:
     type: string
   volume_size:
     type: number
-    default: 200
+    default: 50
   cluster_name:
     type: string
   pnda_secgroup:
@@ -41,7 +41,7 @@ parameters:
     default: default
   logvolume_size:
     type: number
-    default: 250
+    default: 120
   signal_transport:
     type: string
   software_config_transport:
