@@ -44,6 +44,10 @@ parameters:
     description: Package repository FS location path
     type: string
     default: ''
+  package_repository_fs_type:
+    description: Package repository FS type
+    type: string
+    default: ''  
   signal_transport:
     type: string
   software_config_transport:
@@ -83,8 +87,9 @@ resources:
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
             $log_volume_id$: { get_resource: logvolume }
-            $pr_volume_id$: { get_resource: prvolume }            
+            $pr_volume_id$: { get_resource: prvolume }
             $package_repository_fs_location_path$: { get_param: package_repository_fs_location_path }
+            $package_repository_fs_type$: { get_param: package_repository_fs_type }
             $roles$: 'cloudera_edge,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,gobblin,deployment_manager,package_repository,data_service,impala-shell,yarn-gateway,hbase_opentsdb_tables,hdfs_cleaner,master_dataset'
             $cloudera_role$: 'EDGE'
 
