@@ -82,17 +82,19 @@ if [ -b $HDFS_VOLUME_DEVICE ]; then
 EOF
 fi
 
-PR_VOLUME_ID="$pr_volume_id$"
-PR_VOLUME_DEVICE="/dev/disk/by-id/virtio-$(echo ${PR_VOLUME_ID} | cut -c -20)"
-echo PR_VOLUME_DEVICE is $PR_VOLUME_DEVICE
-if [ -b $PR_VOLUME_DEVICE ]; then
-  echo PR_VOLUME_DEVICE exists
-  umount $PR_VOLUME_DEVICE || echo 'not mounted'
-  mkfs.xfs $PR_VOLUME_DEVICE
-  mkdir -p $package_repository_fs_location_path$
-  cat >> /etc/fstab <<EOF
-  $HDFS_VOLUME_DEVICE  $package_repository_fs_location_path$ xfs defaults  0 0
+if [[ "$package_repository_fs_type$" == "fs" ]]; then
+  PR_VOLUME_ID="$pr_volume_id$"
+  PR_VOLUME_DEVICE="/dev/disk/by-id/virtio-$(echo ${PR_VOLUME_ID} | cut -c -20)"
+  echo PR_VOLUME_DEVICE is $PR_VOLUME_DEVICE
+  if [ -b $PR_VOLUME_DEVICE ]; then
+    echo PR_VOLUME_DEVICE exists
+    umount $PR_VOLUME_DEVICE || echo 'not mounted'
+    mkfs.xfs $PR_VOLUME_DEVICE
+    mkdir -p $package_repository_fs_location_path$
+    cat >> /etc/fstab <<EOF
+    $HDFS_VOLUME_DEVICE  $package_repository_fs_location_path$ xfs defaults  0 0
 EOF
+  fi
 fi
 
 cat /etc/fstab
