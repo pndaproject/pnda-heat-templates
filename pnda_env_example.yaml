@@ -88,7 +88,7 @@ parameter_defaults:
   # JavaMirror: A mirror of the JDK. PNDA is unlikely to succeed without this being hosted locally
   # see PNDA-2274
   #
-  JavaMirror: 'http://x.x.x.x/NFS/repos/java/jdk/8u74-b02/jdk-8u74-linux-x64.tar.gz'
+  JavaMirror: 'http://x.x.x.x/mirror/java/jdk/8u74-b02/jdk-8u74-linux-x64.tar.gz'
 
   #
   # ClouderaParcelsMirror: A mirror of the CDH repo. This is optional but can speed up provisioning
@@ -96,6 +96,12 @@ parameter_defaults:
   #  
   ClouderaParcelsMirror: 'http://x.x.x.x/mirror/archive.cloudera.com/cdh5/parcels/5.9.0/'
 
+  #
+  # AnacondaParcelsMirror: A mirror of the Anaconda repo. This is optional but can speed up provisioning
+  # if the network connection to the Anaconda hosted repo is unreliable
+  #  
+  AnacondaParcelsMirror: 'http://x.x.x.x/mirror/anaconda'
+  
   #
   # git_private_key_file: If authenticated access to platform_git_repo_uri is required then this key should be
   # provided. This is not normally used now platform-salt is on public github
