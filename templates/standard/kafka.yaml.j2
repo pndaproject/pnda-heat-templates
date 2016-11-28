@@ -43,6 +43,11 @@ parameters:
     type: string
   software_config_transport:
     type: string
+{%if create_kafkanodes_group is equalto 1 %}
+  scheduler_group_hint:
+    type: string
+{%endif%}
+
 
 resources:
   port:
@@ -102,7 +107,10 @@ resources:
       software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
       config_drive: True
-
+{%if create_kafkanodes_group is equalto 1 %}
+      scheduler_hints: 
+        group: { get_param: scheduler_group_hint}
+{%endif%}
 
 outputs:
   port_resource:

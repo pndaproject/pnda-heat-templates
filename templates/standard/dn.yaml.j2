@@ -1,4 +1,4 @@
-# Definition for the zookeeper instance type
+# Definition for the datanode instance type
 # Specifies which bootstrap script to run to set up this instance type and which roles
 # to apply to this instance type
 
@@ -6,9 +6,9 @@ heat_template_version: 2014-10-16
 
 parameters:
   Flavor:
-    description: Flavor of the zookeeper server
+    description: Flavor of the datanode server
     type: string
-    default: m1.small
+    default: m1.xlarge
   KeyName:
     description: Name of an existing ssh keypair
     type: string
@@ -29,20 +29,27 @@ parameters:
     default: 0
   sec_group:
     type: string
+  volume_size:
+    type: number
+    default: 50
   cluster_name:
     type: string
   pnda_secgroup:
     type: string
   pnda_flavor:
     type: string
-    default: standard
+    default: default
   logvolume_size:
     type: number
-    default: 500
+    default: 120
   signal_transport:
     type: string
   software_config_transport:
     type: string
+{%if create_datanodes_group is equalto 1 %}
+  scheduler_group_hint:
+    type: string
+{%endif%}
 
 resources:
   port:
@@ -51,7 +58,7 @@ resources:
       network: { get_param: PrivateNet }
       fixed_ips:
         - subnet_id: { get_param: PrivateSubnet }
-      security_groups: [{ get_param: sec_group }, { get_param: pnda_secgroup }]
+      security_groups: [{ get_param: sec_group }]
   install_config:
     type: OS::Heat::SoftwareConfig
     properties:
@@ -64,29 +71,17 @@ resources:
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
             $log_volume_id$: { get_resource: logvolume }
-            $roles$: 'zookeeper'
+            $hdfs_volume_id$: { get_resource: volume }
+            $cloudera_role$: 'DATANODE'
   install_deployment:
     type: OS::Heat::SoftwareDeployment
-    depends_on: [ logvolume_attachment ]
+    depends_on: [ volume_attachment, logvolume_attachment ]
     properties:
       signal_transport: { get_param: signal_transport }
       config:
         get_resource: install_config
       server:
         get_resource: server
-
-  logvolume:
-    type: OS::Cinder::Volume
-    properties:
-      size: { get_param: logvolume_size }
-      description: Volume for zookeeper logs
-
-  logvolume_attachment:
-    type: OS::Cinder::VolumeAttachment
-    properties:
-      volume_id: { get_resource: logvolume }
-      instance_uuid: { get_resource: server }
-
 
   server:
     type: OS::Nova::Server
@@ -95,11 +90,39 @@ resources:
       image: { get_param: Image }
       flavor: { get_param: Flavor }
       key_name: { get_param: KeyName }
-      networks:
-        - port: { get_resource: port }
+      networks: [{ network: {get_param: PrivateNet}}]
+      security_groups: [{ get_param: sec_group }, { get_param: pnda_secgroup }]
       software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
       config_drive: True
+{%if create_datanodes_group is equalto 1 %}
+      scheduler_hints: 
+        group: { get_param: scheduler_group_hint}
+{%endif%}
+
+
+  volume:
+    type: OS::Cinder::Volume
+    properties:
+      size: { get_param: volume_size }
+      description: Volume for datanode
+  volume_attachment:
+    type: OS::Cinder::VolumeAttachment
+    depends_on: logvolume_attachment
+    properties:
+      volume_id: { get_resource: volume }
+      instance_uuid: { get_resource: server }
+  logvolume:
+    type: OS::Cinder::Volume
+    properties:
+      size: { get_param: logvolume_size }
+      description: Volume for datanode logs
+  logvolume_attachment:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_resource: logvolume }
+      instance_uuid: { get_resource: server }
+
 
 outputs:
   port_resource:

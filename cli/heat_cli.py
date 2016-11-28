@@ -132,7 +132,7 @@ def process_templates_from_dir(flavor, cname, from_dir, to_dir, vars):
     with open('%s/pnda.yaml' % to_dir, 'w') as outfile:
         yaml.dump(pnda_common, outfile, default_flow_style=False)
 
-def setup_flavor_templates(flavor, cname, is_bare, fs_type):
+def setup_flavor_templates(flavor, cname, is_bare, fs_type, zknodes, kafkanodes, datanodes):
 
     resources_dir = '_resources_{}-{}'.format(flavor, cname)
     dest_dir = '{}/{}'.format(os.getcwd(), resources_dir)
@@ -150,6 +150,11 @@ def setup_flavor_templates(flavor, cname, is_bare, fs_type):
         templateVars['create_network'] = 1
         templateVars['create_volumes'] = 1
         templateVars['create_bastion'] = 1
+     
+    hypervisor_count = get_hypervisor_count()
+    templateVars['create_zknodes_group'] = 1 if (zknodes > 1 and hypervisor_count >= zknodes) else 0
+    templateVars['create_kafkanodes_group'] = 1 if (kafkanodes > 1 and hypervisor_count >= kafkanodes) else 0
+    templateVars['create_datanodes_group'] = 1 if (datanodes > 1 and hypervisor_count >= datanodes) else 0
 
     templateVars['package_repository_fs_type'] = fs_type
 
@@ -237,6 +242,7 @@ def create_cluster(args):
     stack_params.append('--parameter OpentsdbNodes={}'.format(tsdbnodes))
     stack_params.append('--parameter PndaFlavor={}'.format(flavor))
     stack_params.append('--parameter KeyName={}'.format(keypair))
+   
     if branch:
         stack_params.append('--parameter GitBranch={}'.format(branch))
     if command == 'resize':
@@ -248,7 +254,7 @@ def create_cluster(args):
 
     if command == 'create':
         print CREATE_INFO
-        setup_flavor_templates(flavor, pnda_cluster, is_bare, fs_type)
+        setup_flavor_templates(flavor, pnda_cluster, is_bare, fs_type, zknodes, kafkanodes, datanodes)
         cmdline = 'openstack stack create --timeout 120 --wait --template {} --environment {} {}'.format('pnda.yaml',
                                                                                     'pnda_env.yaml',
                                                                                     stack_params_string)
@@ -293,6 +299,8 @@ def get_salt_highstate_output(stack):
 def get_salt_orchestrate_output(stack):
     return os_cmd('openstack stack output show {} salt_orchestrate --format value --column output_value'.format(stack))
 
+def get_hypervisor_count():
+    return os_cmd("nova hypervisor-list | awk -F '|' '{print $4}' | grep -c 'up'").strip('\n')
 
 def print_pnda_cluster_status(stack, verbose=False):
     stack_name = stack['Stack Name']
