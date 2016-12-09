@@ -281,17 +281,19 @@ def destroy_cluster(args):
 def get_pnda_cluster_info(cluster_name):
     hosts = os_cmd('openstack server list --format json --name "{}"'.format(cluster_name))
     hosts = json.loads(hosts)
-    # bastion informations
-    bastion = next(h for h in hosts if h['Name'] == '{}-bastion'.format(cluster_name))
-    bastion_ip = bastion['Networks'].split(',')[-1]
+    try:
+        # bastion informations
+        bastion = next(h for h in hosts if h['Name'] == '{}-bastion'.format(cluster_name))
+        bastion_ip = bastion['Networks'].split(',')[-1]
 
-    # edge node informations
-    edge = next(h for h in hosts if h['Name'] == '{}-cdh-edge'.format(cluster_name))
-    edge_ip = edge['Networks'].split(',')[0].split('=')[-1]
+        # edge node informations
+        edge = next(h for h in hosts if h['Name'] == '{}-cdh-edge'.format(cluster_name))
+        edge_ip = edge['Networks'].split(',')[0].split('=')[-1]
 
-    return { 'bastion' : {'public-ip': bastion_ip},
-             'edge'    : {'private-ip': edge_ip} }
-
+        return { 'bastion' : {'public-ip': bastion_ip},
+            'edge'    : {'private-ip': edge_ip} }
+    except:
+        return {}
 
 def get_salt_highstate_output(stack):
     return os_cmd('openstack stack output show {} salt_highstate --format value --column output_value'.format(stack))
@@ -306,11 +308,17 @@ def print_pnda_cluster_status(stack, verbose=False):
     stack_name = stack['Stack Name']
     stack_status = stack['Stack Status']
 
-    print '[P] {} - {}'.format(stack_name, stack_status)
     if stack_status in ['CREATE_COMPLETE', 'UPDATE_COMPLETE']:
         info = get_pnda_cluster_info(stack_name)
-        print "    |- Bastion public IP: {}".format(info['bastion']['public-ip'])
-        print "    |- Edge node private IP: {}".format(info['edge']['private-ip'])
+        if 'bastion' in info and 'edge' in info:
+            print '[P] {} - {}'.format(stack_name, stack_status)
+            print "    |- Bastion public IP: {}".format(info['bastion']['public-ip'])
+            print "    |- Edge node private IP: {}".format(info['edge']['private-ip'])
+        else:
+            print '[?] {} - {}'.format(stack_name, stack_status)
+            print "    |- No Bastion/Edge (May not be a PNDA cluster)."
+    else: 
+       print '[?] {} - {}'.format(stack_name, stack_status)
 
 def clusters_status(args):
     stacks = os_cmd('openstack stack list --format json', print_output=False)
