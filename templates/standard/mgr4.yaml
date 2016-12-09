@@ -38,6 +38,8 @@ parameters:
     type: string
   software_config_transport:
     type: string
+  scheduler_group_hint:
+    type: string
 
 resources:
   sec_group:
@@ -110,7 +112,8 @@ resources:
       software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
       config_drive: True
-
+      scheduler_hints: 
+        group: { get_param: scheduler_group_hint}
 
 outputs:
   server_resource:
