@@ -1,6 +1,25 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] 2016-12-12
+### Added
+- PNDA-2159: Create a runfile containing structured info about run
+- Added numerous comments to bootstrap scripts and templates as in-code documentation
+- Added Anti Affinity hints to the nova scheduler
+
+### Changed
+- PNDA-2262: If deploy key not found create one with a helpful message 
+- PNDA-2386: Updates to volume sizes 
+- PNDA-2387: Run a minion on the saltmaster instance 
+- PNDA-2428: Mount disks using openstack IDs 
+- PNDA-2430: Log volume consistency changes 
+- Specify Anaconda mirror in PNDA YAML and make example mirror URIs consistent
+
+### Fixed
+- Move pnda_restart role to correct grain PNDA-2250
+- Update doc to match new Cloudera version 5.9.0
+- PNDA-2474: Execute PR volume logic conditionally 
+
 ## [1.0.0] 2016-10-21
 ### Changed
 - PNDA-2272: move to Salt 2015.8.11 in order to get the fix on orchestrate #33467
