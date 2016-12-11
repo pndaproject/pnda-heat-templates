@@ -155,6 +155,7 @@ def setup_flavor_templates(flavor, cname, is_bare, fs_type, zknodes, kafkanodes,
     templateVars['create_zknodes_group'] = 1 if (zknodes > 1 and hypervisor_count >= zknodes) else 0
     templateVars['create_kafkanodes_group'] = 1 if (kafkanodes > 1 and hypervisor_count >= kafkanodes) else 0
     templateVars['create_datanodes_group'] = 1 if (datanodes > 1 and hypervisor_count >= datanodes) else 0
+    templateVars['create_mgrnodes_group'] = 1 if hypervisor_count >= 3 else 0
 
     templateVars['package_repository_fs_type'] = fs_type
 
