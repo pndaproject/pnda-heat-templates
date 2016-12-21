@@ -1,58 +1,178 @@
 parameter_defaults:
   # NETWORK CONFIGURATION
-  # Specify here the external network id so that the stack can allaocate a
-  # Floating IP
+  
+  #
+  # public_net: UUID of the public network in openstack to use
+  #
   public_net: 5982b761-802a-4af3-9c0b-c3b457559179
-  private_net_name: 'corp18'
+  
+  #
+  # private_net_cidr: CIDR specifying the address range that the private network
+  # should be created with
+  #
   private_net_cidr: '192.168.10.0/24'
-  private_net_pool_end: '192.168.10.250'
+
+  #
+  # private_net_pool_start: The first available IP address on the private network
+  #
   private_net_pool_start: '192.168.10.10'
+
+  #
+  # private_net_pool_start: The last available IP address on the private network
+  #
+  private_net_pool_end: '192.168.10.250'
+ 
+  #
+  # private_net_gateway: IP address to use for the network gateway on the private network
+  #
   private_net_gateway: '192.168.10.1'
+  
+  #
+  # name_servers: DNS server(s) to use, this should be provided in the environment
+  #
   name_servers: [ "173.38.200.100" ]
 
-  # SERVER IMAGE
+  #
+  # image_id: A a base image to use for the created instances. It should be created by 
+  # following the guide in https://github.com/pndaproject/pnda-dib-elements
+  #
   image_id: pnda-base
 
   # KEYSTONE CREDENTIALS
-  # Uncomment and initialize this snippet's values in regards to your tenant
+  
+  #
+  # keystone_user: Username for the openstack clients to use
+  #  
   keystone_user: 'username'
+  
+  #
+  # keystone_user: Password for the openstack clients to use
+  #  
   keystone_password: 'password'
+  
+  #
+  # keystone_tenant: Name of the tenant / project in the openstack environment. The
+  # PNDA stack will be created in this project.
+  #  
   keystone_tenant: 'pnda'
+  
+  #
+  # keystone_auth_url: Keystone authentication URL. The Openstack console provides this 
+  # under the Access & Security section.
+  #  
   keystone_auth_url: 'http://x.x.x.x:5000/v2.0'
+  
+  #
+  # keystone_region_name: Keystone region. The Openstack console provides this 
+  # under the Access & Security section.
+  #  
   keystone_region_name: 'regionOne'
 
-  # Swift containers and folders
-  pnda_apps_container:  'pnda_apps'
-  pnda_apps_folder:  'releases'
+  #
+  # pnda_archive_container: Swift container for PNDA to use when archiving data
+  #  
   pnda_archive_container:  'pnda_archive'
 
-  # Initialize this if you want to use a specific packages http server
+  #
+  # packages_server_uri: HTTP server containing the compiled binary packages for the 
+  # components required to provision PNDA
+  #
   packages_server_uri: 'http://x.x.x.x'
 
-  # Initialize this to the platform-salt git repository url.
+  #
+  # platform_git_repo_uri: The platform-salt git repository url.
+  #
   platform_git_repo_uri: 'https://github.com/pndaproject/platform-salt.git'
 
-  # Optional mirrors
-  JavaMirror: 'http://x.x.x.x/NFS/repos/java/jdk/8u74-b02/jdk-8u74-linux-x64.tar.gz'
-  ClouderaParcelsMirror: 'http://x.x.x.x/mirror/archive.cloudera.com/cdh5/parcels/5.5.2/'
+  #
+  # JavaMirror: A mirror of the JDK. PNDA is unlikely to succeed without this being hosted locally
+  # see PNDA-2274
+  #
+  JavaMirror: 'http://x.x.x.x/mirror/java/jdk/8u74-b02/jdk-8u74-linux-x64.tar.gz'
 
+  #
+  # ClouderaParcelsMirror: A mirror of the CDH repo. This is optional but can speed up provisioning
+  # if the network connection to the Cloudera hosted repo is slow, as the download is 1.5GB
+  #  
+  ClouderaParcelsMirror: 'http://x.x.x.x/mirror/archive.cloudera.com/cdh5/parcels/5.9.0/'
+
+  #
+  # AnacondaParcelsMirror: A mirror of the Anaconda repo. This is optional but can speed up provisioning
+  # if the network connection to the Anaconda hosted repo is unreliable
+  #  
+  AnacondaParcelsMirror: 'http://x.x.x.x/mirror/anaconda'
+  
+  #
+  # git_private_key_file: If authenticated access to platform_git_repo_uri is required then this key should be
+  # provided. This is not normally used now platform-salt is on public github
+  #
   git_private_key_file: deploy
 
-  # Optional ntp servers
+  #
+  # NtpServers: Optional ntp servers. Use this if the standard Ubuntu NTP servers on the Internet cannot be reached
+  # and a local NTP server has been configured. PNDA will not work without NTP.
+  #
   NtpServers: 'xxx.ntp.org'
 
-  # package repository
+  # APPLICATION PACKAGE REPOSITORY
+  
+  #
+  # package_repository_fs_type: Type of storage to use for PNDA application packages
+  #   swift  - Openstack swift. Also set pnda_apps_container and pnda_apps_folder
+  #   s3     - Amazon S3. Also set pnda_apps_container, pnda_apps_folder, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY and AWS_REGION
+  #   sshfs  - standard file system. Also set package_repository_fs_location_path, package_repository_sshfs_user, package_repository_sshfs_host, package_repository_sshfs_path and package_repository_sshfs_key
+  #   fs     - local filesystem on the package repository service server. Also set package_repository_fs_location_path.
+  package_repository_fs_type:  'swift'
+  
+  #
+  # pnda_apps_container: Name of a container in swift or s3 to use for application packages
+  #
+  pnda_apps_container:  'pnda_apps'
+  
+  #
+  # pnda_apps_folder: Folder name within pnda_apps_container that contains the  application packages
+  #
+  pnda_apps_folder:  'releases'
+    
+  #
+  # package_repository_fs_location_path: Path to local folder on the package repository service server that contains 
+  # application packages
+  #  
   #package_repository_fs_location_path: '/mnt/packages'
+  
+  #
+  # package_repository_sshfs_user: Username to use when logging in to the sshfs repo
+  #  
   #package_repository_sshfs_user: 'cloud-user'
+  
+  #
+  # package_repository_sshfs_host: Hostname that contains the sshfs repo
+  #  
   #package_repository_sshfs_host: '127.0.0.1'
+  
+  #
+  # package_repository_sshfs_path: Path to folder on the sshfs server that contains 
+  # application packages
+  #   
   #package_repository_sshfs_path: '/mnt/packages'
+  
+  #
+  # package_repository_sshfs_key: RSA key to use when accessing the sshfs server that contains
+  # application packages
+  # 
   #package_repository_sshfs_key: pr_key
 
-  # AWS configuration
+  #
+  # S3_ACCESS_KEY_ID: AWS provided key to access the s3 bucket that contains application packages
+  # 
   #S3_ACCESS_KEY_ID=xxxx
+  
+  #
+  # S3_SECRET_ACCESS_KEY: AWS provided secret key to access the s3 bucket that contains application packages
+  # 
   #S3_SECRET_ACCESS_KEY=xxxx
+  
+  #
+  # AWS_REGION: AWS region to use to access the s3 bucket that contains application packages
+  # 
   #AWS_REGION=xxxx
-
-  # software deployment syncrho
-  #signal_transport: TEMP_URL_SIGNAL
-  #software_config_transport: POLL_TEMP_URL

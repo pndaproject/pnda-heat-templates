@@ -1,5 +1,9 @@
 #!/bin/bash -v
 
+# This script runs on the bastion instance
+# It generates the ssh key used to access the rest of
+# the instances
+
 set -e
 
 KEY="$private_key$"
