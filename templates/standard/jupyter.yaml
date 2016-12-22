@@ -8,7 +8,7 @@ parameters:
   Flavor:
     description: Flavor of the jupyter server
     type: string
-    default: m1.small
+    default: ec2.m3.large
   KeyName:
     description: Name of an existing ssh keypair
     type: string

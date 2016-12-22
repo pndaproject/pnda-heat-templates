@@ -4,4 +4,5 @@ pr_key
 alternate_envs/
 _resources_*
 pnda_env.yaml
+cli/logs
 
