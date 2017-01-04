@@ -38,7 +38,7 @@ parameters:
     description: End of private network IP address allocation pool
   name_servers:
     description: List of name name servers
-    type: string
+    type: comma_delimited_list
   KeyName:
     description: Name of an existing KeyPair to enable SSH access to the instances
     type: string
