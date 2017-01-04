@@ -121,7 +121,7 @@ parameter_defaults:
   #   swift  - Openstack swift. Also set pnda_apps_container and pnda_apps_folder
   #   s3     - Amazon S3. Also set pnda_apps_container, pnda_apps_folder, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY and AWS_REGION
   #   sshfs  - standard file system. Also set package_repository_fs_location_path, package_repository_sshfs_user, package_repository_sshfs_host, package_repository_sshfs_path and package_repository_sshfs_key
-  #   fs     - local filesystem on the package repository service server. Also set package_repository_fs_location_path.
+  #   local  - local filesystem on the package repository service server. Also set package_repository_fs_location_path.
   package_repository_fs_type:  'swift'
   
   #
