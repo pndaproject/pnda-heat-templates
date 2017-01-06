@@ -91,6 +91,11 @@ parameter_defaults:
   JavaMirror: ''
 
   #
+  # PndaMirror: URI of the mirror for offline installation
+  #  
+  PndaMirror: 'http://www.example.com'
+
+  #
   # ClouderaParcelsMirror: A mirror of the CDH repo. This is optional but can speed up provisioning
   # if the network connection to the Cloudera hosted repo is slow, as the download is 1.5GB
   # example format: 'http://x.x.x.x/mirror/archive.cloudera.com/cdh5/parcels/5.9.0/'

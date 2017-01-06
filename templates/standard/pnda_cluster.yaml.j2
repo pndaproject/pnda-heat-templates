@@ -137,6 +137,10 @@ parameters:
   software_config_transport:
     type: string
     default: POLL_TEMP_URL
+  PndaMirror:
+    description: URL of a mirror for operating system package download
+    type: string
+    default: ''
 
 resources:
   MgrAAGroup:
@@ -283,6 +287,8 @@ resources:
       pnda_secgroup: { get_param: PndaSecGroup }
       cluster_name: { get_param: deployment_name }
       pnda_flavor: { get_param: PndaFlavor }
+      PndaMirror: { get_param: PndaMirror }
+      
   zookeeper:
     type: OS::Heat::ResourceGroup
     properties:
@@ -308,6 +314,7 @@ resources:
           cluster_name: { get_param: deployment_name }
           pnda_secgroup: { get_param: PndaSecGroup }
           pnda_flavor: { get_param: PndaFlavor }
+          PndaMirror: { get_param: PndaMirror }
 {%if create_zknodes_group is equalto 1 %}
           scheduler_group_hint: { get_resource: ZkAAGroup}
 {%endif%}
@@ -336,6 +343,7 @@ resources:
           cluster_name: { get_param: deployment_name }
           pnda_secgroup: { get_param: PndaSecGroup }
           pnda_flavor: { get_param: PndaFlavor }
+          PndaMirror: { get_param: PndaMirror }          
 {%if create_kafkanodes_group is equalto 1 %}
           scheduler_group_hint: { get_resource: KafkaAAGroup}
 {%endif%}
@@ -364,6 +372,7 @@ resources:
           cluster_name: { get_param: deployment_name }
           pnda_secgroup: { get_param: PndaSecGroup }
           pnda_flavor: { get_param: PndaFlavor }
+          PndaMirror: { get_param: PndaMirror }
   cm:
     type: OS::Pnda::cm
     properties:
@@ -383,6 +392,7 @@ resources:
       cluster_name: { get_param: deployment_name }
       pnda_secgroup: { get_param: PndaSecGroup }
       pnda_flavor: { get_param: PndaFlavor }
+      PndaMirror: { get_param: PndaMirror }
   logserver:
     type: OS::Pnda::logserver
     properties:
@@ -402,6 +412,7 @@ resources:
       cluster_name: { get_param: deployment_name }
       pnda_secgroup: { get_param: PndaSecGroup }
       pnda_flavor: { get_param: PndaFlavor }
+      PndaMirror: { get_param: PndaMirror }
   jupyter:
     type: OS::Pnda::jupyter
     properties:
@@ -421,6 +432,7 @@ resources:
       cluster_name: { get_param: deployment_name }
       pnda_secgroup: { get_param: PndaSecGroup }
       pnda_flavor: { get_param: PndaFlavor }
+      PndaMirror: { get_param: PndaMirror }
   manager1:
     type: OS::Pnda::manager1
     properties:
@@ -440,6 +452,7 @@ resources:
       pnda_secgroup: { get_param: PndaSecGroup }
       cluster_name: { get_param: deployment_name }
       pnda_flavor: { get_param: PndaFlavor }
+      PndaMirror: { get_param: PndaMirror }
       scheduler_group_hint: { get_resource: MgrAAGroup}
   manager2:
     type: OS::Pnda::manager2
@@ -460,6 +473,7 @@ resources:
       pnda_secgroup: { get_param: PndaSecGroup }
       cluster_name: { get_param: deployment_name }
       pnda_flavor: { get_param: PndaFlavor }
+      PndaMirror: { get_param: PndaMirror }
       scheduler_group_hint: { get_resource: MgrAAGroup}
   manager3:
     type: OS::Pnda::manager3
@@ -480,6 +494,7 @@ resources:
       pnda_secgroup: { get_param: PndaSecGroup }
       cluster_name: { get_param: deployment_name }
       pnda_flavor: { get_param: PndaFlavor }
+      PndaMirror: { get_param: PndaMirror }
   manager4:
     type: OS::Pnda::manager4
     properties:
@@ -500,6 +515,7 @@ resources:
       cluster_name: { get_param: deployment_name }
       pnda_flavor: { get_param: PndaFlavor }
       scheduler_group_hint: { get_resource: MgrAAGroup}
+      PndaMirror: { get_param: PndaMirror }
   edge:
     type: OS::Pnda::edge
     properties:
@@ -519,6 +535,7 @@ resources:
       cluster_name: { get_param: deployment_name }
       pnda_secgroup: { get_param: PndaSecGroup }
       pnda_flavor: { get_param: PndaFlavor }
+      PndaMirror: { get_param: PndaMirror }
   dn:
     type: OS::Heat::ResourceGroup
     properties:
@@ -545,6 +562,7 @@ resources:
           cluster_name: { get_param: deployment_name }
           pnda_secgroup: { get_param: PndaSecGroup }
           pnda_flavor: { get_param: PndaFlavor }
+          PndaMirror: { get_param: PndaMirror }
 {%if create_datanodes_group is equalto 1 %}
           scheduler_group_hint: { get_resource: DataNodeAAGroup}
 {%endif%}
@@ -573,7 +591,7 @@ resources:
           cluster_name: { get_param: deployment_name }
           pnda_secgroup: { get_param: PndaSecGroup }
           pnda_flavor: { get_param: PndaFlavor }
-
+          PndaMirror: { get_param: PndaMirror }
 outputs:
   zookeeper_hosts:
     value: { get_attr: [zookeeper, hosts_entry] }

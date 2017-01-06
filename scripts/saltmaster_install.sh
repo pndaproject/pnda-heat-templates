@@ -11,17 +11,13 @@ DISTRO=$(cat /etc/*-release|grep ^ID\=|awk -F\= {'print $2'}|sed s/\"//g)
 # Install the saltmaster, plus saltmaster config
 if [ "x$DISTRO" == "xubuntu" ]; then
 export DEBIAN_FRONTEND=noninteractive
-apt-get update && apt-get -y install python-pip
-apt-get -y install python-git
-apt-get -y install unzip
+apt-get update
+apt-get -y install unzip salt-minion salt-master
 fi
 
 if [ "x$DISTRO" == "xrhel" ]; then
-yum -y install python-git unzip
+yum -y install unzip salt-minion salt-master
 fi
-
-wget -O install_salt.sh https://bootstrap.saltstack.com
-sh install_salt.sh -D -U -M stable 2015.8.11
 
 cat << EOF > /etc/salt/master
 ## specific PNDA saltmaster config
@@ -180,14 +176,5 @@ pnda:
 pnda_cluster: $pnda_cluster$
 EOF
 
-if [ "x$DISTRO" == "xubuntu" ]; then
-restart salt-minion
-restart salt-master
-fi
-
-if [ "x$DISTRO" == "xrhel" ]; then
-systemctl enable salt-minion
-systemctl enable salt-master
-systemctl restart salt-minion
-systemctl restart salt-master
-fi
+service salt-minion restart
+service salt-master restart

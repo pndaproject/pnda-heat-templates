@@ -46,7 +46,10 @@ parameters:
   software_config_transport:
     type: string
     default: POLL_TEMP_URL
-
+  PndaMirror:
+    description: URL of a mirror for operating system package download
+    type: string
+    default: ''
 
 resources:
 {%if create_network is equalto 1 %}
@@ -80,6 +83,7 @@ resources:
         str_replace:
           template: {get_file: scripts/base_install.sh }
           params:
+            $pnda_mirror$: { get_param: PndaMirror }
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
             $flavor$: { get_param: pnda_flavor }
