@@ -61,6 +61,9 @@ parameters:
     description: URL of a mirror for anaconda parcels download
     type: string
     default: ''
+  npm_registry:
+    description: NPM registry
+    type: string
   NtpServers:
     description: NTP servers
     type: string
@@ -253,6 +256,7 @@ resources:
             $java_mirror$: { get_param: JavaMirror }
             $cloudera_mirror$: { get_param: ClouderaParcelsMirror }
             $anaconda_mirror$: { get_param: AnacondaParcelsMirror }
+            $npm_registry$: { get_param: npm_registry }
             $ntp_servers$: { get_param: NtpServers }
             $package_repository_fs_type$ : {{ package_repository_fs_type }}
             $package_repository_fs_location_path$: { get_param: package_repository_fs_location_path }
