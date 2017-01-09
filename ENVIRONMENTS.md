@@ -438,6 +438,15 @@ Installing the Cloudera Hadoop cluster might take some time. In an effort to red
 | *Default values:* | None |
 | *Example value:* | 'http://www.example.com/mirror/anaconda/misc/parcels/' |
 
+* **npm_registry**
+
+| *Mandatory:* | no |
+| -------------|-----|
+| *Purpose:* | Alternative NPM registry for offline installation |
+| *Type:* | string |
+| *Default values:* | 'https://registry.npmjs.org/' |
+| *Example value:* | 'https://registry.npmjs.org/' |
+
 * **NtpServers**
 
 | *Mandatory:* | no |

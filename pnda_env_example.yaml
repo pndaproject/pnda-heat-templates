@@ -102,9 +102,11 @@ parameter_defaults:
   #  
   AnacondaParcelsMirror: 'http://x.x.x.x/mirror/anaconda'
   
-  # npm registry
-  #npm_registry: 'https://registry.npmjs.org/'
   #
+  # npm registry: Alternative NPM registry for offline installation
+  #
+  npm_registry: 'https://registry.npmjs.org/'
+
   # git_private_key_file: If authenticated access to platform_git_repo_uri is required then this key should be
   # provided. This is not normally used now platform-salt is on public github
   #
