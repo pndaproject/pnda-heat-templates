@@ -3,7 +3,7 @@
 # This script runs on all instances except the saltmaster
 # It installs a salt minion and mounts the disks
 
-set -e
+set -ex
 
 ROLES=$roles$
 
@@ -11,8 +11,13 @@ cat >> /etc/hosts <<EOF
 $master_ip$ saltmaster salt
 EOF
 
-# Install a salt minion
+DISTRO=$(cat /etc/*-release|grep ^ID\=|awk -F\= {'print $2'}|sed s/\"//g)
+
+if [ "x$DISTRO" == "xubuntu" ]; then
 export DEBIAN_FRONTEND=noninteractive
+fi
+
+# Install a salt minion
 wget -O install_salt.sh https://bootstrap.saltstack.com
 sh install_salt.sh -D -U stable 2015.8.11
 hostname=`hostname` && echo "id: $hostname" > /etc/salt/minion && unset hostname
@@ -51,10 +56,23 @@ roles: [${ROLES}]
 EOF
 fi
 
+if [ "x$DISTRO" == "xubuntu" ]; then
 service salt-minion restart
+fi
+if [ "x$DISTRO" == "xrhel" ]; then
+systemctl enable salt-minion
+systemctl restart salt-minion
+fi
+
 
 # Mount the disks
+if [ "x$DISTRO" == "xubuntu" ]; then
 apt-get -y install xfsprogs
+fi
+
+if [ "x$DISTRO" == "xrhel" ]; then
+yum -y install xfsprogs
+fi
 
 LOG_VOLUME_ID="$log_volume_id$"
 LOG_VOLUME_DEVICE="/dev/disk/by-id/virtio-$(echo ${LOG_VOLUME_ID} | cut -c -20)"
