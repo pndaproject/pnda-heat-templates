@@ -8,7 +8,7 @@ parameters:
   Flavor:
     description: Flavor of the manager1 server
     type: string
-    default: m1.xlarge
+    default: ec2.m3.2xlarge
   KeyName:
     description: Name of an existing ssh keypair
     type: string
