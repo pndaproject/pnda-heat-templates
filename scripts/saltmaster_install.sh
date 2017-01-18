@@ -6,13 +6,22 @@
 
 set -ex
 
+DISTRO=$(cat /etc/*-release|grep ^ID\=|awk -F\= {'print $2'}|sed s/\"//g)
+
 # Install the saltmaster, plus saltmaster config
+if [ "x$DISTRO" == "xubuntu" ]; then
 export DEBIAN_FRONTEND=noninteractive
 apt-get update && apt-get -y install python-pip
 apt-get -y install python-git
+apt-get -y install unzip
+fi
+
+if [ "x$DISTRO" == "xrhel" ]; then
+yum -y install python-git unzip
+fi
+
 wget -O install_salt.sh https://bootstrap.saltstack.com
 sh install_salt.sh -D -U -M stable 2015.8.11
-apt-get -y install unzip
 
 cat << EOF > /etc/salt/master
 ## specific PNDA saltmaster config
@@ -102,7 +111,7 @@ fi
 if [ "x$anaconda_mirror$" != "x" ] ; then
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
 anaconda:
-  parcel_version: '4.0.0'  
+  parcel_version: '4.0.0'
   parcel_repo: '$anaconda_mirror$'
 EOF
 fi
@@ -159,8 +168,6 @@ packages_server:
 EOF
 fi
 
-restart salt-master
-
 # Set up a salt minion on the saltmaster too
 cat >> /etc/hosts <<EOF
 127.0.0.1 saltmaster salt
@@ -173,4 +180,14 @@ pnda:
 pnda_cluster: $pnda_cluster$
 EOF
 
+if [ "x$DISTRO" == "xubuntu" ]; then
 restart salt-minion
+restart salt-master
+fi
+
+if [ "x$DISTRO" == "xrhel" ]; then
+systemctl enable salt-minion
+systemctl enable salt-master
+systemctl restart salt-minion
+systemctl restart salt-master
+fi
