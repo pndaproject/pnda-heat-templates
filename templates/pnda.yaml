@@ -1,8 +1,8 @@
 # This base pnda.yaml contains the parts of the stack that are common to all flavors
-# The <flavor>/pnda.yaml file is merged over the top of this one before creating the stack 
+# The <flavor>/pnda.yaml file is merged over the top of this one before creating the stack
 
 # To create a new flavor copy an existing flavor folder and edit:
-# - pnda_yaml.yaml to define a pnda_cluster with a parameter for each instance size and a saltmaster 
+# - pnda_yaml.yaml to define a pnda_cluster with a parameter for each instance size and a saltmaster
 # - pnda_cluster.yaml to define the specific instances required to host the flavor
 # - a yaml for each instance type that defines which bootstrap script to run and what parameters to pass to it
 # - resource_registry.yaml to specify which of these yaml files to run for each instance type
@@ -13,7 +13,8 @@
 #   - package_repository_fs_type: swift|s3|fs|sshfs. Additional properties are defined based on the type
 #                                 of package repository selected
 
-heat_template_version: 2014-10-16
+#heat_template_version: 2014-10-16
+heat_template_version: 2015-10-15
 
 parameters:
   image_id:
@@ -38,7 +39,7 @@ parameters:
     description: End of private network IP address allocation pool
   name_servers:
     description: List of name name servers
-    type: string
+    type: comma_delimited_list
   KeyName:
     description: Name of an existing KeyPair to enable SSH access to the instances
     type: string
