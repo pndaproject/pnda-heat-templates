@@ -6,63 +6,63 @@ parameters:
   SaltmasterFlavor:
     type: string
     description: Flavor for the salmaster nodes
-    default: m1.large
+    default: ec2.m3.large
   Manager1Flavor:
     type: string
     description: Flavor for the manager nodes
-    default: m1.xlarge
+    default: ec2.m3.2xlarge
   Manager2Flavor:
     type: string
     description: Flavor for the manager nodes
-    default: m1.xlarge
+    default: ec2.m3.2xlarge
   Manager3Flavor:
     type: string
     description: Flavor for the manager nodes
-    default: m1.xlarge
+    default: ec2.m3.2xlarge
   Manager4Flavor:
     type: string
     description: Flavor for the manager nodes
-    default: m1.xlarge
+    default: ec2.m3.2xlarge
   EdgeFlavor:
     type: string
     description: Flavor for the edge node
-    default: m1.xlarge
+    default: ec2.t2.medium
   BastionFlavor:
     type: string
     description: Flavor for the bastion nodes
-    default: m1.large
+    default: ec2.t2.medium
   ZookeeperFlavor:
     type: string
     description: Flavor for the zookeeper nodes
-    default: m1.large
+    default: ec2.m3.large
   KafkaFlavor:
     type: string
     description: Flavor for the kafka nodes
-    default: m1.large
+    default: ec2.m3.xlarge
   DatanodeFlavor:
     type: string
     description: Flavor for the data nodes
-    default: m1.xlarge
+    default: ec2.m4.2xlarge
   CMFlavor:
     type: string
     description: Flavor for the data nodes
-    default: m1.xlarge
+    default: ec2.m3.xlarge
   ToolsFlavor:
     type: string
     description: Flavor for the tools nodes
-    default: m1.large
+    default: ec2.m3.large
   JupyterFlavor:
     type: string
     description: Flavor for the Jupyter nodes
-    default: m1.large
+    default: ec2.m3.large
   LogserverFlavor:
     type: string
     description: Flavor for the logserver node
-    default: m1.large
+    default: ec2.m3.large
   OpentsdbFlavor:
     type: string
     description: Flavor for the opentsdb node
-    default: m1.large
+    default: ec2.m3.xlarge
   ToolsNodes:
     default: '1'
     description: Number of TOOLS nodes

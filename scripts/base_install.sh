@@ -82,7 +82,7 @@ if [ -b $HDFS_VOLUME_DEVICE ]; then
 EOF
 fi
 
-if [[ "$package_repository_fs_type$" == "fs" ]]; then
+if [[ "$package_repository_fs_type$" == "local" ]]; then
   PR_VOLUME_ID="$pr_volume_id$"
   PR_VOLUME_DEVICE="/dev/disk/by-id/virtio-$(echo ${PR_VOLUME_ID} | cut -c -20)"
   echo PR_VOLUME_DEVICE is $PR_VOLUME_DEVICE

@@ -1,11 +1,11 @@
 # instance_flavors.yaml contains the default instance type for each
 # PNDA instance type
 parameter_defaults:
-  Manager1Flavor: pico-mgr
-  EdgeFlavor: pico-edge
-  KafkaFlavor: pico-kafka
-  DatanodeFlavor: pico-dn
-  BastionFlavor: pico-bastion
-  SaltmasterFlavor: pico-saltmaster
+  Manager1Flavor: ec2.m3.xlarge
+  EdgeFlavor: ec2.m3.xlarge
+  KafkaFlavor: ec2.m3.large
+  DatanodeFlavor: ec2.c4.xlarge
+  BastionFlavor: ec2.t2.medium
+  SaltmasterFlavor: ec2.t2.medium
   DatanodeVolumeSize: 35
   PndaFlavor: pico
