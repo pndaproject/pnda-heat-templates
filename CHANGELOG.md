@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+### Changed
+- PNDA-2688: review pnda_env default values
+
 ## [1.2.0] 2017-01-20
 ### Changed
 - PNDA-2493: Align openstack and AWS flavors
