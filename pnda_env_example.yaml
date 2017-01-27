@@ -87,20 +87,20 @@ parameter_defaults:
   #
   # JavaMirror: A mirror of the JDK. PNDA is unlikely to succeed without this being hosted locally
   # see PNDA-2274
-  #
-  JavaMirror: 'http://x.x.x.x/mirror/java/jdk/8u74-b02/jdk-8u74-linux-x64.tar.gz'
+  # example format: 'http://x.x.x.x/mirror/java/jdk/8u74-b02/jdk-8u74-linux-x64.tar.gz'
+  JavaMirror: ''
 
   #
   # ClouderaParcelsMirror: A mirror of the CDH repo. This is optional but can speed up provisioning
   # if the network connection to the Cloudera hosted repo is slow, as the download is 1.5GB
-  #  
-  ClouderaParcelsMirror: 'http://x.x.x.x/mirror/archive.cloudera.com/cdh5/parcels/5.9.0/'
+  # example format: 'http://x.x.x.x/mirror/archive.cloudera.com/cdh5/parcels/5.9.0/'
+  ClouderaParcelsMirror: ''
 
   #
   # AnacondaParcelsMirror: A mirror of the Anaconda repo. This is optional but can speed up provisioning
   # if the network connection to the Anaconda hosted repo is unreliable
-  #  
-  AnacondaParcelsMirror: 'http://x.x.x.x/mirror/anaconda'
+  # example format: 'http://x.x.x.x/mirror/anaconda'
+  AnacondaParcelsMirror: ''
   
   #
   # git_private_key_file: If authenticated access to platform_git_repo_uri is required then this key should be
@@ -111,8 +111,8 @@ parameter_defaults:
   #
   # NtpServers: Optional ntp servers. Use this if the standard Ubuntu NTP servers on the Internet cannot be reached
   # and a local NTP server has been configured. PNDA will not work without NTP.
-  #
-  NtpServers: 'xxx.ntp.org'
+  # example format: 'xxx.ntp.org'
+  NtpServers: ''
 
   # APPLICATION PACKAGE REPOSITORY
   
