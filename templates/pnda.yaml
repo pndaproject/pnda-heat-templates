@@ -13,8 +13,7 @@
 #   - package_repository_fs_type: swift|s3|fs|sshfs. Additional properties are defined based on the type
 #                                 of package repository selected
 
-#heat_template_version: 2014-10-16
-heat_template_version: 2015-10-15
+heat_template_version: 2014-10-16
 
 parameters:
   image_id:
