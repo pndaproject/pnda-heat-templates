@@ -2,7 +2,7 @@
 # Specifies which bootstrap script to run to set up this instance type and which roles
 # to apply to this instance type
 
-heat_template_version: 2014-10-16
+heat_template_version: 2015-04-30
 
 parameters:
   Flavor:
@@ -42,6 +42,8 @@ parameters:
   signal_transport:
     type: string
   software_config_transport:
+    type: string
+  pre_config:
     type: string
 {%if create_kafkanodes_group is equalto 1 %}
   scheduler_group_hint:
@@ -109,6 +111,7 @@ resources:
         - port: { get_resource: port }
       software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
+      user_data: { get_param: pre_config }
       config_drive: True
 {%if create_kafkanodes_group is equalto 1 %}
       scheduler_hints: 

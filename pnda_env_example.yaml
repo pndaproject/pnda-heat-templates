@@ -165,3 +165,10 @@ parameter_defaults:
   #
   #hypervisor_count: 30
 
+resource_registry:
+  #
+  # OS::Pnda::preConfig: the resource definition of a pre configuration file
+  # that will be run prior all the other PNDA configuration files.
+  # Example: To enable the ip tracking config script uncomment the next line.
+  #OS::Pnda::preConfig : iptracker.yaml
+  #OS::Pnda::preConfig : iprejecter.yaml

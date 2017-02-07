@@ -100,11 +100,13 @@ def get_args():
 
 def merge_dicts(base, mergein):
     for element in mergein:
-        if element not in base:
+        if element not in base or not base[element]:
             base[element] = mergein[element]
         else:
             for child in mergein[element]:
-                base[element][child] = mergein[element][child]
+                # base has priority over mergein, so don't overwrite base elements
+                if child not in base[element]:
+                    base[element][child] = mergein[element][child]
 
 def process_templates_from_dir(flavor, cname, from_dir, to_dir, vars):
 
@@ -165,6 +167,8 @@ def setup_flavor_templates(flavor, cname, is_bare, fs_type, zknodes, kafkanodes,
 
     templateVars['package_repository_fs_type'] = fs_type
 
+    for yaml_file in glob.glob('../../templates/shared/*.yaml'):
+        shutil.copy(yaml_file, './')
     for yaml_file in glob.glob('../../templates/%s/*.yaml' % flavor):
         shutil.copy(yaml_file, './')
 
