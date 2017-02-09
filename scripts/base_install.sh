@@ -32,6 +32,35 @@ fi
 
 ROLES=$roles$
 
+# VLAN interface(s) that needs to be configured
+VLAN=bond0
+
+configure_vlan () {
+    raw_if=$1
+    vlan_if=$2
+    vlan_id=$3
+
+    # On Debian Ubuntu the vconfig command is needed
+    apt-get install -y vlan
+    # grep -q -F '8021q' /etc/modules || echo '8021q' >> /etc/modules
+
+    cat > /etc/network/interfaces.d/${vlan_if}.cfg <<-EOF
+	auto ${vlan_if}
+	
+	iface ${vlan_if} inet dhcp
+	    vlan-raw-device ${raw_if}
+	    vlan-id ${raw_id}
+	EOF
+
+    ifup ${vlan_if}
+}
+
+# XXX: How can we guess that we are on a kafka/zk host and not hadoop ?
+# XXX: Maybe by matching on the hostname ?
+# XXX: A the moment, only create the 2006 VLAN for kafka/zookeeper
+# XXX: Let's do it later by matching on the $ROLES variable
+configure_vlan "bond0" "vlan2006" "2006"
+
 cat >> /etc/hosts <<EOF
 $master_ip$ saltmaster salt
 EOF
