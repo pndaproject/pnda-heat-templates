@@ -6,7 +6,13 @@
 
 set -ex
 
+
 DISTRO=$(cat /etc/*-release|grep ^ID\=|awk -F\= {'print $2'}|sed s/\"//g)
+
+# VLAN interface on which saltmaster will listen
+# By default it's bond0
+VLAN=bond0
+
 
 # Install the saltmaster, plus saltmaster config
 if [ "x$DISTRO" == "xubuntu" ]; then
@@ -32,6 +38,12 @@ rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-CentOS-7
 rpm --import $pnda_mirror$/mirror_rpm/NODESOURCE-GPG-SIGNING-KEY-EL
 yum -y install unzip salt-minion salt-master
 fi
+
+get_interface_ip () {
+    iface=$1
+
+    ip -f inet -o addr show ${iface} | cut -d' ' -f 7 | cut -d'/' -f 1
+}
 
 cat << EOF > /etc/salt/master
 ## specific PNDA saltmaster config
@@ -66,6 +78,12 @@ file_recv: True
 
 failhard: True
 EOF
+
+if [ -n "${VLAN}" ]; then
+    listen_ip=$(get_interface_ip ${VLAN})
+    echo "# Only listen on ${listen_ip} which is on VLAN interface: ${VLAN}" >> /etc/salt/master
+    echo "interface: ${listen_ip}" >> /etc/salt/master
+fi
 
 # Set up ssh access to the platform-salt git repo
 # if secure access is required this key will be used automatically.
@@ -178,6 +196,7 @@ pnda:
   flavor: $flavor$
 pnda_cluster: $pnda_cluster$
 EOF
+
 
 service salt-minion restart
 service salt-master restart
