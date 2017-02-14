@@ -57,9 +57,19 @@ configure_vlan () {
 
 # XXX: How can we guess that we are on a kafka/zk host and not hadoop ?
 # XXX: Maybe by matching on the hostname ?
-# XXX: A the moment, only create the 2006 VLAN for kafka/zookeeper
 # XXX: Let's do it later by matching on the $ROLES variable
-configure_vlan "bond0" "vlan2006" "2006"
+
+case "$(hostname)" in
+*-kafka-*)
+  configure_vlan "bond0" "vlan2006" "2006"
+  ;;
+*-cdh-*)
+  configure_vlan "bond0" "vlan2008" "2008"
+  ;;
+*)
+  # Do nothing at the moment
+  ;;
+esac
 
 cat >> /etc/hosts <<EOF
 $master_ip$ saltmaster salt
