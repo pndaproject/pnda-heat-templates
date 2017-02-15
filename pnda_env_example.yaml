@@ -37,6 +37,7 @@ parameter_defaults:
   # following the guide in https://github.com/pndaproject/pnda-dib-elements
   #
   image_id: pnda-base
+  image_id_saltmaster: pnda-base
 
   # KEYSTONE CREDENTIALS
   
