@@ -18,7 +18,7 @@ configure_vlan () {
 	
 	iface ${vlan_if} inet dhcp
 	    vlan-raw-device ${raw_if}
-	    vlan-id ${raw_id}
+	    vlan-id ${vlan_id}
 	EOF
 
     ifup ${vlan_if}
