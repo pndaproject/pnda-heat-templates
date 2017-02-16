@@ -10,8 +10,8 @@ set -ex
 DISTRO=$(cat /etc/*-release|grep ^ID\=|awk -F\= {'print $2'}|sed s/\"//g)
 
 # VLAN interface on which saltmaster will listen
-# By default it's bond0
-VLAN=bond0
+# By default it's eth0
+VLAN=eth0
 
 
 # Install the saltmaster, plus saltmaster config
