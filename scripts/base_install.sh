@@ -32,9 +32,6 @@ fi
 
 ROLES=$roles$
 
-# VLAN interface(s) that needs to be configured
-VLAN=bond0
-
 configure_vlan () {
     raw_if=$1
     vlan_if=$2
