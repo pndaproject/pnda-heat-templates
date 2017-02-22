@@ -1,0 +1,186 @@
+{
+  "nodes": [
+    {
+      "arch": "x86_64",
+      "disk": "10",
+      "name": "server15",
+      "pm_addr": "10.10.10.198",
+      "pm_password": "replaceme",
+      "pm_user": "replaceme",
+      "pm_type": "pxe_ipmitool",
+      "mac": [
+        "00:00:00:00:00:24"
+      ],
+      "cpu": "1",
+      "memory": "1024"
+    },
+    {
+      "arch": "x86_64",
+      "disk": "10",
+      "name": "server16",
+      "pm_addr": "10.10.10.199",
+      "pm_password": "replaceme",
+      "pm_user": "replaceme",
+      "pm_type": "pxe_ipmitool",
+      "mac": [
+        "00:00:00:00:00:28"
+      ],
+      "cpu": "1",
+      "memory": "1024"
+    },
+    {
+      "arch": "x86_64",
+      "disk": "10",
+      "name": "server17",
+      "pm_addr": "10.10.10.189",
+      "pm_password": "replaceme",
+      "pm_user": "replaceme",
+      "pm_type": "pxe_ipmitool",
+      "mac": [
+        "00:00:00:00:00:26"
+      ],
+      "cpu": "1",
+      "memory": "1024"
+    },
+    {
+      "arch": "x86_64",
+      "disk": "10",
+      "name": "server18",
+      "pm_addr": "10.10.10.229",
+      "pm_password": "replaceme",
+      "pm_user": "replaceme",
+      "pm_type": "pxe_ipmitool",
+      "mac": [
+        "00:00:00:00:00:20"
+      ],
+      "cpu": "1",
+      "memory": "1024"
+    },
+    {
+      "arch": "x86_64",
+      "disk": "10",
+      "name": "server19",
+      "pm_addr": "10.10.10.129",
+      "pm_password": "replaceme",
+      "pm_user": "replaceme",
+      "pm_type": "pxe_ipmitool",
+      "mac": [
+        "00:00:00:00:00:22"
+      ],
+      "cpu": "1",
+      "memory": "1024"
+    },
+    {
+      "arch": "x86_64",
+      "disk": "10",
+      "name": "server20",
+      "pm_addr": "10.10.10.179",
+      "pm_password": "replaceme",
+      "pm_user": "replaceme",
+      "pm_type": "pxe_ipmitool",
+      "mac": [
+        "00:00:00:00:00:1E"
+      ],
+      "cpu": "1",
+      "memory": "1024"
+    },
+    {
+      "arch": "x86_64",
+      "disk": "10",
+      "name": "server21",
+      "pm_addr": "10.10.10.209",
+      "pm_password": "replaceme",
+      "pm_user": "replaceme",
+      "pm_type": "pxe_ipmitool",
+      "mac": [
+        "00:00:00:00:00:1C"
+      ],
+      "cpu": "1",
+      "memory": "1024"
+    },
+    {
+      "arch": "x86_64",
+      "disk": "10",
+      "name": "server22",
+      "pm_addr": "10.10.10.219",
+      "pm_password": "replaceme",
+      "pm_user": "replaceme",
+      "pm_type": "pxe_ipmitool",
+      "mac": [
+        "00:00:00:00:00:1A"
+      ],
+      "cpu": "1",
+      "memory": "1024"
+    },
+    {
+      "arch": "x86_64",
+      "disk": "10",
+      "name": "server23",
+      "pm_addr": "10.10.10.119",
+      "pm_password": "replaceme",
+      "pm_user": "replaceme",
+      "pm_type": "pxe_ipmitool",
+      "mac": [
+        "00:00:00:00:00:18"
+      ],
+      "cpu": "1",
+      "memory": "1024"
+    },
+    {
+      "arch": "x86_64",
+      "disk": "10",
+      "name": "server24",
+      "pm_addr": "10.10.10.109",
+      "pm_password": "replaceme",
+      "pm_user": "replaceme",
+      "pm_type": "pxe_ipmitool",
+      "mac": [
+        "00:00:00:00:00:0A"
+      ],
+      "cpu": "1",
+      "memory": "1024"
+    },
+    {
+      "arch": "x86_64",
+      "disk": "10",
+      "name": "server25",
+      "pm_addr": "10.10.10.139",
+      "pm_password": "replaceme",
+      "pm_user": "replaceme",
+      "pm_type": "pxe_ipmitool",
+      "mac": [
+        "00:00:00:00:00:06"
+      ],
+      "cpu": "1",
+      "memory": "1024"
+    },
+    {
+      "arch": "x86_64",
+      "disk": "10",
+      "name": "server26",
+      "pm_addr": "10.10.10.149",
+      "pm_password": "replaceme",
+      "pm_user": "replaceme",
+      "pm_type": "pxe_ipmitool",
+      "mac": [
+        "00:00:00:00:00:08"
+      ],
+      "cpu": "1",
+      "memory": "1024"
+    },
+    {
+      "arch": "x86_64",
+      "disk": "10",
+      "name": "master",
+      "pm_addr": "192.168.100.1",
+      "pm_password": "-----BEGIN RSA PRIVATE KEY-----\nlines separated by newlines\n-----END RSA PRIVATE KEY-----",
+      "pm_user": "root",
+      "pm_type": "pxe_ssh",
+      "mac": [
+        "00:00:00:00:00:fa"
+      ],
+      "cpu": "1",
+      "memory": "1024"
+    }
+  ]
+}
