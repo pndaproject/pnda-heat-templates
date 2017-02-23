@@ -39,6 +39,10 @@ parameters:
     type: string
   software_config_transport:
     type: string
+  PndaMirror:
+    description: URL of a mirror for operating system package download
+    type: string
+    default: ''
 
 resources:
   sec_group:
@@ -80,6 +84,7 @@ resources:
         str_replace:
           template: {get_file: scripts/base_install.sh }
           params:
+            $pnda_mirror$: { get_param: PndaMirror }
             $flavor$: { get_param: pnda_flavor }
             $roles$: 'bastion'
             $master_ip$: { get_param: SaltmasterIP }

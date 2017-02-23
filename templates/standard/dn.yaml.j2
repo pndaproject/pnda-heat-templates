@@ -50,6 +50,10 @@ parameters:
   scheduler_group_hint:
     type: string
 {%endif%}
+  PndaMirror:
+    description: URL of a mirror for operating system package download
+    type: string
+    default: ''
 
 resources:
   port:
@@ -67,6 +71,7 @@ resources:
         str_replace:
           template: {get_file: scripts/base_install.sh }
           params:
+            $pnda_mirror$: { get_param: PndaMirror }
             $flavor$: { get_param: pnda_flavor }
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }

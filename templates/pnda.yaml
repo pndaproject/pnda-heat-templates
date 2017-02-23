@@ -61,6 +61,10 @@ parameters:
     description: URL of a mirror for anaconda parcels download
     type: string
     default: ''
+  PndaMirror:
+    description: URL of a mirror for operating system package download
+    type: string
+    default: ''
   NtpServers:
     description: NTP servers
     type: string
@@ -143,6 +147,10 @@ parameters:
   software_config_transport:
     type: string
     default: POLL_TEMP_URL
+  PndaMirror:
+    description: URL of a mirror for operating system package download
+    type: string
+    default: ''
 
 resources:
   # A keypair is created for this stack and used to secure login for all instances
@@ -246,6 +254,7 @@ resources:
         str_replace:
           template: { get_file: scripts/saltmaster_install.sh }
           params:
+            $pnda_mirror$: { get_param: PndaMirror }
             $flavor$: { get_param: PndaFlavor }
             $pnda_cluster$: {get_param: 'OS::stack_name'}
             $git_private_key$: { get_file: deploy }

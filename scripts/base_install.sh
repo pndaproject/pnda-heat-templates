@@ -4,6 +4,30 @@
 # It installs a salt minion and mounts the disks
 
 set -ex
+DISTRO=$(cat /etc/*-release|grep ^ID\=|awk -F\= {'print $2'}|sed s/\"//g)
+
+if [ "x$DISTRO" == "xubuntu" ]; then
+rm -rf /etc/apt/sources.list.d/*
+rm -rf /etc/apt/sources.list
+touch /etc/apt/sources.list
+cat > /etc/apt/sources.list.d/local.list <<EOF
+  deb $pnda_mirror$/debs/ ./
+EOF
+wget -O - $pnda_mirror$/debs/pnda.gpg.key | apt-key add -
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+apt-get -y install xfsprogs salt-minion
+elif [ "x$DISTRO" == "xrhel" ]; then
+rm -rf /etc/yum.repos.d/*
+yum-config-manager --add-repo $pnda_mirror$/rpms
+rpm --import $pnda_mirror$/rpms/RPM-GPG-KEY-redhat-release
+rpm --import $pnda_mirror$/rpms/RPM-GPG-KEY-mysql
+rpm --import $pnda_mirror$/rpms/RPM-GPG-KEY-cloudera
+rpm --import $pnda_mirror$/rpms/RPM-GPG-KEY-EPEL-7
+rpm --import $pnda_mirror$/rpms/SALTSTACK-GPG-KEY.pub
+rpm --import $pnda_mirror$/rpms/RPM-GPG-KEY-CentOS-7
+yum -y install xfsprogs wget salt-minion
+fi
 
 ROLES=$roles$
 
@@ -11,15 +35,10 @@ cat >> /etc/hosts <<EOF
 $master_ip$ saltmaster salt
 EOF
 
-DISTRO=$(cat /etc/*-release|grep ^ID\=|awk -F\= {'print $2'}|sed s/\"//g)
-
 if [ "x$DISTRO" == "xubuntu" ]; then
 export DEBIAN_FRONTEND=noninteractive
 fi
 
-# Install a salt minion
-wget -O install_salt.sh https://bootstrap.saltstack.com
-sh install_salt.sh -D -U stable 2015.8.11
 hostname=`hostname` && echo "id: $hostname" > /etc/salt/minion && unset hostname
 echo "log_level: debug" >> /etc/salt/minion
 echo "log_level_logfile: debug" >> /etc/salt/minion
@@ -56,24 +75,9 @@ roles: [${ROLES}]
 EOF
 fi
 
-if [ "x$DISTRO" == "xubuntu" ]; then
 service salt-minion restart
-fi
-if [ "x$DISTRO" == "xrhel" ]; then
-systemctl enable salt-minion
-systemctl restart salt-minion
-fi
-
 
 # Mount the disks
-if [ "x$DISTRO" == "xubuntu" ]; then
-apt-get -y install xfsprogs
-fi
-
-if [ "x$DISTRO" == "xrhel" ]; then
-yum -y install xfsprogs
-fi
-
 LOG_VOLUME_ID="$log_volume_id$"
 LOG_VOLUME_DEVICE="/dev/disk/by-id/virtio-$(echo ${LOG_VOLUME_ID} | cut -c -20)"
 echo LOG_VOLUME_DEVICE is $LOG_VOLUME_DEVICE
