@@ -74,38 +74,14 @@ parameter_defaults:
   pnda_archive_container:  'pnda_archive'
 
   #
-  # packages_server_uri: HTTP server containing the compiled binary packages for the 
-  # components required to provision PNDA
-  #
-  packages_server_uri: 'http://x.x.x.x'
-
-  #
   # platform_git_repo_uri: The platform-salt git repository url.
   #
   platform_git_repo_uri: 'https://github.com/pndaproject/platform-salt.git'
 
   #
-  # JavaMirror: A mirror of the JDK. PNDA is unlikely to succeed without this being hosted locally
-  # see PNDA-2274
-  # example format: 'http://x.x.x.x/mirror/java/jdk/8u74-b02/jdk-8u74-linux-x64.tar.gz'
-  JavaMirror: ''
-
-  #
   # PndaMirror: URI of the mirror for offline installation
   #  
   PndaMirror: 'http://www.example.com'
-
-  #
-  # ClouderaParcelsMirror: A mirror of the CDH repo. This is optional but can speed up provisioning
-  # if the network connection to the Cloudera hosted repo is slow, as the download is 1.5GB
-  # example format: 'http://x.x.x.x/mirror/archive.cloudera.com/cdh5/parcels/5.9.0/'
-  ClouderaParcelsMirror: ''
-
-  #
-  # AnacondaParcelsMirror: A mirror of the Anaconda repo. This is optional but can speed up provisioning
-  # if the network connection to the Anaconda hosted repo is unreliable
-  # example format: 'http://x.x.x.x/mirror/anaconda'
-  AnacondaParcelsMirror: ''
   
   #
   # git_private_key_file: If authenticated access to platform_git_repo_uri is required then this key should be

@@ -90,27 +90,21 @@ pnda.apps_folder: '$pnda_apps_folder$'
 pnda.archive_container: '$pnda_archive_container$'
 EOF
 
-if [ "x$java_mirror$" != "x" ] ; then
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
-java:
-  source_url: '$java_mirror$'
-EOF
-fi
+pnda_mirror:
+  base_url: '$pnda_mirror$'
+  misc_packages_path: /misc/
 
-if [ "x$cloudera_mirror$" != "x" ] ; then
-cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
 cloudera:
-  parcel_repo: '$cloudera_mirror$'
-EOF
-fi
+  parcel_repo: '$pnda_mirror$/cloudera_repo'
 
-if [ "x$anaconda_mirror$" != "x" ] ; then
-cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
 anaconda:
-  parcel_version: '4.0.0'
-  parcel_repo: '$anaconda_mirror$'
+  parcel_version: "4.0.0"
+  parcel_repo: '$pnda_mirror$/anaconda_repo'
+
+packages_server:
+  base_uri: $pnda_mirror$/pnda
 EOF
-fi
 
 if [ "x$ntp_servers$" != "x" ] ; then
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
