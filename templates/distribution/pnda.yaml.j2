@@ -1,5 +1,13 @@
 
 parameters:
+  image_id:
+    type: string
+    description: default image for pnda servers
+    default: ubuntu1404
+  image_id_saltmaster:
+    type: string
+    description: default image for pnda saltmaster
+    default: ubuntu1404
   SaltmasterFlavor:
     type: string
     description: Flavor for the salmaster nodes
@@ -85,7 +93,7 @@ resources:
     depends_on: [ router, private_subnet ]
   {%endif%}
     properties:
-      image: { get_param: image_id }
+      image: { get_param: image_id_saltmaster }
       flavor: { get_param: SaltmasterFlavor }
   {%if create_network is equalto 1 %}
       key_name: { get_resource: Key }

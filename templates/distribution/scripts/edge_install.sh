@@ -3,6 +3,42 @@
 set -e
 export ROLES="$roles$"
 
+configure_vlan () {
+    raw_if=$1
+    vlan_if=$2
+    vlan_id=$3
+
+    # On Debian Ubuntu the vconfig command is needed
+    apt-get install -y vlan
+    # grep -q -F '8021q' /etc/modules || echo '8021q' >> /etc/modules
+
+    cat > /etc/network/interfaces.d/${vlan_if}.cfg <<-EOF
+	auto ${vlan_if}
+	
+	iface ${vlan_if} inet dhcp
+	    vlan-raw-device ${raw_if}
+	    vlan-id ${vlan_id}
+	EOF
+
+    ifup ${vlan_if}
+}
+
+# XXX: How can we guess that we are on a kafka/zk host and not hadoop ?
+# XXX: Maybe by matching on the hostname ?
+# XXX: Let's do it later by matching on the $ROLES variable
+
+case "$(hostname)" in
+*-kafka-*)
+  configure_vlan "bond0" "vlan2006" "2006"
+  ;;
+*-cdh-*)
+  configure_vlan "bond0" "vlan2008" "2008"
+  ;;
+*)
+  # Do nothing at the moment
+  ;;
+esac
+
 cat >> /etc/hosts <<EOF
 $master_ip$ saltmaster salt
 EOF
