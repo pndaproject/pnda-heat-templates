@@ -5,7 +5,7 @@
 #   - create_network: 0|1. Set to 1 to create network related resources or to 0 when running
 #                          for an openstack ironic bare-metal install
 
-heat_template_version: 2014-10-16
+heat_template_version: 2015-04-30
 
 parameters:
   Flavor:
@@ -53,6 +53,8 @@ parameters:
     description: URL of a mirror for operating system package download
     type: string
     default: ''
+  pre_config:
+    type: string
 
 resources:
 {%if create_network is equalto 1 %}
@@ -104,16 +106,6 @@ resources:
             $private_key$: { get_param: private_key }
 {%endif%}
             $pnda_cluster$: { get_param: cluster_name }
-  install_deployment:
-    type: OS::Heat::SoftwareDeployment
-    depends_on: bastion_deployment
-    properties:
-      signal_transport: { get_param: signal_transport }
-      config:
-        get_resource: install_config
-      server:
-        get_resource: server
-
   bastion_config:
     type: OS::Heat::SoftwareConfig
     properties:
@@ -126,14 +118,15 @@ resources:
             $private_key$: { get_param: private_key }
 {%endif%}
             $keyname$: { get_param: 'OS::stack_name' }
-  bastion_deployment:
-    type: OS::Heat::SoftwareDeployment
+
+  server_init:
+    type: OS::Heat::MultipartMime
     properties:
-      signal_transport: { get_param: signal_transport }
-      config:
-        get_resource: bastion_config
-      server:
-        get_resource: server
+      parts:
+      - config: {get_param: pre_config}
+      - config: {get_resource: install_config}
+      - config: {get_resource: bastion_config}
+
   server:
     type: OS::Nova::Server
 {%if create_network is equalto 1 %}
@@ -150,6 +143,7 @@ resources:
 {% endif %}
       software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
+      user_data: {get_resource: server_init}
       config_drive: True
 
 outputs:

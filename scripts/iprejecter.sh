@@ -26,7 +26,7 @@ WHITELIST+=(${DNSLIST[@]})
 
 # Log the global scope IP connection.
 cat > /etc/rsyslog.d/10-iptables.conf <<EOF
-:msg,contains,"[iplog] " /var/log/iptables.log
+:msg,contains,"[ipreject] " /var/log/iptables.log
 STOP
 EOF
 sudo service rsyslog restart
@@ -40,5 +40,6 @@ iptables -A LOGGING -d  $line -j ACCEPT
   for line in ${WHITELIST[@]}; do
 iptables -A LOGGING -d  $line -j ACCEPT
   done 
-## And log all the remaining IP connections.
-iptables -A LOGGING -j LOG --log-prefix "[iplog] " --log-level 7 -m state --state NEW
+## Log and reject all the remaining IP connections.
+iptables -A LOGGING -j LOG --log-prefix "[ipreject] " --log-level 7 -m state --state NEW
+iptables -A LOGGING -j REJECT
