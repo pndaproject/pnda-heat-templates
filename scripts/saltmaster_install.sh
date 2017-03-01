@@ -93,14 +93,14 @@ EOF
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
 pnda_mirror:
   base_url: '$pnda_mirror$'
-  misc_packages_path: /misc/
+  misc_packages_path: /mirror_misc/
 
 cloudera:
-  parcel_repo: '$pnda_mirror$/cloudera_repo'
+  parcel_repo: '$pnda_mirror$/mirror_cloudera'
 
 anaconda:
   parcel_version: "4.0.0"
-  parcel_repo: '$pnda_mirror$/anaconda_repo'
+  parcel_repo: '$pnda_mirror$/mirror_anaconda'
 
 packages_server:
   base_uri: $pnda_mirror$/pnda

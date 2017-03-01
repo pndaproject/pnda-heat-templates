@@ -11,22 +11,22 @@ rm -rf /etc/apt/sources.list.d/*
 rm -rf /etc/apt/sources.list
 touch /etc/apt/sources.list
 cat > /etc/apt/sources.list.d/local.list <<EOF
-  deb $pnda_mirror$/debs/ ./
+  deb $pnda_mirror$/mirror_deb/ ./
 EOF
-wget -O - $pnda_mirror$/debs/pnda.gpg.key | apt-key add -
+wget -O - $pnda_mirror$/mirror_deb/pnda.gpg.key | apt-key add -
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get -y install xfsprogs salt-minion
 elif [ "x$DISTRO" == "xrhel" ]; then
 rm -rf /etc/yum.repos.d/*
-yum-config-manager --add-repo $pnda_mirror$/rpms
-rpm --import $pnda_mirror$/rpms/RPM-GPG-KEY-redhat-release
-rpm --import $pnda_mirror$/rpms/RPM-GPG-KEY-mysql
-rpm --import $pnda_mirror$/rpms/RPM-GPG-KEY-cloudera
-rpm --import $pnda_mirror$/rpms/RPM-GPG-KEY-EPEL-7
-rpm --import $pnda_mirror$/rpms/SALTSTACK-GPG-KEY.pub
-rpm --import $pnda_mirror$/rpms/RPM-GPG-KEY-CentOS-7
-rpm --import $pnda_mirror$/rpms/NODESOURCE-GPG-SIGNING-KEY-EL
+yum-config-manager --add-repo $pnda_mirror$/mirror_rpm
+rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-redhat-release
+rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-mysql
+rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-cloudera
+rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-EPEL-7
+rpm --import $pnda_mirror$/mirror_rpm/SALTSTACK-GPG-KEY.pub
+rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-CentOS-7
+rpm --import $pnda_mirror$/mirror_rpm/NODESOURCE-GPG-SIGNING-KEY-EL
 yum -y install xfsprogs wget salt-minion
 fi
 
