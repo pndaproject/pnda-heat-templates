@@ -29,10 +29,10 @@ configure_vlan () {
 
 case "$(hostname)" in
 *-kafka-*)
-  configure_vlan "bond0" "vlan2006" "2006"
+  configure_vlan "bond0" "vlan2506" "2506"
   ;;
 *-cdh-*)
-  configure_vlan "bond0" "vlan2008" "2008"
+  configure_vlan "bond0" "vlan2508" "2508"
   ;;
 *)
   # Do nothing at the moment
