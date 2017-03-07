@@ -103,7 +103,7 @@ anaconda:
   parcel_repo: '$pnda_mirror$/mirror_anaconda'
 
 packages_server:
-  base_uri: $pnda_mirror$/pnda
+  base_uri: $pnda_mirror$
 EOF
 
 if [ "x$ntp_servers$" != "x" ] ; then
@@ -147,14 +147,6 @@ cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
 package_repository:
   fs_type: "$package_repository_fs_type$"
   fs_location_path: "$package_repository_fs_location_path$"
-EOF
-fi
-
-
-if [ "x$packages_server_uri$" != "x" ] ; then
-cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
-packages_server:
-  base_uri: $packages_server_uri$
 EOF
 fi
 
