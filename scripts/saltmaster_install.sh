@@ -10,12 +10,26 @@ DISTRO=$(cat /etc/*-release|grep ^ID\=|awk -F\= {'print $2'}|sed s/\"//g)
 
 # Install the saltmaster, plus saltmaster config
 if [ "x$DISTRO" == "xubuntu" ]; then
+rm -rf /etc/apt/sources.list.d/*
+rm -rf /etc/apt/sources.list
+touch /etc/apt/sources.list
+cat > /etc/apt/sources.list.d/local.list <<EOF
+  deb $pnda_mirror$/mirror_deb/ ./
+EOF
+wget -O - $pnda_mirror$/mirror_deb/pnda.gpg.key | apt-key add -
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get -y install unzip salt-minion salt-master
-fi
-
-if [ "x$DISTRO" == "xrhel" ]; then
+elif [ "x$DISTRO" == "xrhel" ]; then
+rm -rf /etc/yum.repos.d/*
+yum-config-manager --add-repo $pnda_mirror$/mirror_rpm
+rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-redhat-release
+rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-mysql
+rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-cloudera
+rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-EPEL-7
+rpm --import $pnda_mirror$/mirror_rpm/SALTSTACK-GPG-KEY.pub
+rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-CentOS-7
+rpm --import $pnda_mirror$/mirror_rpm/NODESOURCE-GPG-SIGNING-KEY-EL
 yum -y install unzip salt-minion salt-master
 fi
 
@@ -104,6 +118,9 @@ anaconda:
 
 packages_server:
   base_uri: $pnda_mirror$
+
+pip:
+  index_url: '$pnda_mirror$/mirror_python/simple'
 EOF
 
 if [ "x$ntp_servers$" != "x" ] ; then

@@ -97,7 +97,6 @@ parameters:
     type: string
     default: POLL_TEMP_URL
 
-
 resources:
   pnda_cluster:
     type: OS::Pnda::cluster

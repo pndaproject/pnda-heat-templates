@@ -90,7 +90,6 @@ resources:
             $log_volume_id$: { get_resource: logvolume }
             $roles$: 'cloudera_namenode,mysql_connector,oozie_database,hue,opentsdb,grafana'
             $cloudera_role$: 'MGR01'
-
   install_deployment:
     type: OS::Heat::SoftwareDeployment
 {%if create_volumes is equalto 1 %}

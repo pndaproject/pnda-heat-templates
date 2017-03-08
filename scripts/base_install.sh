@@ -76,7 +76,20 @@ roles: [${ROLES}]
 EOF
 fi
 
+PIP_INDEX_URL="$pnda_mirror$/mirror_python/simple"
+TRUSTED_HOST=$(echo $PIP_INDEX_URL | awk -F'[/:]' '/http:\/\//{print $4}')
+cat << EOF > /etc/pip.conf
+[global]
+index-url=$PIP_INDEX_URL
+trusted-host=$TRUSTED_HOST
+EOF
+cat << EOF > /root/.pydistutils.cfg
+[easy_install]
+index_url=$PIP_INDEX_URL
+EOF
+
 service salt-minion restart
+
 
 # Mount the disks
 LOG_VOLUME_ID="$log_volume_id$"

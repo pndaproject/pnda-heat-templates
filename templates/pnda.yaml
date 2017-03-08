@@ -49,18 +49,6 @@ parameters:
     description: Branch of the salt repository
     type: string
     default: master
-  JavaMirror:
-    description: URL of a mirror for java release download
-    type: string
-    default: ''
-  ClouderaParcelsMirror:
-    description: URL of a mirror for cloudera parcels download
-    type: string
-    default: ''
-  AnacondaParcelsMirror:
-    description: URL of a mirror for anaconda parcels download
-    type: string
-    default: ''
   PndaMirror:
     description: URL of a mirror for operating system package download
     type: string
@@ -147,10 +135,6 @@ parameters:
   software_config_transport:
     type: string
     default: POLL_TEMP_URL
-  PndaMirror:
-    description: URL of a mirror for operating system package download
-    type: string
-    default: ''
 
 resources:
   # A keypair is created for this stack and used to secure login for all instances
@@ -259,9 +243,6 @@ resources:
             $pnda_cluster$: {get_param: 'OS::stack_name'}
             $git_private_key$: { get_file: deploy }
             $git_branch$: { get_param: GitBranch }
-            $java_mirror$: { get_param: JavaMirror }
-            $cloudera_mirror$: { get_param: ClouderaParcelsMirror }
-            $anaconda_mirror$: { get_param: AnacondaParcelsMirror }
             $ntp_servers$: { get_param: NtpServers }
             $package_repository_fs_type$ : {{ package_repository_fs_type }}
             $package_repository_fs_location_path$: { get_param: package_repository_fs_location_path }
