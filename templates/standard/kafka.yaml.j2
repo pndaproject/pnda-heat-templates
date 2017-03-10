@@ -75,7 +75,6 @@ resources:
             $pnda_cluster$: { get_param: cluster_name }
             $log_volume_id$: { get_resource: logvolume }
             $roles$: 'kafka'
-            $cloudera_role$: ''
   install_deployment:
     type: OS::Heat::SoftwareDeployment
     depends_on: [ logvolume_attachment ]
