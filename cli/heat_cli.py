@@ -302,7 +302,11 @@ def get_salt_orchestrate_output(stack):
     return os_cmd('openstack stack output show {} salt_orchestrate --format value --column output_value'.format(stack))
 
 def get_hypervisor_count():
-    return int(os_cmd("nova hypervisor-list | awk -F '|' '{print $4}' | grep -c 'up'").strip('\n'))
+    try:  
+      return int(os_cmd("nova hypervisor-list | awk -F '|' '{print $4}' | grep -c 'up'").strip('\n'))
+    except:
+      print 'nova hypervisor-list FAILED -> Disabling all Anty Affinity groups.'
+      return 0
 
 def print_pnda_cluster_status(stack, verbose=False):
     stack_name = stack['Stack Name']
