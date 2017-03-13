@@ -87,7 +87,9 @@ resources:
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
             $flavor$: { get_param: pnda_flavor }
+{%if create_volumes is equalto 1 %}
             $log_volume_id$: { get_resource: logvolume }
+{%endif%}
             $roles$: 'cloudera_namenode,mysql_connector,oozie_database,hue,opentsdb,grafana'
             $cloudera_role$: 'MGR01'
   install_deployment:

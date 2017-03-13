@@ -81,8 +81,10 @@ resources:
             $flavor$: { get_param: pnda_flavor }
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
+{%if create_volumes is equalto 1 %}
             $log_volume_id$: { get_resource: logvolume }
             $hdfs_volume_id$: { get_resource: volume }            
+{%endif%}
             $cloudera_role$: 'DATANODE'
   install_deployment:
     type: OS::Heat::SoftwareDeployment
