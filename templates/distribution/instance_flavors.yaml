@@ -3,4 +3,4 @@ parameter_defaults:
   KafkaFlavor: s1.large
   BastionFlavor: s1.large
   SaltmasterFlavor: master
-  PndaFlavor: standard
+  PndaFlavor: distribution
