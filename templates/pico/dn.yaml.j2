@@ -83,8 +83,8 @@ resources:
             $pnda_cluster$: { get_param: cluster_name }
 {%if create_volumes is equalto 1 %}
             $log_volume_id$: { get_resource: logvolume }
-{%endif%}
             $hdfs_volume_id$: { get_resource: volume }            
+{%endif%}
             $cloudera_role$: 'DATANODE'
   install_deployment:
     type: OS::Heat::SoftwareDeployment
