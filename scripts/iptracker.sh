@@ -6,12 +6,20 @@ set -e
 
 # built the white list ip address
 ## mirror ntp and dns servers are white listed
-MIRRORSERVER=$(echo '$pnda_mirror$' | awk -F/ '{print $3}')
+MIRRORSERVER=$(echo '$pnda_mirror$' | awk -F/ '{print $3}' | awk -F: '{print $1}')
 NTPSERVER=$(echo '$ntp_servers$' | awk '{print $1}')
 KEYSTONE=$(echo '$keystone_auth_url$' | awk -F/ '{print $3}' | awk -F: '{print $1}')
 DNSLIST=$(cat /etc/resolv.conf  | grep -E -o  "([0-9]{1,3}[\.]){3}[0-9]{1,3}")
 
-LIST=( "${MIRRORSERVER[@]}" "${NTPSERVER[@]}" "${KEYSTONE[@]}" )
+if [ "x$platform_git_repo_uri$" != "x" ]; then
+  PLATFORMSERVER=$(echo '$platform_git_repo_uri$'| awk -F/ '{print $3}' | awk -F: '{print $1}')
+elif [ "x$platform_uri$" != "x" ] ; then
+  PLATFORMSERVER=$(echo '$platform_uri$'| awk -F/ '{print $3}' | awk -F: '{print $1}')
+else 
+  exit 2
+fi
+LIST=( "${MIRRORSERVER[@]}" "${NTPSERVER[@]}" "${KEYSTONE[@]}" "${PLATFORMSERVER[@]}" )
+
 ## resolve FQN's
 WHITELIST=()
 for name in ${LIST[@]}
@@ -19,7 +27,9 @@ do
   if [[ $name =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     WHITELIST+=($name)
   else
-    WHITELIST+=($(dig +short $name))
+    if `dig >/dev/null 2>&1`; then
+      WHITELIST+=($(dig +short $name))
+    fi 
   fi
 done
 WHITELIST+=(${DNSLIST[@]})

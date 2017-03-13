@@ -79,6 +79,8 @@ resources:
       PndaMirror: { get_param: PndaMirror }
       NtpServers: { get_param: NtpServers }
       keystone_auth_url: { get_param: keystone_auth_url }
+      platform_git_repo_uri: { get_param: platform_git_repo_uri }
+      platform_uri: { get_param: platform_uri }
 
   pnda_cluster:
     type: OS::Pnda::cluster
