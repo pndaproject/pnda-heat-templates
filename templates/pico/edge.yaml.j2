@@ -90,7 +90,9 @@ resources:
             $flavor$: { get_param: pnda_flavor }
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
+{%if create_volumes is equalto 1 %}
             $log_volume_id$: { get_resource: logvolume }
+{%endif%}
             $roles$: 'cloudera_edge,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,gobblin,deployment_manager,package_repository,data_service,impala-shell,yarn-gateway,hbase_opentsdb_tables,hdfs_cleaner,master_dataset,elk,logserver,kibana_dashboard,jupyter,cloudera_manager,platform_testing_cdh,mysql_connector,pnda_restart'
             $cloudera_role$: 'EDGE'
   install_deployment:
