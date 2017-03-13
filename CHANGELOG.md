@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 - PNDA-2456: Initial work to support for Redhat 7. Salt highstate and orchestrate run on a Redhat7 HEAT cluster with no errors but requires further testing and work.
 ### Changed
 - PNDA-2688: review pnda_env default values
+- PNDA-2819: fix issue on volume reference once create network is 0
 
 ## [1.2.0] 2017-01-20
 ### Changed
