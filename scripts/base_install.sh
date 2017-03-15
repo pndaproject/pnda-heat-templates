@@ -41,8 +41,13 @@ export DEBIAN_FRONTEND=noninteractive
 fi
 
 hostname=`hostname` && echo "id: $hostname" > /etc/salt/minion && unset hostname
-echo "log_level: debug" >> /etc/salt/minion
-echo "log_level_logfile: debug" >> /etc/salt/minion
+cat >> /etc/salt/minion <<EOF
+log_level: debug
+log_level_logfile: debug
+
+backend: requests
+requests_lib: True
+EOF
 
 # Set up the grains
 cat > /etc/salt/grains <<EOF
