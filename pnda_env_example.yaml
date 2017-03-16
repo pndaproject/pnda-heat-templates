@@ -157,3 +157,10 @@ parameter_defaults:
   # AWS_REGION: AWS region to use to access the s3 bucket that contains application packages
   # 
   #AWS_REGION=xxxx
+
+  #
+  # hypervisor_count: The number of available hypervisors the distribute the Anti-Affiliate servers over.
+  # This optional parameter can be used to enable Anti-Affiliate support.
+  #
+  #hypervisor_count: 30
+
