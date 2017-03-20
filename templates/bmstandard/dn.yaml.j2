@@ -51,6 +51,10 @@ parameters:
     type: string
   software_config_transport:
     type: string
+  PndaMirror:
+    description: URL of a mirror for operating system package download
+    type: string
+    default: ''
 
 
 resources:
@@ -71,6 +75,7 @@ resources:
         str_replace:
           template: {get_file: scripts/dn_install.sh }
           params:
+            $pnda_mirror$: { get_param: PndaMirror }
             $flavor$: { get_param: pnda_flavor }
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
