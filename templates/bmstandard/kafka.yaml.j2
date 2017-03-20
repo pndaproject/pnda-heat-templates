@@ -45,6 +45,10 @@ parameters:
     type: string
   software_config_transport:
     type: string
+  PndaMirror:
+    description: URL of a mirror for operating system package download
+    type: string
+    default: ''
 
 resources:
 {%if create_network is equalto 1 %}
@@ -68,6 +72,7 @@ resources:
             $master_ip$: { get_param: SaltmasterIP }
             $brokerid$: { get_param: NodeIndex}
             $pnda_cluster$: { get_param: cluster_name }
+            $pnda_mirror$: { get_param: PndaMirror }
 {%if create_volumes is equalto 1 %}
             $volume_dev$: { get_param: log_mountpoint }
 {%endif%}
