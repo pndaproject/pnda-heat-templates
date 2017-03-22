@@ -60,27 +60,8 @@ parameters:
   software_config_transport:
     type: string
     default: POLL_TEMP_URL
-  PndaMirror:
-    description: URL of a mirror for operating system package download
-    type: string
-    default: ''
-  NtpServers:
-    description: NTP servers
-    type: string
-    default: ''
-  name_servers:
-    description: List of name name servers
-    type: comma_delimited_list
 
 resources:
-  pre_config:
-    type: OS::Pnda::preConfig
-    properties:
-      PndaMirror: { get_param: PndaMirror }
-      NtpServers: { get_param: NtpServers }
-      keystone_auth_url: { get_param: keystone_auth_url }
-      platform_git_repo_uri: { get_param: platform_git_repo_uri }
-      platform_uri: { get_param: platform_uri }
 
   pnda_cluster:
     type: OS::Pnda::cluster
