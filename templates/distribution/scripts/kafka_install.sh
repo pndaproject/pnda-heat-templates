@@ -1,56 +1,53 @@
 #!/bin/bash -v
 
-set -e
+set -ex
+
+DISTRO=$(cat /etc/*-release|grep ^ID\=|awk -F\= {'print $2'}|sed s/\"//g)
+
+if [ "x$DISTRO" == "xubuntu" ]; then
+rm -rf /etc/apt/sources.list.d/*
+rm -rf /etc/apt/sources.list
+touch /etc/apt/sources.list
+cat > /etc/apt/sources.list.d/local.list <<EOF
+  deb $pnda_mirror$/mirror_deb/ ./
+EOF
+wget -O - $pnda_mirror$/mirror_deb/pnda.gpg.key | apt-key add -
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+apt-get -y install xfsprogs salt-minion
+elif [ "x$DISTRO" == "xrhel" ]; then
+rm -rf /etc/yum.repos.d/*
+yum-config-manager --add-repo $pnda_mirror$/mirror_rpm
+rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-redhat-release
+rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-mysql
+rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-cloudera
+rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-EPEL-7
+rpm --import $pnda_mirror$/mirror_rpm/SALTSTACK-GPG-KEY.pub
+rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-CentOS-7
+rpm --import $pnda_mirror$/mirror_rpm/NODESOURCE-GPG-SIGNING-KEY-EL
+yum -y install xfsprogs wget salt-minion
+fi
 
 ROLES=$roles$
-
-configure_vlan () {
-    raw_if=$1
-    vlan_if=$2
-    vlan_id=$3
-
-    # On Debian Ubuntu the vconfig command is needed
-    apt-get install -y vlan
-    # grep -q -F '8021q' /etc/modules || echo '8021q' >> /etc/modules
-
-    cat > /etc/network/interfaces.d/${vlan_if}.cfg <<-EOF
-	auto ${vlan_if}
-	
-	iface ${vlan_if} inet dhcp
-	    vlan-raw-device ${raw_if}
-	    vlan-id ${vlan_id}
-	EOF
-
-    ifup ${vlan_if}
-}
-
-# XXX: How can we guess that we are on a kafka/zk host and not hadoop ?
-# XXX: Maybe by matching on the hostname ?
-# XXX: Let's do it later by matching on the $ROLES variable
-
-case "$(hostname)" in
-*-kafka-*)
-  configure_vlan "bond0" "vlan2506" "2506"
-  ;;
-*-cdh-*)
-  configure_vlan "bond0" "vlan2508" "2508"
-  ;;
-*)
-  # Do nothing at the moment
-  ;;
-esac
 
 cat >> /etc/hosts <<EOF
 $master_ip$ saltmaster salt
 EOF
 
+if [ "x$DISTRO" == "xubuntu" ]; then
 export DEBIAN_FRONTEND=noninteractive
-wget -O install_salt.sh https://bootstrap.saltstack.com
-sh install_salt.sh -D -U stable 2015.8.11
-hostname=`hostname` && echo "id: $hostname" > /etc/salt/minion && unset hostname
-echo "log_level: debug" >> /etc/salt/minion
-echo "log_level_logfile: debug" >> /etc/salt/minion
+fi
 
+hostname=`hostname` && echo "id: $hostname" > /etc/salt/minion && unset hostname
+cat >> /etc/salt/minion <<EOF
+log_level: debug
+log_level_logfile: debug
+
+backend: requests
+requests_lib: True
+EOF
+
+# Set up the grains
 cat > /etc/salt/grains <<EOF
 pnda:
   flavor: $flavor$
@@ -70,15 +67,27 @@ broker_id: $brokerid$
 EOF
 fi
 
+# The roles grains determine what software is installed
+# on this instance by platform-salt scripts
 if [ "x${ROLES}" != "x" ]; then
 cat >> /etc/salt/grains <<EOF
 roles: [${ROLES}]
 EOF
 fi
 
-service salt-minion restart
+PIP_INDEX_URL="$pnda_mirror$/mirror_python/simple"
+TRUSTED_HOST=$(echo $PIP_INDEX_URL | awk -F'[/:]' '/http:\/\//{print $4}')
+cat << EOF > /etc/pip.conf
+[global]
+index-url=$PIP_INDEX_URL
+trusted-host=$TRUSTED_HOST
+EOF
+cat << EOF > /root/.pydistutils.cfg
+[easy_install]
+index_url=$PIP_INDEX_URL
+EOF
 
-apt-get -y install xfsprogs
+service salt-minion restart
 
 mkdir -p /var/kafka-logs
 
