@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ### Added
 - PNDA-2456: Initial work to support for Redhat 7. Salt highstate and orchestrate run on a Redhat7 HEAT cluster with no errors but requires further testing and work.
+- Add an hypervisor_count setting in the pnda_env file to enable Anti-Affinity feature in PNDA.
 ### Changed
 - PNDA-2688: review pnda_env default values
 - PNDA-2819: fix issue on volume reference once create network is 0
