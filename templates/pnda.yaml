@@ -19,11 +19,6 @@ parameters:
   image_id:
     type: string
     description: default image for pnda servers
-    default: ubuntu1404
-  image_id_saltmaster:
-    type: string
-    description: default image for pnda saltmaster
-    default: ubuntu1404
   public_net:
     type: string
     description: >
