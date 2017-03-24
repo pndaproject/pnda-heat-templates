@@ -1,0 +1,5 @@
+resource_registry:
+  OS::Pnda::cluster: pnda_cluster.yaml
+  OS::Pnda::bastion: bastion.yaml
+  OS::Pnda::kafka: kafka.yaml
+  OS::Pnda::edge: edge.yaml

@@ -1,51 +1,36 @@
-# pnda_cluster.yaml defines the instances to create for this flavor of PNDA
-# The resource_registry.yaml file defines which yaml template to apply to
-# each instance type, and these specific yaml files configure the
-# instance as required for that type of node.
-
-# It is processed as a jinja2 template with the following parameters:
-#   - create_network: 0|1. Set to 1 to create network related resources or to 0 when running
-#                          for an openstack ironic bare-metal install
-
 heat_template_version: 2014-10-16
 
 parameters:
   SaltmasterFlavor:
     type: string
     description: Falvor for the salmaster nodes
-    default: pnda-micro
-  Manager1Flavor:
-    type: string
-    description: Falvor for the manager nodes
-    default: pnda-micro
   EdgeFlavor:
     type: string
     description: Falvor for the edge node
     default: pnda-micro
+{%if create_bastion is equalto 1 %}
   BastionFlavor:
     type: string
     description: Flavor for the bastion nodes
-    default: pnda-micro
+{%endif%}
   KafkaFlavor:
     type: string
     description: Flavor for the kafka nodes
-    default: pnda-micro
-  DatanodeFlavor:
+  KafkaNodes:
+    default: '3'
+    description: Number of KAFKA nodes
     type: string
-    description: Flavor for the data nodes
-    default: pnda-micro
+  DataNodes:
+    default: '4'
+    description: Number of DATA nodes
+    type: string
+  OpentsdbNodes:
+    default: 0
+    description: Number of Opentsdb nodes
+    type: number
   image_id:
     type: string
     description: default image for pnda servers
-
-  DataNodes:
-    default: '1'
-    description: Number of DATA nodes
-    type: string
-
-  DatanodeVolumeSize:
-    default: 10
-    type: number
 
 {%if create_network is equalto 1 %}
   public_net:
@@ -67,6 +52,9 @@ parameters:
     description: pnda flavor
     type: string
     default: standard
+  git_private_key_file:
+    description: private key file for cloning from git
+    type: string
   SaltmasterIP:
     type: string
 {%if create_network is equalto 1 %}
@@ -85,10 +73,6 @@ parameters:
   software_config_transport:
     type: string
     default: POLL_TEMP_URL
-  PndaMirror:
-    description: URL of a mirror for operating system package download
-    type: string
-    default: ''
 
 resources:
 {%if create_network is equalto 1 %}
@@ -131,8 +115,6 @@ resources:
   bastion:
     type: OS::Pnda::bastion
     properties:
-      signal_transport: { get_param: signal_transport }
-      software_config_transport: { get_param: software_config_transport }
       Flavor: { get_param: BastionFlavor }
       Image: { get_param: image_id }
       name:
@@ -151,18 +133,15 @@ resources:
       SaltmasterIP: { get_param: SaltmasterIP }
       cluster_name: { get_param: deployment_name }
       pnda_flavor: { get_param: PndaFlavor }
-      PndaMirror: { get_param: PndaMirror }
 {%endif%}
 
   kafka:
     type: OS::Heat::ResourceGroup
     properties:
-      count: 1
+      count: { get_param: KafkaNodes }
       resource_def:
         type: OS::Pnda::kafka
         properties:
-          signal_transport: { get_param: signal_transport }
-          software_config_transport: { get_param: software_config_transport }
           Flavor: { get_param: KafkaFlavor }
           Image: { get_param: image_id }
           name:
@@ -181,36 +160,10 @@ resources:
           KeyName: { get_param: KeyName }
           cluster_name: { get_param: deployment_name }
           pnda_flavor: { get_param: PndaFlavor }
-          PndaMirror: { get_param: PndaMirror }
-
-  manager1:
-    type: OS::Pnda::manager1
-    properties:
-      signal_transport: { get_param: signal_transport }
-      software_config_transport: { get_param: software_config_transport }
-      Flavor: { get_param: Manager1Flavor }
-      Image: { get_param: image_id }
-      name:
-        str_replace:
-          template: '%stackname%-cdh-mgr1'
-          params:
-            '%stackname%': { get_param: deployment_name }
-{%if create_network is equalto 1 %}
-      PrivateNet: { get_param: private_net }
-      PrivateSubnet: { get_param: private_subnet }
-      pnda_secgroup: { get_param: PndaSecGroup }
-{% endif %}
-      KeyName: { get_param: KeyName }
-      SaltmasterIP: { get_param: SaltmasterIP }
-      cluster_name: { get_param: deployment_name }
-      pnda_flavor: { get_param: PndaFlavor }
-      PndaMirror: { get_param: PndaMirror }
 
   edge:
     type: OS::Pnda::edge
     properties:
-      signal_transport: { get_param: signal_transport }
-      software_config_transport: { get_param: software_config_transport }
       Flavor: { get_param: EdgeFlavor }
       Image: { get_param: image_id }
       name:
@@ -227,37 +180,6 @@ resources:
       cluster_name: { get_param: deployment_name }
       SaltmasterIP: { get_param: SaltmasterIP }
       pnda_flavor: { get_param: PndaFlavor }
-      PndaMirror: { get_param: PndaMirror }
-
-  dn:
-    type: OS::Heat::ResourceGroup
-    properties:
-      count: { get_param: DataNodes }
-      resource_def:
-        type: OS::Pnda::dn
-        properties:
-          signal_transport: { get_param: signal_transport }
-          software_config_transport: { get_param: software_config_transport }
-          Flavor: { get_param: DatanodeFlavor }
-          Image: { get_param: image_id }
-          name:
-            str_replace:
-              template: '%stackname%-cdh-dn-%index%'
-              params:
-                '%stackname%': { get_param: deployment_name }
-          NodeIndex: '%index%'
-{%if create_network is equalto 1 %}
-          PrivateNet: { get_param: private_net }
-          PrivateSubnet: { get_param: private_subnet }
-          sec_group: { get_resource: DNSecGroup }
-          volume_size: { get_param: DatanodeVolumeSize }
-          pnda_secgroup: { get_param: PndaSecGroup }
-{% endif %}
-          KeyName: { get_param: KeyName }
-          SaltmasterIP: { get_param: SaltmasterIP }
-          cluster_name: { get_param: deployment_name }
-          pnda_flavor: { get_param: PndaFlavor }
-          PndaMirror: { get_param: PndaMirror }
 
 outputs:
   kafka_hosts:
