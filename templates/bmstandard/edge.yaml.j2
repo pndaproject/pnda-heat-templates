@@ -1,0 +1,137 @@
+heat_template_version: 2014-10-16
+
+parameters:
+  Flavor:
+    description: Flavor of the cloudera manager server
+    type: string
+    default: m1.xlarge
+  KeyName:
+    description: Name of an existing ssh keypair
+    type: string
+{%if create_network is equalto 1 %}
+  PrivateNet:
+    description: Private network for pnda deployment
+    type: string
+  PrivateSubnet:
+    description: Private network for pnda deployment
+    type: string
+  pnda_secgroup:
+    type: string
+{%endif%}
+  Image:
+    type: string
+  name:
+    type: string
+  SaltmasterIP:
+    type: string
+  cluster_name:
+    type: string
+  pnda_flavor:
+    type: string
+{%if create_volumes is equalto 1 %}
+  logvolume_size:
+    type: number
+    default: 500
+  log_mountpoint:
+    type: string
+    default: /dev/vdb
+{%endif%}
+  signal_transport:
+    type: string
+  software_config_transport:
+    type: string
+  PndaMirror:
+    description: URL of a mirror for operating system package download
+    type: string
+
+resources:
+{%if create_network is equalto 1 %}
+  sec_group:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      description: CM SecurityGroup
+      name:
+        str_replace:
+          template:
+            cname-cdh-edge
+          params:
+            cname: { get_param: cluster_name }
+      rules:
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: icmp
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: tcp
+          port_range_min: 7180
+          port_range_max: 7180
+  port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: PrivateNet }
+      fixed_ips:
+        - subnet_id: { get_param: PrivateSubnet }
+      security_groups: [{ get_resource: sec_group }, { get_param: pnda_secgroup }]
+{%endif%}
+  install_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      config:
+        str_replace:
+          template: {get_file: scripts/edge_install.sh }
+          params:
+            $pnda_mirror$: { get_param: PndaMirror }
+            $flavor$: { get_param: pnda_flavor }
+            $master_ip$: { get_param: SaltmasterIP }
+            $pnda_cluster$: { get_param: cluster_name }
+{%if create_volumes is equalto 1 %}
+            $volume_dev$: { get_param: log_mountpoint }
+{%endif%}
+            $roles$: 'cloudera_edge,mysql_connector,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,gobblin,deployment_manager,package_repository,data_service,impala-shell,yarn-gateway,hbase_opentsdb_tables,hdfs_cleaner,master_dataset,jupyter,kafka_manager'
+            $cloudera_role$: 'EDGE'
+  install_deployment:
+    type: OS::Heat::SoftwareDeployment
+{%if create_volumes is equalto 1 %}
+    depends_on: [ logvolume_attachment ]
+{%endif%}
+    properties:
+      signal_transport: { get_param: signal_transport }
+      config:
+        get_resource: install_config
+      server:
+        get_resource: server
+
+{%if create_volumes is equalto 1 %}
+  logvolume:
+    type: OS::Cinder::Volume
+    properties:
+      size: { get_param: logvolume_size }
+      description: Volume for cloudera manager logs
+
+  logvolume_attachment:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_resource: logvolume }
+      instance_uuid: { get_resource: server }
+      mountpoint: { get_param: log_mountpoint }
+{%endif%}
+
+  server:
+    type: OS::Nova::Server
+    properties:
+      name: { get_param: name }
+      image: { get_param: Image }
+      flavor: { get_param: Flavor}
+      key_name: { get_param: KeyName }
+{%if create_network is equalto 1 %}
+      networks:
+        - port: { get_resource: port }
+{%endif%}
+      software_config_transport: { get_param: software_config_transport }
+      user_data_format: SOFTWARE_CONFIG
+      config_drive: True
+
+outputs:
+  server_resource:
+    description: Heat resource handle for the Nova compute server
+    value:
+      {get_resource: server}

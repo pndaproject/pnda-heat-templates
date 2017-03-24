@@ -1,51 +1,65 @@
-# pnda_cluster.yaml defines the instances to create for this flavor of PNDA
-# The resource_registry.yaml file defines which yaml template to apply to
-# each instance type, and these specific yaml files configure the
-# instance as required for that type of node.
-
-# It is processed as a jinja2 template with the following parameters:
-#   - create_network: 0|1. Set to 1 to create network related resources or to 0 when running
-#                          for an openstack ironic bare-metal install
-
-heat_template_version: 2015-04-30
+heat_template_version: 2014-10-16
 
 parameters:
   SaltmasterFlavor:
     type: string
-    description: Falvor for the salmaster nodes
-    default: pnda-micro
+    description: Flavor for the salmaster nodes
   Manager1Flavor:
     type: string
-    description: Falvor for the manager nodes
-    default: pnda-micro
+    description: Flavor for the manager nodes
+  Manager2Flavor:
+    type: string
+    description: Flavor for the manager nodes
   EdgeFlavor:
     type: string
-    description: Falvor for the edge node
-    default: pnda-micro
+    description: Flavor for the edge node
+{%if create_bastion is equalto 1 %}
   BastionFlavor:
     type: string
     description: Flavor for the bastion nodes
-    default: pnda-micro
+{%endif%}
+  ZookeeperFlavor:
+    type: string
+    description: Flavor for the zookeeper nodes
   KafkaFlavor:
     type: string
     description: Flavor for the kafka nodes
-    default: pnda-micro
   DatanodeFlavor:
     type: string
     description: Flavor for the data nodes
-    default: pnda-micro
+  CMFlavor:
+    type: string
+    description: Flavor for the CM node
+
   image_id:
     type: string
     description: default image for pnda servers
 
-  DataNodes:
+  ToolsNodes:
     default: '1'
+    description: Number of TOOLS nodes
+    type: string
+  ZookeeperNodes:
+    default: '1'
+    description: Number of ZOOKEEPER nodes
+    type: string
+  KafkaNodes:
+    default: '1'
+    description: Number of KAFKA nodes
+    type: string
+  DataNodes:
+    default: '4'
     description: Number of DATA nodes
     type: string
 
+{%if create_volumes is equalto 1 %}
   DatanodeVolumeSize:
-    default: 10
+    default: 200
     type: number
+  DatanodeMountpoint:
+    default: /dev/vdc
+    type: string
+{%endif%}
 
 {%if create_network is equalto 1 %}
   public_net:
@@ -66,7 +80,9 @@ parameters:
   PndaFlavor:
     description: pnda flavor
     type: string
-    default: standard
+  git_private_key_file:
+    description: private key file for cloning from git
+    type: string
   SaltmasterIP:
     type: string
 {%if create_network is equalto 1 %}
@@ -81,19 +97,28 @@ parameters:
     type: string
   signal_transport:
     type: string
-    default: TEMP_URL_SIGNAL
   software_config_transport:
-    type: string
-    default: POLL_TEMP_URL
-  PndaMirror:
-    description: URL of a mirror for operating system package download
-    type: string
-    default: ''
-  pre_config:
     type: string
 
 resources:
 {%if create_network is equalto 1 %}
+  ZKSecGroup:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      description: Add security group rules for Data Nodes
+      name:
+        str_replace:
+          template:
+            cname-sk
+          params:
+            cname: { get_param: deployment_name }
+      rules:
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: tcp
+          port_range_min: 22
+          port_range_max: 22
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: icmp
   KafkaSecGroup:
     type: OS::Neutron::SecurityGroup
     properties:
@@ -111,10 +136,6 @@ resources:
           port_range_max: 22
         - remote_ip_prefix: 0.0.0.0/0
           protocol: icmp
-        - remote_ip_prefix: 0.0.0.0/0
-          protocol: tcp
-          port_range_min: 443
-          port_range_max: 443
   DNSecGroup:
     type: OS::Neutron::SecurityGroup
     properties:
@@ -128,96 +149,84 @@ resources:
       rules:
         - remote_ip_prefix: 0.0.0.0/0
           protocol: icmp
-{% endif %}
+{%endif%}
 {%if create_bastion is equalto 1 %}
   bastion:
     type: OS::Pnda::bastion
     properties:
-      signal_transport: { get_param: signal_transport }
-      software_config_transport: { get_param: software_config_transport }
       Flavor: { get_param: BastionFlavor }
       Image: { get_param: image_id }
+      KeyName: { get_param: BastionKeyName }
       name:
         str_replace:
           template: '%stackname%-bastion'
           params:
             '%stackname%': { get_param: deployment_name }
-{%if create_network is equalto 1 %}
       PrivateNet: { get_param: private_net }
       PrivateSubnet: { get_param: private_subnet }
       PublicNet: { get_param: public_net }
+      SaltmasterIP: { get_param: SaltmasterIP }
       private_key: { get_param: private_key }
       pnda_secgroup: { get_param: PndaSecGroup }
-{% endif %}
-      KeyName: { get_param: BastionKeyName }
-      SaltmasterIP: { get_param: SaltmasterIP }
       cluster_name: { get_param: deployment_name }
       pnda_flavor: { get_param: PndaFlavor }
-      PndaMirror: { get_param: PndaMirror }
 {%endif%}
-
+  zookeeper:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: { get_param: ZookeeperNodes }
+      resource_def:
+        type: OS::Pnda::zookeeper
+        properties:
+          Flavor: { get_param: ZookeeperFlavor }
+          Image: { get_param: image_id }
+          KeyName: { get_param: KeyName }
+          name:
+            str_replace:
+              template: '%stackname%-zookeeper-%index%'
+              params:
+                '%stackname%': { get_param: deployment_name }
+          NodeIndex: '%index%'
+{%if create_network is equalto 1 %}
+          PrivateNet: { get_param: private_net }
+          PrivateSubnet: { get_param: private_subnet }
+          sec_group: { get_resource: ZKSecGroup }
+          pnda_secgroup: { get_param: PndaSecGroup }
+{%endif%}
+          cluster_name: { get_param: deployment_name }
+          SaltmasterIP: { get_param: SaltmasterIP }
+          pnda_flavor: { get_param: PndaFlavor }
   kafka:
     type: OS::Heat::ResourceGroup
     properties:
-      count: 1
+      count: { get_param: KafkaNodes }
       resource_def:
         type: OS::Pnda::kafka
         properties:
-          signal_transport: { get_param: signal_transport }
-          software_config_transport: { get_param: software_config_transport }
-          pre_config: { get_param: pre_config }
           Flavor: { get_param: KafkaFlavor }
           Image: { get_param: image_id }
+          KeyName: { get_param: KeyName }
           name:
             str_replace:
               template: '%stackname%-kafka-%index%'
               params:
                 '%stackname%': { get_param: deployment_name }
           NodeIndex: '%index%'
-          SaltmasterIP: { get_param: SaltmasterIP }
 {%if create_network is equalto 1 %}
           PrivateNet: { get_param: private_net }
           PrivateSubnet: { get_param: private_subnet }
-          sec_group: { get_resource: KafkaSecGroup }
           pnda_secgroup: { get_param: PndaSecGroup }
-{% endif %}
-          KeyName: { get_param: KeyName }
+          sec_group: { get_resource: KafkaSecGroup }
+{%endif%}
+          SaltmasterIP: { get_param: SaltmasterIP }
           cluster_name: { get_param: deployment_name }
           pnda_flavor: { get_param: PndaFlavor }
-          PndaMirror: { get_param: PndaMirror }
-
-  manager1:
-    type: OS::Pnda::manager1
-    properties:
-      signal_transport: { get_param: signal_transport }
-      software_config_transport: { get_param: software_config_transport }
-      pre_config: { get_param: pre_config }
-      Flavor: { get_param: Manager1Flavor }
-      Image: { get_param: image_id }
-      name:
-        str_replace:
-          template: '%stackname%-cdh-mgr1'
-          params:
-            '%stackname%': { get_param: deployment_name }
-{%if create_network is equalto 1 %}
-      PrivateNet: { get_param: private_net }
-      PrivateSubnet: { get_param: private_subnet }
-      pnda_secgroup: { get_param: PndaSecGroup }
-{% endif %}
-      KeyName: { get_param: KeyName }
-      SaltmasterIP: { get_param: SaltmasterIP }
-      cluster_name: { get_param: deployment_name }
-      pnda_flavor: { get_param: PndaFlavor }
-      PndaMirror: { get_param: PndaMirror }
-
   edge:
     type: OS::Pnda::edge
     properties:
-      signal_transport: { get_param: signal_transport }
-      software_config_transport: { get_param: software_config_transport }
-      pre_config: { get_param: pre_config }
       Flavor: { get_param: EdgeFlavor }
       Image: { get_param: image_id }
+      KeyName: { get_param: KeyName }
       name:
         str_replace:
           template: '%stackname%-cdh-edge'
@@ -227,13 +236,67 @@ resources:
       PrivateNet: { get_param: private_net }
       PrivateSubnet: { get_param: private_subnet }
       pnda_secgroup: { get_param: PndaSecGroup }
-{% endif %}
-      KeyName: { get_param: KeyName }
-      cluster_name: { get_param: deployment_name }
+{%endif%}
       SaltmasterIP: { get_param: SaltmasterIP }
+      cluster_name: { get_param: deployment_name }
       pnda_flavor: { get_param: PndaFlavor }
-      PndaMirror: { get_param: PndaMirror }
-
+  cm:
+    type: OS::Pnda::cm
+    properties:
+      Flavor: { get_param: CMFlavor }
+      Image: { get_param: image_id }
+      KeyName: { get_param: KeyName }
+      name:
+        str_replace:
+          template: '%stackname%-cdh-cm'
+          params:
+            '%stackname%': { get_param: deployment_name }
+{%if create_network is equalto 1 %}
+      PrivateNet: { get_param: private_net }
+      PrivateSubnet: { get_param: private_subnet }
+      pnda_secgroup: { get_param: PndaSecGroup }
+{%endif%}
+      SaltmasterIP: { get_param: SaltmasterIP }
+      cluster_name: { get_param: deployment_name }
+      pnda_flavor: { get_param: PndaFlavor }
+  manager1:
+    type: OS::Pnda::manager1
+    properties:
+      Flavor: { get_param: Manager1Flavor }
+      Image: { get_param: image_id }
+      KeyName: { get_param: KeyName }
+      name:
+        str_replace:
+          template: '%stackname%-cdh-mgr1'
+          params:
+            '%stackname%': { get_param: deployment_name }
+{%if create_network is equalto 1 %}
+      PrivateNet: { get_param: private_net }
+      PrivateSubnet: { get_param: private_subnet }
+      pnda_secgroup: { get_param: PndaSecGroup }
+{%endif%}
+      SaltmasterIP: { get_param: SaltmasterIP }
+      cluster_name: { get_param: deployment_name }
+      pnda_flavor: { get_param: PndaFlavor }
+  manager2:
+    type: OS::Pnda::manager2
+    properties:
+      Flavor: { get_param: Manager2Flavor }
+      Image: { get_param: image_id }
+      KeyName: { get_param: KeyName }
+      name:
+        str_replace:
+          template: '%stackname%-cdh-mgr2'
+          params:
+            '%stackname%': { get_param: deployment_name }
+{%if create_network is equalto 1 %}
+      PrivateNet: { get_param: private_net }
+      PrivateSubnet: { get_param: private_subnet }
+      pnda_secgroup: { get_param: PndaSecGroup }
+{%endif%}
+      SaltmasterIP: { get_param: SaltmasterIP }
+      cluster_name: { get_param: deployment_name }
+      pnda_flavor: { get_param: PndaFlavor }
   dn:
     type: OS::Heat::ResourceGroup
     properties:
@@ -241,11 +304,9 @@ resources:
       resource_def:
         type: OS::Pnda::dn
         properties:
-          signal_transport: { get_param: signal_transport }
-          software_config_transport: { get_param: software_config_transport }
-          pre_config: { get_param: pre_config }
           Flavor: { get_param: DatanodeFlavor }
           Image: { get_param: image_id }
+          KeyName: { get_param: KeyName }
           name:
             str_replace:
               template: '%stackname%-cdh-dn-%index%'
@@ -256,15 +317,18 @@ resources:
           PrivateNet: { get_param: private_net }
           PrivateSubnet: { get_param: private_subnet }
           sec_group: { get_resource: DNSecGroup }
-          volume_size: { get_param: DatanodeVolumeSize }
           pnda_secgroup: { get_param: PndaSecGroup }
-{% endif %}
-          KeyName: { get_param: KeyName }
-          SaltmasterIP: { get_param: SaltmasterIP }
+{%endif%}
+{%if create_volumes is equalto 1 %}
+          volume_size: { get_param: DatanodeVolumeSize }
+          mountpoint: { get_param: DatanodeMountpoint }
+{%endif%}
           cluster_name: { get_param: deployment_name }
+          SaltmasterIP: { get_param: SaltmasterIP }
           pnda_flavor: { get_param: PndaFlavor }
-          PndaMirror: { get_param: PndaMirror }
 
 outputs:
+  zookeeper_hosts:
+    value: { get_attr: [zookeeper, hosts_entry] }
   kafka_hosts:
     value: { get_attr: [kafka, hosts_entry] }
