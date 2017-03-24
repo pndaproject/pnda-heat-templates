@@ -154,11 +154,11 @@ def setup_flavor_templates(flavor, cname, is_bare, fs_type, zknodes, kafkanodes,
     with open('../../pnda_env.yaml', 'r') as infile:
         pnda_env = yaml.load(infile)
     
-    try:
-      hypervisor_count = int(pnda_env['parameter_defaults']['hypervisor_count'])
-    except:
-      hypervisor_count = guess_hypervisor_count()
-      
+    if 'hypervisor_count' in pnda_env['parameter_defaults']:
+      hypervisor_count = pnda_env['parameter_defaults']['hypervisor_count']
+    else:
+      hypervisor_count = 0
+     
     templateVars['create_zknodes_group'] = 1 if (zknodes > 1 and hypervisor_count >= zknodes) else 0
     templateVars['create_kafkanodes_group'] = 1 if (kafkanodes > 1 and hypervisor_count >= kafkanodes) else 0
     templateVars['create_datanodes_group'] = 1 if (datanodes > 1 and hypervisor_count >= datanodes) else 0
@@ -325,13 +325,6 @@ def get_salt_highstate_output(stack):
 
 def get_salt_orchestrate_output(stack):
     return os_cmd('openstack stack output show {} salt_orchestrate --format value --column output_value'.format(stack))
-
-def guess_hypervisor_count():
-    try:  
-      return int(os_cmd("nova hypervisor-list | awk -F '|' '{print $4}' | grep -c 'up'").strip('\n'))
-    except:
-      print 'Warning: (nova hypervisor-list FAILED) -> Disabling all Anty Affinity groups.'
-      return 0
 
 def print_pnda_cluster_status(stack, verbose=False):
     stack_name = stack['Stack Name']

@@ -161,7 +161,8 @@ parameter_defaults:
 
   #
   # hypervisor_count: The number of available hypervisors the distribute the Anti-Affiliate servers over.
-  # This optional parameter can be used to enable Anti-Affiliate support.
+  # This optional parameter can be used to trigger Anti-Affiliate support.
+  # Commenting out this parameter will disable Anti-Affiliate support altogether. 
   #
   #hypervisor_count: 30
 
