@@ -7,7 +7,7 @@
 #   - create_network: 0|1. Set to 1 to create network related resources or to 0 when running
 #                          for an openstack ironic bare-metal install
 
-heat_template_version: 2014-10-16
+heat_template_version: 2015-04-30
 
 parameters:
   SaltmasterFlavor:
@@ -89,6 +89,8 @@ parameters:
     description: URL of a mirror for operating system package download
     type: string
     default: ''
+  pre_config:
+    type: string
 
 resources:
 {%if create_network is equalto 1 %}
@@ -163,6 +165,7 @@ resources:
         properties:
           signal_transport: { get_param: signal_transport }
           software_config_transport: { get_param: software_config_transport }
+          pre_config: { get_param: pre_config }
           Flavor: { get_param: KafkaFlavor }
           Image: { get_param: image_id }
           name:
@@ -188,6 +191,7 @@ resources:
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      pre_config: { get_param: pre_config }
       Flavor: { get_param: Manager1Flavor }
       Image: { get_param: image_id }
       name:
@@ -211,6 +215,7 @@ resources:
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      pre_config: { get_param: pre_config }
       Flavor: { get_param: EdgeFlavor }
       Image: { get_param: image_id }
       name:
@@ -238,6 +243,7 @@ resources:
         properties:
           signal_transport: { get_param: signal_transport }
           software_config_transport: { get_param: software_config_transport }
+          pre_config: { get_param: pre_config }
           Flavor: { get_param: DatanodeFlavor }
           Image: { get_param: image_id }
           name:

@@ -13,7 +13,7 @@
 #   - package_repository_fs_type: swift|s3|fs|sshfs. Additional properties are defined based on the type
 #                                 of package repository selected
 
-heat_template_version: 2014-10-16
+heat_template_version: 2015-04-30
 
 parameters:
   image_id:
@@ -226,6 +226,15 @@ resources:
       security_groups: [{ get_resource: saltmaster_sec_group }, { get_resource: PndaSecGroup }]
 {% endif %}
 
+  pre_config:
+    type: OS::Pnda::preConfig
+    properties:
+      PndaMirror: { get_param: PndaMirror }
+      NtpServers: { get_param: NtpServers }
+      keystone_auth_url: { get_param: keystone_auth_url }
+      platform_git_repo_uri: { get_param: platform_git_repo_uri }
+      platform_uri: { get_param: platform_uri } 
+ 
   # A SoftwareConfig resource contains all the parameters used when provisioning PNDA
   install_config:
     type: OS::Heat::SoftwareConfig
@@ -268,15 +277,15 @@ resources:
             $pnda_archive_container$: { get_param: pnda_archive_container }
 
   deploy_install:
-        type: OS::Heat::SoftwareDeployment
-        properties:
-          signal_transport: { get_param: signal_transport }
-          config:
-            get_resource: install_config
-          server:
-            get_resource: saltmaster_server
-          actions:
-            - CREATE
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      signal_transport: { get_param: signal_transport }
+      config:
+        get_resource: install_config
+      server:
+        get_resource: saltmaster_server
+      actions:
+        - CREATE
 
   # The salt highstate command is the first of the two main salt commands to run
   # Each instance is targetted using the "roles" grains to install the right software on them

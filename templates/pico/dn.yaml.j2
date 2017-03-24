@@ -6,7 +6,7 @@
 #   - create_network: 0|1. Set to 1 to create network related resources or to 0 when running
 #                          for an openstack ironic bare-metal install
 
-heat_template_version: 2014-10-16
+heat_template_version: 2015-04-30
 
 parameters:
   Flavor:
@@ -54,6 +54,8 @@ parameters:
   software_config_transport:
     type: string
     default: POLL_TEMP_URL
+  pre_config:
+    type: string
   PndaMirror:
     description: URL of a mirror for operating system package download
     type: string
@@ -111,6 +113,7 @@ resources:
 {% endif %}
       software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
+      user_data: { get_param: pre_config }
       config_drive: True
 
 {%if create_volumes is equalto 1 %}

@@ -6,7 +6,7 @@
 # It is processed as a jinja2 template with the following parameters:
 #   - create_network: 0|1. Set to 1 to create network related resources
 
-heat_template_version: 2014-10-16
+heat_template_version: 2015-04-30
 
 parameters:
   SaltmasterFlavor:
@@ -137,6 +137,8 @@ parameters:
     description: URL of a mirror for operating system package download
     type: string
     default: ''
+  pre_config:
+    type: string
 
 resources:
   MgrAAGroup:
@@ -294,6 +296,7 @@ resources:
         properties:
           signal_transport: { get_param: signal_transport }
           software_config_transport: { get_param: software_config_transport }
+          pre_config: { get_param: pre_config }
           Flavor: { get_param: ZookeeperFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }
@@ -323,6 +326,7 @@ resources:
         properties:
           signal_transport: { get_param: signal_transport }
           software_config_transport: { get_param: software_config_transport }
+          pre_config: { get_param: pre_config }
           Flavor: { get_param: KafkaFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }
@@ -352,6 +356,7 @@ resources:
         properties:
           signal_transport: { get_param: signal_transport }
           software_config_transport: { get_param: software_config_transport }
+          pre_config: { get_param: pre_config }
           Flavor: { get_param: ToolsFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }
@@ -374,6 +379,7 @@ resources:
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      pre_config: { get_param: pre_config }
       Flavor: { get_param: CMFlavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -394,6 +400,7 @@ resources:
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      pre_config: { get_param: pre_config }
       Flavor: { get_param: LogserverFlavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -414,6 +421,7 @@ resources:
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      pre_config: { get_param: pre_config }
       Flavor: { get_param: JupyterFlavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -434,6 +442,7 @@ resources:
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      pre_config: { get_param: pre_config }
       Flavor: { get_param: Manager1Flavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -455,6 +464,7 @@ resources:
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      pre_config: { get_param: pre_config }
       Flavor: { get_param: Manager2Flavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -476,6 +486,7 @@ resources:
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      pre_config: { get_param: pre_config }
       Flavor: { get_param: Manager3Flavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -496,6 +507,7 @@ resources:
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      pre_config: { get_param: pre_config }
       Flavor: { get_param: Manager4Flavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -517,6 +529,7 @@ resources:
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      pre_config: { get_param: pre_config }
       Flavor: { get_param: EdgeFlavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -541,6 +554,7 @@ resources:
         properties:
           signal_transport: { get_param: signal_transport }
           software_config_transport: { get_param: software_config_transport }
+          pre_config: { get_param: pre_config }
           Flavor: { get_param: DatanodeFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }
@@ -571,6 +585,7 @@ resources:
         properties:
           signal_transport: { get_param: signal_transport }
           software_config_transport: { get_param: software_config_transport }
+          pre_config: { get_param: pre_config }
           Flavor: { get_param: OpentsdbFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }

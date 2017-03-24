@@ -1,7 +1,7 @@
 # Definition for the bastion instance type
 # Specifies which bootstrap script to run to set up this instance type
 
-heat_template_version: 2014-10-16
+heat_template_version: 2015-04-30
 
 parameters:
   Flavor:

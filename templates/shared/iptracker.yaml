@@ -1,0 +1,43 @@
+# Definition for the iptracker instance type
+# Specifies which the script to run to track ip connections on an instance
+
+heat_template_version: 2015-04-30
+
+parameters:
+  PndaMirror:
+    description: URL of a mirror for operating system package download
+    type: string
+    default: ''
+  NtpServers:
+    description: NTP servers
+    type: string
+    default: ''
+  keystone_auth_url:
+    type: string
+  platform_git_repo_uri:
+    type: string
+    default: ''
+    description: |
+      uri to the platform-salt upstream git repository
+  platform_uri:
+    type: string
+    default: ''
+    description: |
+      Uri to retrieve a platform-salt release zip file
+
+resources:
+  iptracker_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      config: 
+        str_replace:
+          template: { get_file: scripts/iptracker.sh }
+          params: 
+            $pnda_mirror$: { get_param: PndaMirror }
+            $ntp_servers$: { get_param: NtpServers }
+            $keystone_auth_url$: { get_param: keystone_auth_url }
+            $platform_git_repo_uri$: { get_param: platform_git_repo_uri }
+            $platform_uri$: { get_param: platform_uri }
+outputs:
+  OS::stack_id:
+    value: { get_resource: iptracker_config }

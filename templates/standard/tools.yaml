@@ -2,7 +2,7 @@
 # Specifies which bootstrap script to run to set up this instance type and which roles
 # to apply to this instance type
 
-heat_template_version: 2014-10-16
+heat_template_version: 2015-04-30
 
 parameters:
   Flavor:
@@ -44,6 +44,8 @@ parameters:
     description: URL of a mirror for operating system package download
     type: string
     default: ''
+  pre_config:
+    type: string
 
 resources:
   port:
@@ -86,6 +88,7 @@ resources:
         - port: { get_resource: port }
       software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
+      user_data: { get_param: pre_config }
       config_drive: True
 
 outputs:
