@@ -98,15 +98,15 @@ def get_args():
     args = parser.parse_args()
     return args
 
+# Merge two dictionaries together, 
+# overwriting existing base elements along the way.
 def merge_dicts(base, mergein):
     for element in mergein:
-        if element not in base or not base[element]:
+        if element not in base:
             base[element] = mergein[element]
-        else:
+        elif mergein[element]:
             for child in mergein[element]:
-                # base has priority over mergein, so don't overwrite base elements
-                if child not in base[element]:
-                    base[element][child] = mergein[element][child]
+                base[element][child] = mergein[element][child]
 
 def process_templates_from_dir(flavor, cname, from_dir, to_dir, vars):
 
@@ -187,10 +187,12 @@ def setup_flavor_templates(flavor, cname, is_bare, fs_type, zknodes, kafkanodes,
         resource_registry = yaml.load(infile)
     with open('../../templates/%s/instance_flavors.yaml' % flavor, 'r') as infile:
         instance_flavors = yaml.load(infile)
-    merge_dicts(pnda_env, resource_registry)
-    merge_dicts(pnda_env, instance_flavors)
+    env = resource_registry  
+    merge_dicts(env, instance_flavors)
+    # pnda_env is merged in last as it overwrites any defaults
+    merge_dicts(env, pnda_env)
     with open('pnda_env.yaml', 'w') as outfile:
-        yaml.dump(pnda_env, outfile, default_flow_style=False)
+        yaml.dump(env, outfile, default_flow_style=False)
     shutil.copytree('../../scripts', './scripts')
     shutil.copy('../../deploy', './')
     if os.path.isfile('../../pr_key'):
