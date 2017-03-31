@@ -7,14 +7,14 @@ import sys
 import re
 import os
 import json
+import time
 import uuid
 import shutil
-import yaml
 import glob
 import jinja2
-import time
+import yaml
 
-name_regex = "^[\.a-zA-Z0-9-]+$"
+NAME_REGEX = r"^[\.a-zA-Z0-9-]+$"
 
 CREATE_INFO = """
 Please wait while your PNDA cluster is being created.
@@ -32,16 +32,16 @@ def to_runfile(pairs):
     Append arbitrary pairs to a JSON dict on disk from anywhere in the code
     '''
     mode = 'w' if not os.path.isfile(RUNFILE) else 'r'
-    with open(RUNFILE, mode) as rf:
-        jrf = json.load(rf) if mode == 'r' else {}
-        jrf.update(pairs)
-        json.dump(jrf, rf)
+    with open(RUNFILE, mode) as run_file:
+        json_run_file_data = json.load(run_file) if mode == 'r' else {}
+        json_run_file_data.update(pairs)
+        json.dump(json_run_file_data, run_file)
 
-def name_string(v):
+def name_string(value_str):
     try:
-        return re.match(name_regex, v).group(0)
+        return re.match(NAME_REGEX, value_str).group(0)
     except:
-        raise argparse.ArgumentTypeError("String '%s' may contain only  a-z 0-9 and '-'"%v)
+        raise argparse.ArgumentTypeError("String '%s' may contain only  a-z 0-9 and '-'" % value_str)
 
 def banner():
     print r"    ____  _   ______  ___ "
@@ -53,15 +53,15 @@ def banner():
 
 def os_cmd(cmdline, print_output=False, verbose=False):
     if verbose:
-        print(cmdline)
+        print cmdline
 
     try:
         if print_output:
-            ret = subprocess.check_call(cmdline, shell=True)
+            ret = str(subprocess.check_call(cmdline, shell=True))
         else:
             ret = subprocess.check_output(cmdline, shell=True)
         return ret
-    except subprocess.CalledProcessError as e:
+    except subprocess.CalledProcessError:
         print >>sys.stderr, "Command '{}' failed".format(cmdline)
         sys.exit(1)
 
@@ -83,53 +83,52 @@ def get_args():
     banner()
 
     parser.add_argument('command', help='Mode of operation', choices=['create', 'resize', 'destroy', 'status', 'logs'])
-    parser.add_argument('-e','--pnda-cluster', type=name_string, help='Namespaced environment for machines in this cluster')
-    parser.add_argument('-n','--datanodes', type=int, help='How many datanodes for the hadoop cluster')
-    parser.add_argument('-o','--opentsdb-nodes', type=int, help='How many Open TSDB nodes for the hadoop cluster')
-    parser.add_argument('-k','--kafka-nodes', type=int, help='How many kafka nodes for the databus cluster')
-    parser.add_argument('-z','--zk-nodes', type=int, help='How many zookeeper nodes for the databus cluster')
-    parser.add_argument('-f','--flavor', help='PNDA flavor: e.g. "standard"', choices=['pico', 'standard', 'distribution', 'bmstandard'])
-    parser.add_argument('-b','--branch', help='Git branch to use (defaults to master)')
-    parser.add_argument('-s','--keypair', help='keypair name for ssh to the bastion server')
-    parser.add_argument('-v','--verbose', help='Be more verbose')
+    parser.add_argument('-e', '--pnda-cluster', type=name_string, help='Namespaced environment for machines in this cluster')
+    parser.add_argument('-n', '--datanodes', type=int, help='How many datanodes for the hadoop cluster')
+    parser.add_argument('-o', '--opentsdb-nodes', type=int, help='How many Open TSDB nodes for the hadoop cluster')
+    parser.add_argument('-k', '--kafka-nodes', type=int, help='How many kafka nodes for the databus cluster')
+    parser.add_argument('-z', '--zk-nodes', type=int, help='How many zookeeper nodes for the databus cluster')
+    parser.add_argument('-f', '--flavor', help='PNDA flavor: e.g. "standard"', choices=['pico', 'standard', 'distribution', 'bmstandard'])
+    parser.add_argument('-b', '--branch', help='Git branch to use (defaults to master)')
+    parser.add_argument('-s', '--keypair', help='keypair name for ssh to the bastion server')
+    parser.add_argument('-v', '--verbose', help='Be more verbose')
     parser.add_argument('-bare', '--bare', help='Assume baremetal environment')
     parser.add_argument('-fstype', '--fstype', help='FS type for package repository')
 
     args = parser.parse_args()
     return args
 
-# Merge two dictionaries together, 
-# overwriting existing base elements along the way.
 def merge_dicts(base, mergein):
     for element in mergein:
-        if element not in base:
+        if element not in base or not base[element]:
             base[element] = mergein[element]
-        elif mergein[element]:
+        else:
             for child in mergein[element]:
-                base[element][child] = mergein[element][child]
+                # base has priority over mergein, so don't overwrite base elements
+                if child not in base[element]:
+                    base[element][child] = mergein[element][child]
 
-def process_templates_from_dir(flavor, cname, from_dir, to_dir, vars):
+def process_templates_from_dir(from_dir, to_dir, template_vars):
 
-    templateVars = vars
-    templateEnv = jinja2.Environment( loader=jinja2.FileSystemLoader( searchpath='/' ) )
+    template_env = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath='/'))
 
     print from_dir
     print to_dir
-    print vars
+    print template_vars
 
     for j2_file in glob.glob('%s/*.j2' % from_dir):
         print 'processing template file: %s' % j2_file
-        template = templateEnv.get_template( j2_file )
-        yaml_file_content = yaml.load( template.render( templateVars ) )
+        template = template_env.get_template(j2_file)
+        yaml_file_content = yaml.load(template.render(template_vars))
         #print yaml_file_content
-        yaml_file = '{}/{}'.format( to_dir, os.path.basename( j2_file[:-3] ) )
+        yaml_file = '{}/{}'.format(to_dir, os.path.basename(j2_file[:-3]))
         with open(yaml_file, 'w') as outfile:
             yaml.dump(yaml_file_content, outfile, default_flow_style=False)
 
     with open('%s/pnda.yaml' % to_dir, 'r') as infile:
         pnda_flavor = yaml.load(infile)
-    template = templateEnv.get_template( os.path.abspath( '../../templates/pnda.yaml' ) )
-    pnda_common = yaml.load( template.render( templateVars ) )
+    template = template_env.get_template(os.path.abspath('../../templates/pnda.yaml'))
+    pnda_common = yaml.load(template.render(template_vars))
     merge_dicts(pnda_common, pnda_flavor)
     with open('%s/pnda.yaml' % to_dir, 'w') as outfile:
         yaml.dump(pnda_common, outfile, default_flow_style=False)
@@ -143,56 +142,52 @@ def setup_flavor_templates(flavor, cname, is_bare, fs_type, zknodes, kafkanodes,
     os.makedirs(resources_dir)
     os.chdir(resources_dir)
 
-    templateVars = {}
+    template_vars = {}
     if is_bare == 'true':
-        templateVars['create_network'] = 0
-        templateVars['create_volumes'] = 0
-        templateVars['create_bastion'] = 0
+        template_vars['create_network'] = 0
+        template_vars['create_volumes'] = 0
+        template_vars['create_bastion'] = 0
     else:
-        templateVars['create_network'] = 1
-        templateVars['create_volumes'] = 1
-        templateVars['create_bastion'] = 1
-     
+        template_vars['create_network'] = 1
+        template_vars['create_volumes'] = 1
+        template_vars['create_bastion'] = 1
+
     with open('../../pnda_env.yaml', 'r') as infile:
         pnda_env = yaml.load(infile)
-    
-    if 'hypervisor_count' in pnda_env['parameter_defaults']:
-      hypervisor_count = pnda_env['parameter_defaults']['hypervisor_count']
-    else:
-      hypervisor_count = 0
-     
-    templateVars['create_zknodes_group'] = 1 if (zknodes > 1 and hypervisor_count >= zknodes) else 0
-    templateVars['create_kafkanodes_group'] = 1 if (kafkanodes > 1 and hypervisor_count >= kafkanodes) else 0
-    templateVars['create_datanodes_group'] = 1 if (datanodes > 1 and hypervisor_count >= datanodes) else 0
 
-    templateVars['package_repository_fs_type'] = fs_type
+    if 'hypervisor_count' in pnda_env['parameter_defaults']:
+        hypervisor_count = pnda_env['parameter_defaults']['hypervisor_count']
+    else:
+        hypervisor_count = 0
+
+    template_vars['create_zknodes_group'] = 1 if (zknodes > 1 and hypervisor_count >= zknodes) else 0
+    template_vars['create_kafkanodes_group'] = 1 if (kafkanodes > 1 and hypervisor_count >= kafkanodes) else 0
+    template_vars['create_datanodes_group'] = 1 if (datanodes > 1 and hypervisor_count >= datanodes) else 0
+
+    template_vars['package_repository_fs_type'] = fs_type
 
     for yaml_file in glob.glob('../../templates/shared/*.yaml'):
         shutil.copy(yaml_file, './')
     for yaml_file in glob.glob('../../templates/%s/*.yaml' % flavor):
         shutil.copy(yaml_file, './')
 
-    process_templates_from_dir( flavor, cname,
-                                os.path.abspath( '../../templates/%s' % flavor ),
-                                os.path.abspath( dest_dir ),
-                                templateVars)
+    process_templates_from_dir(os.path.abspath('../../templates/%s' % flavor),
+                               os.path.abspath(dest_dir),
+                               template_vars)
 
-    templateEnv = jinja2.Environment( loader=jinja2.FileSystemLoader( searchpath='/' ) )
     if is_bare == 'true':
-        templateVars = { }
+        template_vars = {}
     else:
-        templateVars = { "create_network": "1" }
+        template_vars = {"create_network": "1"}
 
     with open('../../templates/%s/resource_registry.yaml' % flavor, 'r') as infile:
         resource_registry = yaml.load(infile)
     with open('../../templates/%s/instance_flavors.yaml' % flavor, 'r') as infile:
         instance_flavors = yaml.load(infile)
-    env = resource_registry  
-    merge_dicts(env, instance_flavors)
-    # pnda_env is merged in last as it overwrites any defaults
-    merge_dicts(env, pnda_env)
+    merge_dicts(pnda_env, resource_registry)
+    merge_dicts(pnda_env, instance_flavors)
     with open('pnda_env.yaml', 'w') as outfile:
-        yaml.dump(env, outfile, default_flow_style=False)
+        yaml.dump(pnda_env, outfile, default_flow_style=False)
     shutil.copytree('../../scripts', './scripts')
     shutil.copy('../../deploy', './')
     if os.path.isfile('../../pr_key'):
@@ -202,7 +197,6 @@ def setup_flavor_templates(flavor, cname, is_bare, fs_type, zknodes, kafkanodes,
 
 def create_cluster(args):
 
-    # TODO add bastion/saltmaster endpoints to runfile
     init_runfile(args.pnda_cluster)
 
     to_runfile({'cmdline':sys.argv})
@@ -224,40 +218,40 @@ def create_cluster(args):
         fs_type = args.fstype
 
     if flavor == 'standard':
-        if datanodes == None:
+        if datanodes is None:
             datanodes = 3
-        if tsdbnodes == None:
+        if tsdbnodes is None:
             tsdbnodes = 1
-        if kafkanodes == None:
+        if kafkanodes is None:
             kafkanodes = 2
-        if zknodes == None:
+        if zknodes is None:
             zknodes = 3
     elif flavor == 'pico':
-        if datanodes == None:
+        if datanodes is None:
             datanodes = 1
-        if tsdbnodes == None:
+        if tsdbnodes is None:
             tsdbnodes = 0
-        if kafkanodes == None:
+        if kafkanodes is None:
             kafkanodes = 1
-        if zknodes == None:
+        if zknodes is None:
             zknodes = 0
     elif flavor == 'bmstandard':
-        if datanodes == None:
+        if datanodes is None:
             datanodes = 3
-        if tsdbnodes == None:
+        if tsdbnodes is None:
             tsdbnodes = 0
-        if kafkanodes == None:
+        if kafkanodes is None:
             kafkanodes = 3
-        if zknodes == None:
+        if zknodes is None:
             zknodes = 0
     elif flavor == 'distribution':
-        if datanodes == None:
+        if datanodes is None:
             datanodes = 0
-        if tsdbnodes == None:
+        if tsdbnodes is None:
             tsdbnodes = 0
-        if kafkanodes == None:
+        if kafkanodes is None:
             kafkanodes = 3
-        if zknodes == None:
+        if zknodes is None:
             zknodes = 1
 
     if not os.path.isfile('../deploy'):
@@ -273,7 +267,7 @@ def create_cluster(args):
     stack_params.append('--parameter OpentsdbNodes={}'.format(tsdbnodes))
     stack_params.append('--parameter PndaFlavor={}'.format(flavor))
     stack_params.append('--parameter KeyName={}'.format(keypair))
-   
+
     if branch:
         stack_params.append('--parameter GitBranch={}'.format(branch))
     if command == 'resize':
@@ -287,17 +281,17 @@ def create_cluster(args):
         print CREATE_INFO
         setup_flavor_templates(flavor, pnda_cluster, is_bare, fs_type, zknodes, kafkanodes, datanodes)
         cmdline = 'openstack stack create --timeout 120 --wait --template {} --environment {} {}'.format('pnda.yaml',
-                                                                                    'pnda_env.yaml',
-                                                                                    stack_params_string)
+                                                                                                         'pnda_env.yaml',
+                                                                                                         stack_params_string)
     elif command == 'resize':
         os.chdir('_resources_{}-{}'.format(flavor, pnda_cluster))
         stack_params_string = ' '.join(stack_params)
         cmdline = 'openstack stack update --timeout 120 --wait --template {} --environment {} {}'.format('pnda.yaml',
-                                                                                    'pnda_env.yaml',
-                                                                                    stack_params_string)
+                                                                                                         'pnda_env.yaml',
+                                                                                                         stack_params_string)
     print cmdline
     os_cmd(cmdline, print_output=True)
-    console_info = subprocess.check_output(['nova','list', '--name', "%s-cdh-edge" % pnda_cluster, '--fields', 'networks'])
+    console_info = subprocess.check_output(['nova', 'list', '--name', "%s-cdh-edge" % pnda_cluster, '--fields', 'networks'])
     console_ip = re.search('([0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*)', console_info)
     if console_ip:
         print 'Use the PNDA console to get started: http://%s' % console_ip.group(1)
@@ -321,8 +315,8 @@ def get_pnda_cluster_info(cluster_name):
         edge = next(h for h in hosts if h['Name'] == '{}-cdh-edge'.format(cluster_name))
         edge_ip = edge['Networks'].split(',')[0].split('=')[-1]
 
-        return { 'bastion' : {'public-ip': bastion_ip},
-            'edge'    : {'private-ip': edge_ip} }
+        return {'bastion' : {'public-ip': bastion_ip},
+                'edge'    : {'private-ip': edge_ip}}
     except:
         return {}
 
@@ -332,7 +326,7 @@ def get_salt_highstate_output(stack):
 def get_salt_orchestrate_output(stack):
     return os_cmd('openstack stack output show {} salt_orchestrate --format value --column output_value'.format(stack))
 
-def print_pnda_cluster_status(stack, verbose=False):
+def print_pnda_cluster_status(stack):
     stack_name = stack['Stack Name']
     stack_status = stack['Stack Status']
 
@@ -345,15 +339,15 @@ def print_pnda_cluster_status(stack, verbose=False):
         else:
             print '[?] {} - {}'.format(stack_name, stack_status)
             print "    |- No Bastion/Edge (May not be a PNDA cluster)."
-    else: 
-       print '[?] {} - {}'.format(stack_name, stack_status)
+    else:
+        print '[?] {} - {}'.format(stack_name, stack_status)
 
-def clusters_status(args):
+def clusters_status():
     stacks = os_cmd('openstack stack list --format json', print_output=False)
     stacks = json.loads(stacks)
 
     for stack in stacks:
-        print_pnda_cluster_status(stack, verbose=args.verbose)
+        print_pnda_cluster_status(stack)
 
 def print_pnda_cluster_logs(args):
     stack_name = args.pnda_cluster
@@ -369,7 +363,7 @@ def main():
     elif args.command == 'destroy':
         destroy_cluster(args)
     elif args.command == 'status':
-        clusters_status(args)
+        clusters_status()
     elif args.command == 'logs':
         print_pnda_cluster_logs(args)
 
