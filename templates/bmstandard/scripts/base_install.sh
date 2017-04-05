@@ -88,10 +88,12 @@ cat << EOF > /etc/pip.conf
 [global]
 index-url=$PIP_INDEX_URL
 trusted-host=$TRUSTED_HOST
+extra-index-url=https://pypi.python.org/simple/
 EOF
 cat << EOF > /root/.pydistutils.cfg
 [easy_install]
 index_url=$PIP_INDEX_URL
+extra-index-url=https://pypi.python.org/simple/
 EOF
 
 service salt-minion restart
