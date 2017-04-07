@@ -397,7 +397,7 @@ When deploying, one can choose git repo sources for salt recipes. Both http and 
 | *Example value:* | 'master' |
 
 ### Deployment from tarballs releases
-When deploying, one can choose to deploy from tarball files (releases) rather than from the git repository. the _platform_uri_ parameter is superseded by the _platform_git_repo_uri_ definition. Meaning that if _platform_git_repo_uri_ is defined it git based deployment takes precedence.
+When deploying, one can choose to deploy from a tarball archive of platform-salt rather than from the git repository. If _platform_git_repo_uri_ is defined git based deployment takes precedence, so make sure the _platform_git_repo_uri_ setting is removed if the tarball method is chosen. The platform-salt tarball can be served from the [PNDA mirror server](#mirror-usage). To create the platform salt tarball, first clone then platform-salt from github then run the command `tar zcf platform-salt.tar.gz platform-salt/`.
 
 * **platform_uri**
 
@@ -408,53 +408,17 @@ When deploying, one can choose to deploy from tarball files (releases) rather th
 | *Default values:* | None |
 | *Example value:* | 'http://www.example.com/platform_salt_release-0.1.tar.gz' |
 
-* **packages_server_uri**
+### Mirror usage
+The PNDA mirror server provides a webserver for the binaries for the pnda components plus all the third party resources. [This documentation contains instructions](https://github.com/pndaproject/pnda/blob/develop/CREATING_PNDA.md) on how to set up a PNDA mirror.
+
+* **PndaMirror**
 
 | *Mandatory:* | yes |
 | -------------|-----|
-| *Purpose:* | URI of the packages location |
+| *Purpose:* | URI of PNDA mirror |
 | *Type:* | string |
 | *Default values:* | None |
-| *Example value:* | 'http://www.example.com/packages' |
-
-### Mirror usage
-Installing the Cloudera Hadoop cluster might take some time. In an effort to reduce the provisioning time it is possible to specify mirrors for Hadoop parcels or the Oracle JDK installer. If not defined, Installation will grab the Cloudera parcels or the JDK installer from the Cloudera and Oracle servers, respectively.
-
-* **ClouderaParcelsMirror**
-
-| *Mandatory:* | no |
-| -------------|-----|
-| *Purpose:* | URI of the Cloudera parcels mirror |
-| *Type:* | string |
-| *Default values:* | None |
-| *Example value:* | 'http://www.example.com/mirror/archive.cloudera.com/cdh5/parcels/5.9.0/' |
-
-* **AnacondaParcelsMirror**
-
-| *Mandatory:* | no |
-| -------------|-----|
-| *Purpose:* | URI of the Anaconda parcels mirror |
-| *Type:* | string |
-| *Default values:* | None |
-| *Example value:* | 'http://www.example.com/mirror/anaconda/misc/parcels/' |
-
-* **NtpServers**
-
-| *Mandatory:* | no |
-| -------------|-----|
-| *Purpose:* | NTP server |
-| *Type:* | string |
-| *Default values:* | None |
-| *Example value:* | 'europe.pool.ntp.org' |
-
-* **JavaMirror**
-
-| *Mandatory:* | no |
-| -------------|-----|
-| *Purpose:* | URI of Oracle JDK installer mirror |
-| *Type:* | string |
-| *Default values:* | None |
-| *Example value:* | 'http://www.example.com/java/jdk/8u74-b02/jdk-8u74-linux-x64.tar.gz' |
+| *Example value:* | 'http://www.example.com' |
 
 ### VM instances image
 PNDA instances are created from the image created using the pnda-dib-elements.
