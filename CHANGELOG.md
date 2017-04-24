@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 - PNDA-2801: Add support for bare-metal deployment using the bmstandard flavor. Add support for distribution flavor providing kafka only cluser. Add documentation for baremetal deployment.
 - Add an hypervisor_count setting in the pnda_env file to enable Anti-Affinity feature in PNDA.
 - Add ability to define a software config that applies a pre config script to all instances but bastion.
+- PNDA-2375: Isolate PNDA from breaking dependency changes
+
 ### Changed
 - PNDA-2688: review pnda_env default values
 - PNDA-2819: fix issue on volume reference once create network is 0
