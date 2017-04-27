@@ -310,6 +310,15 @@ Access to the created swift containers from the deployed PNDA instances requires
 | *Default values:* | None |
 | *Example value:* | 'http://host.example.com:5000/v2.0' |
 
+* **keystone_auth_version**
+
+| *Mandatory:* | yes |
+| -------------|-----|
+| *Purpose:* | Keystone API version for authentication |
+| *Type:* | string |
+| *Default values:* | 2 |
+| *Example value:* | '2' |
+
 * **keystone_region_name**
 
 | *Mandatory:* | yes |

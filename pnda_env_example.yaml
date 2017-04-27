@@ -62,6 +62,12 @@ parameter_defaults:
   # under the Access & Security section.
   #  
   keystone_auth_url: 'http://x.x.x.x:5000/v2.0'
+
+  #
+  # keystone_auth_version: Keystone authentication version. The Openstack console provides this 
+  # under the Access & Security section.
+  #  
+  keystone_auth_version: '2'
   
   #
   # keystone_region_name: Keystone region. The Openstack console provides this 

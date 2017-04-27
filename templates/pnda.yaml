@@ -97,6 +97,8 @@ parameters:
     type: string
   keystone_auth_url:
     type: string
+  keystone_auth_version:
+    type: string
   keystone_region_name:
     type: string
   pnda_apps_container:
@@ -232,6 +234,7 @@ resources:
       PndaMirror: { get_param: PndaMirror }
       NtpServers: { get_param: NtpServers }
       keystone_auth_url: { get_param: keystone_auth_url }
+      keystone_auth_version: { get_param: keystone_auth_version }
       platform_git_repo_uri: { get_param: platform_git_repo_uri }
       platform_uri: { get_param: platform_uri } 
  
@@ -268,6 +271,7 @@ resources:
             $keystone_password$: { get_param: keystone_password }
             $keystone_tenant$: { get_param: keystone_tenant }
             $keystone_auth_url$: { get_param: keystone_auth_url }
+            $keystone_auth_version$: { get_param: keystone_auth_version }
             $keystone_region_name$: { get_param: keystone_region_name }
             $packages_server_uri$: { get_param: packages_server_uri }
             $platform_uri$: { get_param: platform_uri }

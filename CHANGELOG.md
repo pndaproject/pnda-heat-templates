@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - PNDA-2688: review pnda_env default values
 - PNDA-2819: fix issue on volume reference once create network is 0
+- PNDA-2883: Allow `keystone_auth_version` to be set in `pnda.yaml`
 
 ## [1.2.0] 2017-01-20
 ### Changed

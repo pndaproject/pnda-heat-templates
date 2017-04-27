@@ -51,6 +51,7 @@ parameter_defaults:
   keystone_password: '$OS_PASSWORD'
   keystone_tenant: '$OS_TENANT_NAME'
   keystone_auth_url: '$OS_AUTH_URL'
+  keystone_auth_version: '$OS_IDENTITY_API_VERSION'  
   keystone_region_name: 'regionOne'
   JavaMirror: 'http://10.60.17.100/NFS/repos/java/jdk/8u74-b02/jdk-8u74-linux-x64.tar.gz'
   ClouderaParcelsMirror: 'http://10.60.17.100/mirror/archive.cloudera.com/cdh5/parcels/5.5.2/'
