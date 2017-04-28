@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - Add an hypervisor_count setting in the pnda_env file to enable Anti-Affinity feature in PNDA.
 - Add ability to define a software config that applies a pre config script to all instances but bastion.
 - PNDA-2375: Isolate PNDA from breaking dependency changes
+- A 'specific_config' parameter to 'pnda_env.yaml' in order to pass parameters to bootstrap scripts and salt pillar, in a generic way
 
 ### Changed
 - PNDA-2688: review pnda_env default values

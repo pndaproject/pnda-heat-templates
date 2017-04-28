@@ -56,6 +56,10 @@ parameters:
     description: URL of a mirror for operating system package download
     type: string
     default: ''
+  specific_config:
+    description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
+    type: string
+    default: ''
 
 resources:
   port:
@@ -80,6 +84,7 @@ resources:
             $log_volume_id$: { get_resource: logvolume }
             $hdfs_volume_id$: { get_resource: volume }
             $cloudera_role$: 'DATANODE'
+            $$SPECIFIC_CONF$$: { get_param: specific_config }
   install_deployment:
     type: OS::Heat::SoftwareDeployment
     depends_on: [ volume_attachment, logvolume_attachment ]

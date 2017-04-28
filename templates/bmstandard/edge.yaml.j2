@@ -43,6 +43,10 @@ parameters:
   PndaMirror:
     description: URL of a mirror for operating system package download
     type: string
+  specific_config:
+    description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
+    type: string
+    default: ''
 
 resources:
 {%if create_network is equalto 1 %}
@@ -88,6 +92,7 @@ resources:
 {%endif%}
             $roles$: 'cloudera_edge,mysql_connector,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,gobblin,deployment_manager,package_repository,data_service,impala-shell,yarn-gateway,hbase_opentsdb_tables,hdfs_cleaner,master_dataset,jupyter,kafka_manager'
             $cloudera_role$: 'EDGE'
+            $$SPECIFIC_CONF$$: { get_param: specific_config }
   install_deployment:
     type: OS::Heat::SoftwareDeployment
 {%if create_volumes is equalto 1 %}

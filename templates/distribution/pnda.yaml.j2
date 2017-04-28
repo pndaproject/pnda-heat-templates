@@ -50,6 +50,10 @@ parameters:
     default: 0s
     description: Number of Opentsdb nodes
     type: number
+  specific_config:
+    description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
+    type: string
+    default: ''
 
 resources:
   pnda_cluster:
@@ -84,6 +88,7 @@ resources:
 {% endif %}
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      specific_config: { get_param: specific_config }
 
   saltmaster_server:
     type: OS::Nova::Server

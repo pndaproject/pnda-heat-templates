@@ -53,6 +53,10 @@ parameters:
     description: URL of a mirror for operating system package download
     type: string
     default: ''
+  specific_config:
+    description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
+    type: string
+    default: ''
 
 resources:
   port:
@@ -77,6 +81,7 @@ resources:
             $pnda_cluster$: { get_param: cluster_name }
             $log_volume_id$: { get_resource: logvolume }
             $roles$: 'kafka'
+            $$SPECIFIC_CONF$$: { get_param: specific_config }
   install_deployment:
     type: OS::Heat::SoftwareDeployment
     depends_on: [ logvolume_attachment ]

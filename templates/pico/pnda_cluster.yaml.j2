@@ -46,6 +46,10 @@ parameters:
   DatanodeVolumeSize:
     default: 10
     type: number
+  specific_config:
+    description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
+    type: string
+    default: ''
 
 {%if create_network is equalto 1 %}
   public_net:
@@ -154,6 +158,7 @@ resources:
       cluster_name: { get_param: deployment_name }
       pnda_flavor: { get_param: PndaFlavor }
       PndaMirror: { get_param: PndaMirror }
+      specific_config: { get_param: specific_config }
 {%endif%}
 
   kafka:
@@ -185,6 +190,7 @@ resources:
           cluster_name: { get_param: deployment_name }
           pnda_flavor: { get_param: PndaFlavor }
           PndaMirror: { get_param: PndaMirror }
+          specific_config: { get_param: specific_config }
 
   manager1:
     type: OS::Pnda::manager1
@@ -209,6 +215,7 @@ resources:
       cluster_name: { get_param: deployment_name }
       pnda_flavor: { get_param: PndaFlavor }
       PndaMirror: { get_param: PndaMirror }
+      specific_config: { get_param: specific_config }
 
   edge:
     type: OS::Pnda::edge
@@ -233,6 +240,7 @@ resources:
       SaltmasterIP: { get_param: SaltmasterIP }
       pnda_flavor: { get_param: PndaFlavor }
       PndaMirror: { get_param: PndaMirror }
+      specific_config: { get_param: specific_config }
 
   dn:
     type: OS::Heat::ResourceGroup
@@ -264,6 +272,7 @@ resources:
           cluster_name: { get_param: deployment_name }
           pnda_flavor: { get_param: PndaFlavor }
           PndaMirror: { get_param: PndaMirror }
+          specific_config: { get_param: specific_config }
 
 outputs:
   kafka_hosts:

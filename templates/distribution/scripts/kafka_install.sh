@@ -2,6 +2,12 @@
 
 set -ex
 
+declare -A conf=( )
+declare -A specific=( $$SPECIFIC_CONF$$ )
+
+# Override default configuration
+for key in "${!specific[@]}"; do conf[$key]="${specific[${key}]}"; done
+
 DISTRO=$(cat /etc/*-release|grep ^ID\=|awk -F\= {'print $2'}|sed s/\"//g)
 
 if [ "x$DISTRO" == "xubuntu" ]; then

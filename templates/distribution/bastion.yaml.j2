@@ -46,6 +46,10 @@ parameters:
     description: URL of a mirror for operating system package download
     type: string
     default: ''
+  specific_config:
+    description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
+    type: string
+    default: ''
 
 resources:
 {%if create_network is equalto 1 %}
@@ -97,6 +101,7 @@ resources:
             $private_key$: { get_param: private_key }
 {%endif%}
             $pnda_cluster$: { get_param: cluster_name }
+            $$SPECIFIC_CONF$$: { get_param: specific_config }
   install_deployment:
     type: OS::Heat::SoftwareDeployment
     depends_on: bastion_deployment
@@ -119,6 +124,7 @@ resources:
             $private_key$: { get_param: private_key }
 {%endif%}
             $keyname$: { get_param: 'OS::stack_name' }
+            $$SPECIFIC_CONF$$: { get_param: specific_config }
   bastion_deployment:
     type: OS::Heat::SoftwareDeployment
     properties:

@@ -136,6 +136,10 @@ parameters:
   software_config_transport:
     type: string
     default: POLL_TEMP_URL
+  specific_config:
+    description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
+    type: string
+    default: ''
 
 resources:
   # A keypair is created for this stack and used to secure login for all instances
@@ -279,6 +283,7 @@ resources:
             $pnda_apps_container$: { get_param: pnda_apps_container }
             $pnda_apps_folder$: { get_param: pnda_apps_folder }
             $pnda_archive_container$: { get_param: pnda_archive_container }
+            $$SPECIFIC_CONF$$: { get_param: specific_config }
 
   deploy_install:
     type: OS::Heat::SoftwareDeployment

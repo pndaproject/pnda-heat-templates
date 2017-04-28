@@ -6,6 +6,12 @@
 
 set -e
 
+declare -A conf=( )
+declare -A specific=( $$SPECIFIC_CONF$$ )
+
+# Override default configuration
+for key in "${!specific[@]}"; do conf[$key]="${specific[${key}]}"; done
+
 KEY="$private_key$"
 KEYNAME=$keyname$
 

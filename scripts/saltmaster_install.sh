@@ -6,6 +6,11 @@
 
 set -ex
 
+declare -A conf=( )
+declare -A specific=( $$SPECIFIC_CONF$$ )
+
+# Override default configuration
+for key in "${!specific[@]}"; do conf[$key]="${specific[${key}]}"; done
 
 DISTRO=$(cat /etc/*-release|grep ^ID\=|awk -F\= {'print $2'}|sed s/\"//g)
 
@@ -185,6 +190,12 @@ package_repository:
   fs_location_path: "$package_repository_fs_location_path$"
 EOF
 fi
+
+# Add all the specific values to the env_parameter file
+cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
+specific_config:
+EOF
+for i in "${!conf[@]}"; do echo "  $i: ${conf[$i]}" >> /srv/salt/platform-salt/pillar/env_parameters.sls; done
 
 # Set up a salt minion on the saltmaster too
 cat >> /etc/hosts <<EOF

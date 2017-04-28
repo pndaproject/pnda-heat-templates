@@ -44,6 +44,10 @@ parameters:
     description: URL of a mirror for operating system package download
     type: string
     default: ''
+  specific_config:
+    description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
+    type: string
+    default: ''
 
 
 resources:
@@ -86,6 +90,7 @@ resources:
 {%endif%}
             $roles$: 'cloudera_namenode,mysql_connector'
             $cloudera_role$: 'MGR01'
+            $$SPECIFIC_CONF$$: { get_param: specific_config }
   install_deployment:
     type: OS::Heat::SoftwareDeployment
 {%if create_volumes is equalto 1 %}

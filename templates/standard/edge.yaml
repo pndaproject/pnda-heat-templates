@@ -58,6 +58,10 @@ parameters:
     default: ''
   pre_config:
     type: string
+  specific_config:
+    description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
+    type: string
+    default: ''
 
 resources:
   sec_group:
@@ -99,6 +103,7 @@ resources:
             $package_repository_fs_type$: { get_param: package_repository_fs_type }
             $roles$: 'cloudera_edge,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,gobblin,deployment_manager,package_repository,data_service,impala-shell,yarn-gateway,hbase_opentsdb_tables,hdfs_cleaner,master_dataset'
             $cloudera_role$: 'EDGE'
+            $$SPECIFIC_CONF$$: { get_param: specific_config }
   install_deployment:
     type: OS::Heat::SoftwareDeployment
     depends_on: [ logvolume_attachment ,  prvolume_attachment]

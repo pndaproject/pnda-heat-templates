@@ -65,6 +65,10 @@ parameters:
   software_config_transport:
     type: string
     default: POLL_TEMP_URL
+  specific_config:
+    description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
+    type: string
+    default: ''
 
 resources:
   pnda_cluster:
@@ -108,6 +112,7 @@ resources:
       DatanodeVolumeSize : { get_param: DatanodeVolumeSize }
 {%endif%}
       PndaFlavor: { get_param: PndaFlavor }
+      specific_config: { get_param: specific_config }
 
   saltmaster_server:
     type: OS::Nova::Server

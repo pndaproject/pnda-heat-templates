@@ -49,6 +49,10 @@ parameters:
     default: ''
   pre_config:
     type: string
+  specific_config:
+    description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
+    type: string
+    default: ''
 
 resources:
   port:
@@ -72,6 +76,7 @@ resources:
             $pnda_cluster$: { get_param: cluster_name }
             $index$: { get_param: NodeIndex }
             $roles$: 'opentsdb,grafana'
+            $$SPECIFIC_CONF$$: { get_param: specific_config }
   install_deployment:
     type: OS::Heat::SoftwareDeployment
     properties:

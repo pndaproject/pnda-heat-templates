@@ -46,6 +46,10 @@ parameters:
     description: URL of a mirror for operating system package download
     type: string
     default: ''
+  specific_config:
+    description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
+    type: string
+    default: ''
 
 resources:
   sec_group:
@@ -84,6 +88,7 @@ resources:
             $log_volume_id$: { get_resource: logvolume }
             $roles$: 'oozie_database,mysql_connector,hue'
             $cloudera_role$: 'MGR04'
+            $$SPECIFIC_CONF$$: { get_param: specific_config }
   install_deployment:
     type: OS::Heat::SoftwareDeployment
     depends_on: [ logvolume_attachment ]

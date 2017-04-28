@@ -4,6 +4,12 @@
 
 set -e
 
+declare -A conf=( )
+declare -A specific=( $$SPECIFIC_CONF$$ )
+
+# Override default configuration
+for key in "${!specific[@]}"; do conf[$key]="${specific[${key}]}"; done
+
 # built the white list ip address
 ## mirror ntp and dns servers are white listed
 MIRRORSERVER=$(echo '$pnda_mirror$' | awk -F/ '{print $3}' | awk -F: '{print $1}')
