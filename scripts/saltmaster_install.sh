@@ -18,7 +18,6 @@ DISTRO=$(cat /etc/*-release|grep ^ID\=|awk -F\= {'print $2'}|sed s/\"//g)
 # By default it's eth0
 VLAN=eth0
 
-
 # Install the saltmaster, plus saltmaster config
 if [ "x$DISTRO" == "xubuntu" ]; then
 rm -rf /etc/apt/sources.list.d/*
@@ -32,7 +31,6 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get -y install unzip=6.0-9ubuntu1.5 salt-minion=2015.8.11+ds-1 salt-master=2015.8.11+ds-1
 elif [ "x$DISTRO" == "xrhel" ]; then
-rm -rf /etc/yum.repos.d/*
 yum-config-manager --add-repo $pnda_mirror$/mirror_rpm
 rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-redhat-release
 rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-mysql
