@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - PNDA-2688: review pnda_env default values
 - PNDA-2819: fix issue on volume reference once create network is 0
 - PNDA-2883: Allow `keystone_auth_version` to be set in `pnda.yaml`
+- PNDA-2882: Only create package repo volume in standard flavour if the repo type is set to local
 
 ## [1.2.0] 2017-01-20
 ### Changed

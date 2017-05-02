@@ -100,7 +100,9 @@ resources:
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
             $log_volume_id$: { get_resource: logvolume }
+{%if package_repository_fs_type == 'local' %}
             $pr_volume_id$: { get_resource: prvolume }
+{%else%}
             $package_repository_fs_location_path$: { get_param: package_repository_fs_location_path }
             $package_repository_fs_type$: { get_param: package_repository_fs_type }
             $roles$: 'cloudera_edge,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,gobblin,deployment_manager,package_repository,data_service,impala-shell,yarn-gateway,hbase_opentsdb_tables,hdfs_cleaner,master_dataset'
@@ -120,7 +122,11 @@ resources:
 
   install_deployment:
     type: OS::Heat::SoftwareDeployment
+{%if package_repository_fs_type == 'local' %}
     depends_on: [ logvolume_attachment ,  prvolume_attachment, deploy_package]
+{%else%}
+    depends_on: [ logvolume_attachment , deploy_package]
+{%endif%}
     properties:
       signal_transport: { get_param: signal_transport }
       config:
@@ -140,6 +146,7 @@ resources:
     properties:
       size: { get_param: logvolume_size }
       description: Volume for edge logs
+{%if package_repository_fs_type == 'local' %}      
   prvolume:
     type: OS::Cinder::Volume
     properties:
@@ -150,7 +157,7 @@ resources:
     properties:
       volume_id: { get_resource: prvolume }
       instance_uuid: { get_resource: server }
-
+{%endif%}
   logvolume_attachment:
     type: OS::Cinder::VolumeAttachment
     properties:
