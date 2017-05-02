@@ -23,14 +23,6 @@ if [ "x$DISTRO" == "xubuntu" ]; then
 export DEBIAN_FRONTEND=noninteractive
 apt-get -y install unzip=6.0-9ubuntu1.5 salt-minion=2015.8.11+ds-1 salt-master=2015.8.11+ds-1
 elif [ "x$DISTRO" == "xrhel" ]; then
-yum-config-manager --add-repo $pnda_mirror$/mirror_rpm
-rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-redhat-release
-rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-mysql
-rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-cloudera
-rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-EPEL-7
-rpm --import $pnda_mirror$/mirror_rpm/SALTSTACK-GPG-KEY.pub
-rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-CentOS-7
-rpm --import $pnda_mirror$/mirror_rpm/NODESOURCE-GPG-SIGNING-KEY-EL
 yum -y install unzip-6.0-16.el7 salt-minion-2015.8.11-1.el7 salt-master-2015.8.11-1.el7
 fi
 

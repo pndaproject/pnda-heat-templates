@@ -17,14 +17,6 @@ if [ "x$DISTRO" == "xubuntu" ]; then
 export DEBIAN_FRONTEND=noninteractive
 apt-get -y install xfsprogs=3.1.9ubuntu2 salt-minion=2015.8.11+ds-1
 elif [ "x$DISTRO" == "xrhel" ]; then
-yum-config-manager --add-repo $pnda_mirror$/mirror_rpm
-rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-redhat-release
-rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-mysql
-rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-cloudera
-rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-EPEL-7
-rpm --import $pnda_mirror$/mirror_rpm/SALTSTACK-GPG-KEY.pub
-rpm --import $pnda_mirror$/mirror_rpm/RPM-GPG-KEY-CentOS-7
-rpm --import $pnda_mirror$/mirror_rpm/NODESOURCE-GPG-SIGNING-KEY-EL
 yum -y install xfsprogs-4.5.0-9.el7_3 wget-1.14-13.el7 salt-minion-2015.8.11-1.el7
 fi
 
