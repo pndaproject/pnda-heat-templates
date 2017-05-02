@@ -50,6 +50,8 @@ parameters:
     description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
     type: string
     default: ''
+  package_config:
+    type: string
 
 resources:
   sec_group:
@@ -88,9 +90,20 @@ resources:
             $roles$: 'cloudera_namenode,mysql_connector'
             $cloudera_role$: 'MGR01'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
+  deploy_package:
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      signal_transport: { get_param: signal_transport }
+      config:
+        get_param: package_config
+      server:
+        get_resource: server
+      actions:
+        - CREATE
+
   install_deployment:
     type: OS::Heat::SoftwareDeployment
-    depends_on: [ logvolume_attachment ]
+    depends_on: [ logvolume_attachment, deploy_package ]
     properties:
       signal_transport: { get_param: signal_transport }
       config:

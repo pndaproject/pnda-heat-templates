@@ -45,6 +45,8 @@ parameters:
     type: string
   pre_config:
     type: string
+  package_config:
+    type: string
 {%if create_zknodes_group is equalto 1 %}
   scheduler_group_hint:
     type: string
@@ -81,9 +83,20 @@ resources:
             $log_volume_id$: { get_resource: logvolume }
             $roles$: 'zookeeper'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
+  deploy_package:
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      signal_transport: { get_param: signal_transport }
+      config:
+        get_param: package_config
+      server:
+        get_resource: server
+      actions:
+        - CREATE
+
   install_deployment:
     type: OS::Heat::SoftwareDeployment
-    depends_on: [ logvolume_attachment ]
+    depends_on: [ logvolume_attachment, deploy_package ]
     properties:
       signal_transport: { get_param: signal_transport }
       config:

@@ -43,6 +43,8 @@ parameters:
     description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
     type: string
     default: ''
+  package_config:
+    type: string
 
 resources:
   sec_group:
@@ -76,6 +78,16 @@ resources:
       floating_network_id: { get_param: PublicNet }
       port_id: { get_resource: port}
 
+  deploy_package:
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      signal_transport: { get_param: signal_transport }
+      config:
+        get_param: package_config
+      server:
+        get_resource: server
+      actions:
+        - CREATE
   install_config:
     type: OS::Heat::SoftwareConfig
     properties:
@@ -94,7 +106,7 @@ resources:
             $$SPECIFIC_CONF$$: { get_param: specific_config }
   install_deployment:
     type: OS::Heat::SoftwareDeployment
-    depends_on: bastion_deployment
+    depends_on: [ bastion_deployment, deploy_package ]
     properties:
       signal_transport: { get_param: signal_transport }
       config:

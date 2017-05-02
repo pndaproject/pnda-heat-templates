@@ -14,15 +14,7 @@ for key in "${!specific[@]}"; do conf[$key]="${specific[${key}]}"; done
 DISTRO=$(cat /etc/*-release|grep ^ID\=|awk -F\= {'print $2'}|sed s/\"//g)
 
 if [ "x$DISTRO" == "xubuntu" ]; then
-rm -rf /etc/apt/sources.list.d/*
-rm -rf /etc/apt/sources.list
-touch /etc/apt/sources.list
-cat > /etc/apt/sources.list.d/local.list <<EOF
-  deb $pnda_mirror$/mirror_deb/ ./
-EOF
-wget -O - $pnda_mirror$/mirror_deb/pnda.gpg.key | apt-key add -
 export DEBIAN_FRONTEND=noninteractive
-apt-get update
 apt-get -y install xfsprogs=3.1.9ubuntu2 salt-minion=2015.8.11+ds-1
 elif [ "x$DISTRO" == "xrhel" ]; then
 yum-config-manager --add-repo $pnda_mirror$/mirror_rpm

@@ -20,15 +20,7 @@ VLAN=eth0
 
 # Install the saltmaster, plus saltmaster config
 if [ "x$DISTRO" == "xubuntu" ]; then
-rm -rf /etc/apt/sources.list.d/*
-rm -rf /etc/apt/sources.list
-touch /etc/apt/sources.list
-cat > /etc/apt/sources.list.d/local.list <<EOF
-  deb $pnda_mirror$/mirror_deb/ ./
-EOF
-wget -O - $pnda_mirror$/mirror_deb/pnda.gpg.key | apt-key add -
 export DEBIAN_FRONTEND=noninteractive
-apt-get update
 apt-get -y install unzip=6.0-9ubuntu1.5 salt-minion=2015.8.11+ds-1 salt-master=2015.8.11+ds-1
 elif [ "x$DISTRO" == "xrhel" ]; then
 yum-config-manager --add-repo $pnda_mirror$/mirror_rpm

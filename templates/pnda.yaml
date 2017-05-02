@@ -240,8 +240,18 @@ resources:
       keystone_auth_url: { get_param: keystone_auth_url }
       keystone_auth_version: { get_param: keystone_auth_version }
       platform_git_repo_uri: { get_param: platform_git_repo_uri }
-      platform_uri: { get_param: platform_uri } 
- 
+      platform_uri: { get_param: platform_uri }
+
+  package_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      config:
+        str_replace:
+          template: { get_file: scripts/package_install.sh }
+          params:
+            $pnda_mirror$: { get_param: PndaMirror }
+
   # A SoftwareConfig resource contains all the parameters used when provisioning PNDA
   install_config:
     type: OS::Heat::SoftwareConfig
@@ -285,7 +295,19 @@ resources:
             $pnda_archive_container$: { get_param: pnda_archive_container }
             $$SPECIFIC_CONF$$: { get_param: specific_config }
 
+  deploy_package:
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      signal_transport: { get_param: signal_transport }
+      config:
+        get_resource: package_config
+      server:
+        get_resource: saltmaster_server
+      actions:
+        - CREATE
+
   deploy_install:
+    depends_on: [deploy_package]
     type: OS::Heat::SoftwareDeployment
     properties:
       signal_transport: { get_param: signal_transport }

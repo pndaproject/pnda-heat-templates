@@ -103,6 +103,7 @@ resources:
       software_config_transport: { get_param: software_config_transport }
       pre_config: {get_resource: pre_config}
       specific_config: { get_param: specific_config }
+      package_config: {get_resource: package_config}
 
   saltmaster_server:
     type: OS::Nova::Server

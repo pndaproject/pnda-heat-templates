@@ -3,3 +3,4 @@ resource_registry:
   OS::Pnda::bastion: bastion.yaml
   OS::Pnda::kafka: kafka.yaml
   OS::Pnda::edge: edge.yaml
+  OS::Pnda::preConfig : OS::Heat::None

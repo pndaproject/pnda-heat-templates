@@ -56,6 +56,8 @@ parameters:
     default: POLL_TEMP_URL
   pre_config:
     type: string
+  package_config:
+    type: string
   PndaMirror:
     description: URL of a mirror for operating system package download
     type: string
@@ -89,14 +91,27 @@ resources:
             $pnda_cluster$: { get_param: cluster_name }
 {%if create_volumes is equalto 1 %}
             $log_volume_id$: { get_resource: logvolume }
-            $hdfs_volume_id$: { get_resource: volume }            
+            $hdfs_volume_id$: { get_resource: volume }
 {%endif%}
             $cloudera_role$: 'DATANODE'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
+  deploy_package:
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      signal_transport: { get_param: signal_transport }
+      config:
+        get_param: package_config
+      server:
+        get_resource: server
+      actions:
+        - CREATE
+
   install_deployment:
     type: OS::Heat::SoftwareDeployment
 {%if create_volumes is equalto 1 %}
-    depends_on: [ volume_attachment, logvolume_attachment ]
+    depends_on: [ deploy_package, volume_attachment, logvolume_attachment ]
+{%else%}
+    depends_on: [ deploy_package ]
 {%endif%}
     properties:
       signal_transport: { get_param: signal_transport }

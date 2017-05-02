@@ -48,6 +48,8 @@ parameters:
     description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
     type: string
     default: ''
+  package_config:
+    type: string
 
 resources:
 {%if create_network is equalto 1 %}
@@ -76,6 +78,16 @@ resources:
         - subnet_id: { get_param: PrivateSubnet }
       security_groups: [{ get_resource: sec_group }, { get_param: pnda_secgroup }]
 {%endif%}
+  deploy_package:
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      signal_transport: { get_param: signal_transport }
+      config:
+        get_param: package_config
+      server:
+        get_resource: server
+      actions:
+        - CREATE
   install_config:
     type: OS::Heat::SoftwareConfig
     properties:
@@ -97,7 +109,7 @@ resources:
   install_deployment:
     type: OS::Heat::SoftwareDeployment
 {%if create_volumes is equalto 1 %}
-    depends_on: [ logvolume_attachment ]
+    depends_on: [ logvolume_attachment, deploy_package ]
 {%endif%}
     properties:
       signal_transport: { get_param: signal_transport }

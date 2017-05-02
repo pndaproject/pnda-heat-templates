@@ -59,6 +59,8 @@ parameters:
     description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
     type: string
     default: ''
+  package_config:
+    type: string
 
 
 resources:
@@ -103,10 +105,23 @@ resources:
             $roles$: 'cloudera_edge,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,gobblin,deployment_manager,package_repository,data_service,impala-shell,yarn-gateway,hbase_opentsdb_tables,hdfs_cleaner,master_dataset,elk,logserver,kibana_dashboard,jupyter,cloudera_manager,platform_testing_cdh,mysql_connector,pnda_restart'
             $cloudera_role$: 'EDGE'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
+  deploy_package:
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      signal_transport: { get_param: signal_transport }
+      config:
+        get_param: package_config
+      server:
+        get_resource: server
+      actions:
+        - CREATE
+
   install_deployment:
     type: OS::Heat::SoftwareDeployment
 {%if create_volumes is equalto 1 %}
-    depends_on: [ logvolume_attachment ]
+    depends_on: [ logvolume_attachment ,  deploy_package]
+{%else%}
+    depends_on: [ deploy_package]
 {%endif%}
     properties:
       signal_transport: { get_param: signal_transport }

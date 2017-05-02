@@ -143,6 +143,8 @@ parameters:
     description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
     type: string
     default: ''
+  package_config:
+    type: string
 
 resources:
   MgrAAGroup:
@@ -273,6 +275,7 @@ resources:
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      package_config: { get_param: package_config }
       Flavor: { get_param: BastionFlavor }
       Image: { get_param: image_id }
       KeyName: { get_param: BastionKeyName }
@@ -302,6 +305,7 @@ resources:
           signal_transport: { get_param: signal_transport }
           software_config_transport: { get_param: software_config_transport }
           pre_config: { get_param: pre_config }
+          package_config: { get_param: package_config }
           Flavor: { get_param: ZookeeperFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }
@@ -333,6 +337,7 @@ resources:
           signal_transport: { get_param: signal_transport }
           software_config_transport: { get_param: software_config_transport }
           pre_config: { get_param: pre_config }
+          package_config: { get_param: package_config }
           Flavor: { get_param: KafkaFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }
@@ -364,6 +369,7 @@ resources:
           signal_transport: { get_param: signal_transport }
           software_config_transport: { get_param: software_config_transport }
           pre_config: { get_param: pre_config }
+          package_config: { get_param: package_config }
           Flavor: { get_param: ToolsFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }
@@ -388,6 +394,7 @@ resources:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
       pre_config: { get_param: pre_config }
+      package_config: { get_param: package_config }
       Flavor: { get_param: CMFlavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -410,6 +417,7 @@ resources:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
       pre_config: { get_param: pre_config }
+      package_config: { get_param: package_config }
       Flavor: { get_param: LogserverFlavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -432,6 +440,7 @@ resources:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
       pre_config: { get_param: pre_config }
+      package_config: { get_param: package_config }
       Flavor: { get_param: JupyterFlavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -454,6 +463,7 @@ resources:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
       pre_config: { get_param: pre_config }
+      package_config: { get_param: package_config }
       Flavor: { get_param: Manager1Flavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -477,6 +487,7 @@ resources:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
       pre_config: { get_param: pre_config }
+      package_config: { get_param: package_config }
       Flavor: { get_param: Manager2Flavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -500,6 +511,7 @@ resources:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
       pre_config: { get_param: pre_config }
+      package_config: { get_param: package_config }
       Flavor: { get_param: Manager3Flavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -522,6 +534,7 @@ resources:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
       pre_config: { get_param: pre_config }
+      package_config: { get_param: package_config }
       Flavor: { get_param: Manager4Flavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -545,6 +558,7 @@ resources:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
       pre_config: { get_param: pre_config }
+      package_config: { get_param: package_config }
       Flavor: { get_param: EdgeFlavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -571,6 +585,7 @@ resources:
           signal_transport: { get_param: signal_transport }
           software_config_transport: { get_param: software_config_transport }
           pre_config: { get_param: pre_config }
+          package_config: { get_param: package_config }
           Flavor: { get_param: DatanodeFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }
@@ -603,6 +618,7 @@ resources:
           signal_transport: { get_param: signal_transport }
           software_config_transport: { get_param: software_config_transport }
           pre_config: { get_param: pre_config }
+          package_config: { get_param: package_config }
           Flavor: { get_param: OpentsdbFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }

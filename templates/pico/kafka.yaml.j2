@@ -53,6 +53,8 @@ parameters:
     default: POLL_TEMP_URL
   pre_config:
     type: string
+  package_config:
+    type: string
   PndaMirror:
     description: URL of a mirror for operating system package download
     type: string
@@ -90,10 +92,23 @@ resources:
 {%endif%}
             $roles$: 'kafka,kafka_manager,platform_testing_general,elk,zookeeper'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
+  deploy_package:
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      signal_transport: { get_param: signal_transport }
+      config:
+        get_param: package_config
+      server:
+        get_resource: server
+      actions:
+        - CREATE
+
   install_deployment:
     type: OS::Heat::SoftwareDeployment
 {%if create_volumes is equalto 1 %}
-    depends_on: [ logvolume_attachment ]
+    depends_on: [ logvolume_attachment, deploy_package ]
+{%else%}
+    depends_on: [ deploy_package ]
 {%endif%}
     properties:
       signal_transport: { get_param: signal_transport }
