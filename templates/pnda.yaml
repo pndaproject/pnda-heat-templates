@@ -238,7 +238,6 @@ resources:
       PndaMirror: { get_param: PndaMirror }
       NtpServers: { get_param: NtpServers }
       keystone_auth_url: { get_param: keystone_auth_url }
-      keystone_auth_version: { get_param: keystone_auth_version }
       platform_git_repo_uri: { get_param: platform_git_repo_uri }
       platform_uri: { get_param: platform_uri }
 
