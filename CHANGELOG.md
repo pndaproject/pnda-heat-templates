@@ -16,6 +16,9 @@ All notable changes to this project will be documented in this file.
 - PNDA-2883: Allow `keystone_auth_version` to be set in `pnda.yaml`
 - PNDA-2882: Only create package repo volume in standard flavour if the repo type is set to local
 
+### Fixed
+- PNDA-2916: Make number of kafka nodes variable for pico flavour
+
 ## [1.2.0] 2017-01-20
 ### Changed
 - PNDA-2493: Align openstack and AWS flavors
