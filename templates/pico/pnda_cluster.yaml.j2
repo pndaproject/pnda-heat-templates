@@ -37,12 +37,14 @@ parameters:
   image_id:
     type: string
     description: default image for pnda servers
-
   DataNodes:
     default: '1'
     description: Number of DATA nodes
     type: string
-
+  KafkaNodes:
+    default: '1'
+    description: Number of KAFKA nodes
+    type: string
   DatanodeVolumeSize:
     default: 10
     type: number
@@ -167,7 +169,7 @@ resources:
   kafka:
     type: OS::Heat::ResourceGroup
     properties:
-      count: 1
+      count: { get_param: KafkaNodes }
       resource_def:
         type: OS::Pnda::kafka
         properties:
