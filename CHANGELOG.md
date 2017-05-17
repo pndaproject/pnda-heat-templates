@@ -6,10 +6,11 @@ All notable changes to this project will be documented in this file.
 - PNDA-3043: Added [mandatory] os_user parameter to pnda_env.yaml - the target platform specific operating system user/sudoer used to configure the cluster instances
 - PNDA-2456: Initial work to support for Redhat 7. Salt highstate and orchestrate run on a Redhat7 HEAT cluster with no errors but requires further testing and work.
 - PNDA-2801: Add support for bare-metal deployment using the bmstandard flavor. Add support for distribution flavor providing kafka only cluser. Add documentation for baremetal deployment.
-- Add an hypervisor_count setting in the pnda_env file to enable Anti-Affinity feature in PNDA.
+- Add an `hypervisor_count` setting in the `pnda_env` file to enable Anti-Affinity feature in PNDA.
 - Add ability to define a software config that applies a pre config script to all instances but bastion.
 - PNDA-2375: Isolate PNDA from breaking dependency changes
-- A 'specific_config' parameter to 'pnda_env.yaml' in order to pass parameters to bootstrap scripts and salt pillar, in a generic way
+- A `specific_config` parameter to `pnda_env.yaml` in order to pass parameters to bootstrap scripts and salt pillar, in a generic way
+- PNDA-2969: Allow hadoop distro to be set in `pnda_env.yaml`. Supported values are `HDP` and `CDH`.
 
 ### Changed
 - PNDA-2688: review pnda_env default values
@@ -17,6 +18,8 @@ All notable changes to this project will be documented in this file.
 - PNDA-2883: Allow `keystone_auth_version` to be set in `pnda.yaml`
 - PNDA-2882: Only create package repo volume in standard flavour if the repo type is set to local
 - fix issue on preconfig error as keystone auth version not needed
+- PNDA-2965: Rename `cloudera_*` role grains to `hadoop_*`
+- PNDA-2445: Support for Hortonworks HDP hadoop distro.
 
 ### Fixed
 - PNDA-2916: Make number of kafka nodes variable for pico flavour

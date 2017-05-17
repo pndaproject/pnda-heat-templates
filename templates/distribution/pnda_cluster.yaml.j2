@@ -174,7 +174,7 @@ resources:
       Image: { get_param: image_id }
       name:
         str_replace:
-          template: '%stackname%-cdh-edge'
+          template: '%stackname%-hadoop-edge'
           params:
             '%stackname%': { get_param: deployment_name }
 {%if create_network is equalto 1 %}

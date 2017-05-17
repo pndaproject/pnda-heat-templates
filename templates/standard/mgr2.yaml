@@ -60,7 +60,7 @@ resources:
       name:
         str_replace:
           template:
-            cname-cdh-mgr2
+            cname-hadoop-mgr2
           params:
             cname: { get_param: cluster_name }
       rules:
@@ -87,8 +87,8 @@ resources:
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
             $log_volume_id$: { get_resource: logvolume }
-            $roles$: 'cloudera_namenode,mysql_connector'
-            $cloudera_role$: 'MGR02'
+            $roles$: 'mysql_connector'
+            $hadoop_role$: 'MGR02'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
   deploy_package:
     type: OS::Heat::SoftwareDeployment

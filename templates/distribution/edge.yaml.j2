@@ -59,7 +59,7 @@ resources:
       name:
         str_replace:
           template:
-            cname-cdh-edge
+            cname-hadoop-edge
           params:
             cname: { get_param: cluster_name }
       rules:
@@ -103,7 +103,7 @@ resources:
 {%if create_volumes is equalto 1 %}
             $volume_dev$: { get_param: log_mountpoint }
 {%endif%}
-            $roles$: 'cloudera_edge,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,kafka_manager,elk,logserver,platform_testing_general,grafana,kibana_dashboard'
+            $roles$: 'hadoop_edge,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,kafka_manager,elk,logserver,platform_testing_general,grafana,kibana_dashboard'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
   install_deployment:
     type: OS::Heat::SoftwareDeployment
