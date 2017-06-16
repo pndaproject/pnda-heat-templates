@@ -33,12 +33,18 @@ parameter_defaults:
   name_servers: [ "173.38.200.100" ]
 
   #
-  # image_id: A a base image to use for the created instances. It should be created by 
+  # image_id: Base image to use for the created instances. It should be created by 
   # following the guide in https://github.com/pndaproject/pnda-dib-elements
   #
   image_id: pnda-base
   image_id_saltmaster: pnda-base
 
+  #
+  # os_user: Default sudo or root user for the instances created from the image above. 
+  # Often but not always 'cloud-user' on OpenStack platforms.
+  #
+  os_user: 'root'
+  
   # KEYSTONE CREDENTIALS
   
   #

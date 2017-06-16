@@ -99,6 +99,7 @@ fi
 
 # Push pillar config into platform-salt for environment specific config
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
+os_user: '$os_user$'
 keystone.user: '$keystone_user$'
 keystone.password: '$keystone_password$'
 keystone.tenant: '$keystone_tenant$'

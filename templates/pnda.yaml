@@ -88,7 +88,8 @@ parameters:
     description: AWS region
     type: string
     default: ''
-
+  os_user:
+    type: string
   keystone_user:
     type: string
   keystone_password:
@@ -280,6 +281,7 @@ resources:
             $S3_ACCESS_KEY_ID$: { get_param: S3_ACCESS_KEY_ID }
             $S3_SECRET_ACCESS_KEY$: { get_param: S3_SECRET_ACCESS_KEY }
             $AWS_REGION$: { get_param: AWS_REGION }
+            $os_user$: { get_param: os_user }
             $keystone_user$: { get_param: keystone_user }
             $keystone_password$: { get_param: keystone_password }
             $keystone_tenant$: { get_param: keystone_tenant }
@@ -427,6 +429,14 @@ outputs:
     description: Output of the Salt orchestrate command
     value:
       get_attr: [deploy_orchestrate, deploy_stdout]
+  salt_highstate_err:
+    description: Output of the Salt highstate command
+    value:
+      get_attr: [deploy_highstate, deploy_stderr]
+  salt_orchestrate_err:
+    description: Output of the Salt orchestrate command
+    value:
+      get_attr: [deploy_orchestrate, deploy_stderr]      
   install_stdout:
     value:
       get_attr: [deploy_install, deploy_stdout]
