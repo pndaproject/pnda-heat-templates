@@ -16,18 +16,20 @@ parameters:
   KeyName:
     description: Name of an existing ssh keypair
     type: string
-{%if create_network is equalto 1 %}
-  PrivateNet:
-    description: Private network for pnda deployment
-    type: string
-  PrivateSubnet:
+{% if neutron_network is equalto 1 %}
+  PndaNet:
     description: Private network for pnda deployment
     type: string
   pnda_secgroup:
     type: string
   sec_group:
-    type: string
-{%endif%}
+    type: string    
+{% if create_network is equalto 1 %}
+  PrivateSubnet:
+    description: Private network for pnda deployment
+    type: string   
+{% endif %}
+{% endif %}
   Image:
     type: string
   name:
@@ -65,15 +67,18 @@ parameters:
     default: ''
 
 resources:
-{%if create_network is equalto 1 %}
+{% if neutron_network is equalto 1 %}
   port:
     type: OS::Neutron::Port
     properties:
-      network: { get_param: PrivateNet }
+      network: { get_param: PndaNet }
+      security_groups: [{ get_param: sec_group }, { get_param: pnda_secgroup }]      
+{% if create_network is equalto 1 %}      
       fixed_ips:
         - subnet_id: { get_param: PrivateSubnet }
-      security_groups: [{ get_param: sec_group }, { get_param: pnda_secgroup }]
-{%endif%}
+{% endif %}
+{% endif %}
+
   install_config:
     type: OS::Heat::SoftwareConfig
     properties:
@@ -138,7 +143,7 @@ resources:
       image: { get_param: Image }
       flavor: { get_param: Flavor }
       key_name: { get_param: KeyName }
-{%if create_network is equalto 1 %}
+{%if neutron_network is equalto 1 %} 
       networks:
         - port: { get_resource: port }
 {%endif%}

@@ -69,26 +69,30 @@ resources:
 
   pnda_cluster:
     type: OS::Pnda::cluster
-  {%if create_network is equalto 1 %}
+{% if create_network is equalto 1 %}
     depends_on: [ router_interface, deploy_install, saltmaster_server ]
-  {%else%}
+{% else %}
     depends_on: [ deploy_install, saltmaster_server ]
-  {%endif%}
+{% endif %}
+
     properties:
-  {%if create_network is equalto 1 %}
-      private_net: { get_resource: private_net }
-      private_subnet: { get_resource: private_subnet }
-  {%endif%}
-      git_private_key_file: { get_param: git_private_key_file }
-      SaltmasterIP: { get_attr: ['saltmaster_server','first_address']}
-  {%if create_network is equalto 1 %}
-      public_net: { get_param: public_net }
+{% if neutron_network is equalto 1 %}      
       KeyName: { get_resource: Key }
       PndaSecGroup: { get_resource: PndaSecGroup }
       private_key: { get_attr: ['Key','private_key'] }
-  {%else%}
+{% if create_network is equalto 1 %}
+      pnda_net: { get_resource: private_net }
+      private_subnet: { get_resource: private_subnet }
+      public_net: { get_param: public_net }      
+{% else %}
+      pnda_net: { get_param: deployment_net }
+{% endif %}
+{% else %}
       KeyName: { get_param: KeyName }
-  {%endif%}
+{% endif %}
+  
+      git_private_key_file: { get_param: git_private_key_file }
+      SaltmasterIP: { get_attr: ['saltmaster_server','first_address']}  
       BastionKeyName: { get_param: KeyName }
       deployment_name: { get_param: 'OS::stack_name' }
       image_id: { get_param: image_id }
@@ -108,19 +112,19 @@ resources:
 
   saltmaster_server:
     type: OS::Nova::Server
-  {%if create_network is equalto 1 %}
+{% if create_network is equalto 1 %}
     depends_on: [ router, private_subnet ]
-  {%endif%}
+{% endif %}
     properties:
       image: { get_param: image_id }
       flavor: { get_param: SaltmasterFlavor }
-  {%if create_network is equalto 1 %}
+{% if neutron_network is equalto 1 %}
       key_name: { get_resource: Key }
       networks:
         - port: { get_resource: saltmaster_port }
-  {%else%}
+{% else %}
       key_name: { get_param: KeyName }
-  {%endif%}
+{% endif %}
       name:
         str_replace:
           template: '%stackname%-saltmaster'

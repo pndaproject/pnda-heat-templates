@@ -19,6 +19,10 @@ parameters:
   image_id:
     type: string
     description: default image for pnda servers
+  deployment_net:
+    type: string
+    description: >
+      ID or name of network to use for PNDA if not creating a dedicated Neutron network 
   public_net:
     type: string
     description: >
@@ -143,15 +147,8 @@ parameters:
     default: ''
 
 resources:
-  # A keypair is created for this stack and used to secure login for all instances
-  # on the private network
-{%if create_network is equalto 1 %}
-  Key:
-    type: OS::Nova::KeyPair
-    properties:
-      save_private_key: true
-      name: { get_param: 'OS::stack_name' }
 
+{% if create_network is equalto 1 %}
   # A private network is created for the PNDA instances
   private_net:
     type: OS::Neutron::Net
@@ -201,9 +198,16 @@ resources:
         - remote_mode: remote_group_id
           protocol: tcp
           port_range_min: 1
-          port_range_max: 65535
+          port_range_max: 65535          
+{% endif %}
 
-
+{%if neutron_network is equalto 1 %}
+  Key:
+    type: OS::Nova::KeyPair
+    properties:
+      save_private_key: true
+      name: { get_param: 'OS::stack_name' }
+      
   saltmaster_sec_group:
     type: OS::Neutron::SecurityGroup
     properties:
@@ -224,13 +228,18 @@ resources:
           protocol: tcp
           port_range_min: 4505
           port_range_max: 4506
+          
   saltmaster_port:
     type: OS::Neutron::Port
     properties:
+{% if create_network is equalto 1 %}    
       network: { get_resource: private_net }
       fixed_ips:
         - subnet_id: { get_resource: private_subnet }
-      security_groups: [{ get_resource: saltmaster_sec_group }, { get_resource: PndaSecGroup }]
+{% else %}
+      network: { get_param: deployment_net }
+{% endif %}
+      security_groups: [{ get_resource: saltmaster_sec_group }, { get_resource: PndaSecGroup }]      
 {% endif %}
 
   pre_config:
@@ -270,7 +279,7 @@ resources:
             $git_branch$: { get_param: GitBranch }
             $ntp_servers$: { get_param: NtpServers }
             $package_repository_fs_type$ : {{ package_repository_fs_type }}
-            $package_repository_fs_location_path$: { get_param: package_repository_fs_location_path }
+            $package_repository_fs_location_path$: { get_param: package_repository_fs_location_path }            
 {%if package_repository_fs_type == 'sshfs' %}
             $package_repository_sshfs_user$: { get_param: package_repository_sshfs_user }
             $package_repository_sshfs_host$: { get_param: package_repository_sshfs_host }
@@ -410,12 +419,14 @@ resources:
             deployment_id: { get_param: DeploymentID }
 
 outputs:
-{%if create_network is equalto 1 %}
+
+{% if neutron_network is equalto 1 %}
   private_key:
     value: { get_attr: [Key, private_key]}
     description: |
       The dynamically created keypair's private key value
 {% endif %}
+
   DeploymentID:
     value: { get_param: DeploymentID }
     description: |

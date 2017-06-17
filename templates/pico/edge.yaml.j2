@@ -16,16 +16,18 @@ parameters:
   KeyName:
     description: Name of an existing ssh keypair
     type: string
-{%if create_network is equalto 1 %}
-  PrivateNet:
-    description: Private network for pnda deployment
-    type: string
-  PrivateSubnet:
+{% if neutron_network is equalto 1 %}
+  PndaNet:
     description: Private network for pnda deployment
     type: string
   pnda_secgroup:
     type: string
-{%endif%}
+{% if create_network is equalto 1 %}
+  PrivateSubnet:
+    description: Private network for pnda deployment
+    type: string    
+{% endif %}
+{% endif %}
   Image:
     type: string
   name:
@@ -64,7 +66,7 @@ parameters:
 
 
 resources:
-{%if create_network is equalto 1 %}
+{% if neutron_network is equalto 1 %}
   sec_group:
     type: OS::Neutron::SecurityGroup
     properties:
@@ -86,7 +88,18 @@ resources:
           protocol: tcp
           port_range_min: 8888
           port_range_max: 8888
-{%endif%}
+
+  port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: PndaNet }
+      security_groups: [{ get_resource: sec_group }, { get_param: pnda_secgroup }]
+{% if create_network is equalto 1 %}
+      fixed_ips:
+        - subnet_id: { get_param: PrivateSubnet }
+{% endif %}
+{% endif %}
+
   install_config:
     type: OS::Heat::SoftwareConfig
     properties:
@@ -130,15 +143,6 @@ resources:
       server:
         get_resource: server
 
-{%if create_network is equalto 1 %}
-  port:
-    type: OS::Neutron::Port
-    properties:
-      network: { get_param: PrivateNet }
-      fixed_ips:
-        - subnet_id: { get_param: PrivateSubnet }
-      security_groups: [{ get_resource: sec_group }, { get_param: pnda_secgroup }]
-{%endif%}
 {%if create_volumes is equalto 1 %}
   logvolume:
     type: OS::Cinder::Volume
@@ -159,10 +163,10 @@ resources:
       image: { get_param: Image }
       flavor: { get_param: Flavor }
       key_name: { get_param: KeyName }
-{%if create_network is equalto 1 %}
-      networks: [{ network: {get_param: PrivateNet}}]
-      security_groups: [{ get_resource: sec_group }, { get_param: pnda_secgroup }]
-{%endif%}
+{% if neutron_network is equalto 1 %} 
+      networks:
+        - port: { get_resource: port }  
+{% endif %}
       software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
       user_data: { get_param: pre_config }

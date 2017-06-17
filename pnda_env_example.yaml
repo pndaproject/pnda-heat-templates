@@ -2,7 +2,12 @@ parameter_defaults:
   # NETWORK CONFIGURATION
   
   #
-  # public_net: UUID of the public network in openstack to use
+  # UUID of network to use for PNDA if not creating a dedicated Neutron network
+  #
+  deployment_net: 783b8b22-84e8-4352-ae68-b3722d3a070b
+  
+  #
+  # public_net: UUID of the public network to use for floating IPs if creating a dedicated Neutron network
   #
   public_net: 5982b761-802a-4af3-9c0b-c3b457559179
   
