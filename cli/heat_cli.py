@@ -150,7 +150,7 @@ def setup_flavor_templates(flavor, cname, is_bare, fs_type, zknodes, kafkanodes,
         template_vars['create_bastion'] = 0
     else:
         template_vars['neutron_network'] = 1
-        template_vars['create_network'] = 1
+        template_vars['create_network'] = 0
         template_vars['create_volumes'] = 1
         template_vars['create_bastion'] = 1
 
