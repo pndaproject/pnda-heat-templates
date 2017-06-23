@@ -64,12 +64,10 @@ parameters:
   private_subnet:
     type: string
 {%endif%}
-
 {%if neutron_network is equalto 1 %}
   pnda_net:
     type: string
 {%endif%}
-
   KeyName:
     description: Name of an existing KeyPair to enable SSH access to the instances
     type: string
@@ -82,7 +80,7 @@ parameters:
     default: standard
   SaltmasterIP:
     type: string
-{%if (create_network is equalto 1) or (attach_network is equalto 1) %}
+{%if neutron_network is equalto 1 %}
   PndaSecGroup:
     type: string
   private_key:
