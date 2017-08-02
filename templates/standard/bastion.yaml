@@ -43,6 +43,8 @@ parameters:
     description: URL of a mirror for operating system package download
     type: string
     default: ''
+  os_user:
+    type: string
   specific_config:
     description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
     type: string
@@ -129,6 +131,7 @@ resources:
           params:
             $private_key$: { get_param: private_key }
             $keyname$: { get_param: 'OS::stack_name' }
+            $os_user$: { get_param: os_user }
             $$SPECIFIC_CONF$$: { get_param: specific_config }
   bastion_deployment:
     type: OS::Heat::SoftwareDeployment
