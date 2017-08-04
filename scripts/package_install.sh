@@ -12,10 +12,10 @@ if [ "x$DISTRO" == "xubuntu" ]; then
   sed -i "1ideb $PNDA_MIRROR/mirror_deb/ ./" /etc/apt/sources.list
   echo "PNDA update done on apt source list to add $PNDA_MIRROR" >> /var/log/cloud-init.log
   cp /etc/apt/sources.list /tmp/apt.sources.list.apres
-  MIRROR_HOST=$(echo $PNDA_MIRROR | awk -F'[/:]' '/http:\/\//{print $4}')
-  echo "Package: *" > /etc/apt/preferences
-  echo "Pin: origin \"$MIRROR_HOST\"" >> /etc/apt/preferences
-  echo "Pin-Priority: 999" >> /etc/apt/preferences
+  #MIRROR_HOST=$(echo $PNDA_MIRROR | awk -F'[/:]' '/http:\/\//{print $4}')
+  #echo "Package: *" > /etc/apt/preferences
+  #echo "Pin: origin \"$MIRROR_HOST\"" >> /etc/apt/preferences
+  #echo "Pin-Priority: 999" >> /etc/apt/preferences
   wget -O - $PNDA_MIRROR/mirror_deb/pnda.gpg.key | apt-key add -
   (curl -L 'https://archive.cloudera.com/cm5/ubuntu/trusty/amd64/cm/archive.key' | apt-key add - ) && echo 'deb [arch=amd64] https://archive.cloudera.com/cm5/ubuntu/trusty/amd64/cm/ trusty-cm5.9.0 contrib' > /etc/apt/sources.list.d/cloudera-manager.list
   (curl -L 'http://repo.saltstack.com/apt/ubuntu/14.04/amd64/archive/2015.8.11/SALTSTACK-GPG-KEY.pub' | apt-key add - ) && echo 'deb [arch=amd64] http://repo.saltstack.com/apt/ubuntu/14.04/amd64/archive/2015.8.11/ trusty main' > /etc/apt/sources.list.d/saltstack.list
