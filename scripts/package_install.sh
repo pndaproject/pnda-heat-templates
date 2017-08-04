@@ -9,6 +9,8 @@ if [ "x$DISTRO" == "xubuntu" ]; then
   # give the local mirror the first priority 
   cp /etc/apt/sources.list /tmp/apt.sources.list.avant
   echo "deb $PNDA_MIRROR/mirror_deb/ ./" > /etc/apt/sources.list.d/pnda.list
+  sed -i "1ideb $PNDA_MIRROR/mirror_deb/ ./" /etc/apt/sources.list
+  echo "PNDA update done on apt source list to add $PNDA_MIRROR" >> /var/log/cloud-init.log
   cp /etc/apt/sources.list /tmp/apt.sources.list.apres
   MIRROR_HOST=$(echo $PNDA_MIRROR | awk -F'[/:]' '/http:\/\//{print $4}')
   echo "Package: *" > /etc/apt/preferences
