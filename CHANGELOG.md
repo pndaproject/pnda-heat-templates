@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 - PNDA-2819: fix issue on volume reference once create network is 0
 - PNDA-2883: Allow `keystone_auth_version` to be set in `pnda.yaml`
 - PNDA-2882: Only create package repo volume in standard flavour if the repo type is set to local
+- PNDA-3167: change flavor to m4 in order to be align with the PNDA guide and AWS templates
 - fix issue on preconfig error as keystone auth version not needed
 
 ### Fixed
