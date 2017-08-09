@@ -2,20 +2,20 @@
 # PNDA instance type
 
 parameter_defaults:
-  CMFlavor: ec2.m3.xlarge
-  Manager1Flavor: ec2.m3.2xlarge
-  Manager2Flavor: ec2.m3.2xlarge
-  Manager3Flavor: ec2.m3.2xlarge
-  Manager4Flavor: ec2.m3.2xlarge
-  LogserverFlavor: ec2.m3.large
+  CMFlavor: ec2.m4.xlarge
+  Manager1Flavor: ec2.m4.2xlarge
+  Manager2Flavor: ec2.m4.2xlarge
+  Manager3Flavor: ec2.m4.2xlarge
+  Manager4Flavor: ec2.m4.2xlarge
+  LogserverFlavor: ec2.m4.large
   EdgeFlavor: ec2.t2.medium
-  JupyterFlavor: ec2.m3.large
-  OpentsdbFlavor: ec2.m3.xlarge
-  ToolsFlavor: ec2.m3.large
-  ZookeeperFlavor: ec2.m3.large
-  KafkaFlavor: ec2.m3.xlarge
+  JupyterFlavor: ec2.m4.large
+  OpentsdbFlavor: ec2.m4.xlarge
+  ToolsFlavor: ec2.m4.large
+  ZookeeperFlavor: ec2.m4.large
+  KafkaFlavor: ec2.m4.xlarge
   DatanodeFlavor: ec2.m4.2xlarge
   BastionFlavor: ec2.t2.medium
-  SaltmasterFlavor: ec2.m3.large
+  SaltmasterFlavor: ec2.m4.large
   DatanodeVolumeSize: 1024
   PndaFlavor: standard

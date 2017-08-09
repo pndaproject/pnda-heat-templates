@@ -1,28 +1,52 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+
 ## [Unreleased]
-### Added
-- PNDA-3043: Added [mandatory] os_user parameter to pnda_env.yaml - the target platform specific operating system user/sudoer used to configure the cluster instances
-- PNDA-2456: Initial work to support for Redhat 7. Salt highstate and orchestrate run on a Redhat7 HEAT cluster with no errors but requires further testing and work.
-- PNDA-2801: Add support for bare-metal deployment using the bmstandard flavor. Add support for distribution flavor providing kafka only cluser. Add documentation for baremetal deployment.
-- Add an `hypervisor_count` setting in the `pnda_env` file to enable Anti-Affinity feature in PNDA.
-- Add ability to define a software config that applies a pre config script to all instances but bastion.
-- PNDA-2375: Isolate PNDA from breaking dependency changes
-- A `specific_config` parameter to `pnda_env.yaml` in order to pass parameters to bootstrap scripts and salt pillar, in a generic way
+### Added:
 - PNDA-2969: Allow hadoop distro to be set in `pnda_env.yaml`. Supported values are `HDP` and `CDH`.
 
 ### Changed
-- PNDA-2688: review pnda_env default values
-- PNDA-2819: fix issue on volume reference once create network is 0
-- PNDA-2883: Allow `keystone_auth_version` to be set in `pnda.yaml`
-- PNDA-2882: Only create package repo volume in standard flavour if the repo type is set to local
-- fix issue on preconfig error as keystone auth version not needed
 - PNDA-2965: Rename `cloudera_*` role grains to `hadoop_*`
-- PNDA-2445: Support for Hortonworks HDP hadoop distro.
+
+## [1.3.0] 2017-08-01
+### Added
+- PNDA-3043: Added [mandatory] os_user parameter to pnda_env.yaml - the target platform specific operating system user/sudoer used to configure the cluster instances
+- PNDA-2375: Isolate PNDA from breaking dependency changes
+- PNDA-2456: Initial work to support for Redhat 7. Salt highstate and orchestrate run on a Redhat7 HEAT cluster with no errors but requires further testing and work
+- PNDA-2680 adding extra index url in pip configuration
+- PNDA-2708: Add pip index URL in order to enable offline installation
+- PNDA-2709: Allow offline installation of ubuntu and redhat packages
+- PNDA-2801: Add support for bare-metal deployment using the bmstandard flavor. Add support for distribution flavor providing kafka only cluser. Add documentation for baremetal deployment.
+- PNDA-2801: Add offline support for distribution flavor
+- PNDA-2878 Isolate PNDA from breaking dependency
+- Add an hypervisor_count setting in the pnda_env file to enable Anti-Affinity feature in PNDA.
+- Add ability to define a software config that applies a pre config script to all instances but bastion.
+- A 'specific_config' parameter to 'pnda_env.yaml' in order to pass parameters to bootstrap scripts and salt pillar, in a generic way
+- Example instackenv.json for bare metal
+- Add code to make Salt-master listen on a specific VLAN interface
+- Add functionality to simulate offline deployment and support pico flavor
+- Add online fallback for yum
+
+### Changed
+- PNDA-2446: Place PNDA packages in root of PNDA_MIRROR
+- PNDA-2688: review pnda_env default values
+- PNDA-2691: Use GPG key for nodejs repo
+- PNDA-2696: Use PNDA_MIRROR for misc files
+- PNDA-2717: Rename mirror paths
+- PNDA-2819: fix issue on volume reference once create network is 0
+- PNDA-2882: Only create package repo volume in standard flavour if the repo type is set to local
+- PNDA-2883: Allow `keystone_auth_version` to be set in `pnda.yaml`
+- PNDA-3167: change flavor to m4 in order to be align with the PNDA guide and AWS templates
+- fix issue on preconfig error as keystone auth version not needed
+- Use 'requests' instead of 'tornado' to download files in salt
+- Make saltmaster listen on eth0 by default
+- Prioritize local mirror over original repo
 
 ### Fixed
+- PNDA-2804: Remove unused cloudera role on kafka instance
 - PNDA-2916: Make number of kafka nodes variable for pico flavour
+- PNDA-2833: pylint fixes
 
 ## [1.2.0] 2017-01-20
 ### Changed
