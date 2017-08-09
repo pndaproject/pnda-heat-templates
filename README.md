@@ -414,16 +414,16 @@ Examining the provisioned instances :
 ```sh
 $ nova list | grep cation
 | 61f96b51-264a-4e76-8b2b-d0d287f24be8 | cation-lab-0-bastion     | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.18, 10.60.18.34 |
-| e8091ceb-222f-4d91-b5bf-04943da01558 | cation-lab-0-cdh-cm      | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.19              |
-| 953c4e1e-6671-49ee-aced-838547f71514 | cation-lab-0-cdh-dn-0    | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.31              |
-| af64183c-e674-4824-8fb0-bcaf193e7ea7 | cation-lab-0-cdh-dn-1    | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.35              |
-| a802878e-32a9-49fe-9d6a-3b431d6f888c | cation-lab-0-cdh-dn-2    | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.36              |
-| a6d86587-04ca-4385-8871-faf3fd67061b | cation-lab-0-cdh-edge    | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.24              |
-| 22c6fcd0-ebfe-4bd9-ae48-401f6a83dcbb | cation-lab-0-cdh-jupyter | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.20              |
-| 35987268-b218-4f46-9fa1-6a81ea7a982a | cation-lab-0-cdh-mgr1    | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.17              |
-| 7c9f25d8-ee58-4d43-9177-d0a40e19b6c6 | cation-lab-0-cdh-mgr2    | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.16              |
-| a7411e57-34b0-4d87-ad62-1d1b471cfe5e | cation-lab-0-cdh-mgr3    | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.14              |
-| eebf2ac7-d25e-49db-8b70-78c3b7c49774 | cation-lab-0-cdh-mgr4    | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.15              |
+| e8091ceb-222f-4d91-b5bf-04943da01558 | cation-lab-0-hadoop-cm      | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.19              |
+| 953c4e1e-6671-49ee-aced-838547f71514 | cation-lab-0-hadoop-dn-0    | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.31              |
+| af64183c-e674-4824-8fb0-bcaf193e7ea7 | cation-lab-0-hadoop-dn-1    | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.35              |
+| a802878e-32a9-49fe-9d6a-3b431d6f888c | cation-lab-0-hadoop-dn-2    | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.36              |
+| a6d86587-04ca-4385-8871-faf3fd67061b | cation-lab-0-hadoop-edge    | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.24              |
+| 22c6fcd0-ebfe-4bd9-ae48-401f6a83dcbb | cation-lab-0-hadoop-jupyter | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.20              |
+| 35987268-b218-4f46-9fa1-6a81ea7a982a | cation-lab-0-hadoop-mgr1    | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.17              |
+| 7c9f25d8-ee58-4d43-9177-d0a40e19b6c6 | cation-lab-0-hadoop-mgr2    | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.16              |
+| a7411e57-34b0-4d87-ad62-1d1b471cfe5e | cation-lab-0-hadoop-mgr3    | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.14              |
+| eebf2ac7-d25e-49db-8b70-78c3b7c49774 | cation-lab-0-hadoop-mgr4    | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.15              |
 | fcb087ab-789f-4a13-891a-71ac70fc2b3f | cation-lab-0-collector   | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.38, 10.60.18.57 |
 | e7941b24-dec3-405c-b61d-cbedd315b0c8 | cation-lab-0-kafka-0     | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.25              |
 | b3ba4c44-939d-4fc4-bc88-c2657ffafc52 | cation-lab-0-kafka-1     | ACTIVE | -          | Running     | cation-lab-0-net=192.168.10.23              |

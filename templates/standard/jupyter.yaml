@@ -56,7 +56,7 @@ resources:
       name:
         str_replace:
           template:
-            cname-cdh-jupyter
+            cname-hadoop-jupyter
           params:
             cname: { get_param: cluster_name }
       rules:
@@ -82,7 +82,7 @@ resources:
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
             $roles$: 'jupyter'
-            $cloudera_role$: 'EDGE'
+            $hadoop_role$: 'EDGE'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
   deploy_package:
     type: OS::Heat::SoftwareDeployment

@@ -82,6 +82,11 @@ parameter_defaults:
   keystone_region_name: 'regionOne'
 
   #
+  # hadoop_distro: The distribution of hadoop to install.
+  #  
+  hadoop_distro: 'CDH'
+
+  #
   # pnda_archive_container: Swift container for PNDA to use when archiving data
   #  
   pnda_archive_container:  'pnda_archive'

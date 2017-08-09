@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+
+## [Unreleased]
+### Added:
+- PNDA-2969: Allow hadoop distro to be set in `pnda_env.yaml`. Supported values are `HDP` and `CDH`.
+
+### Changed
+- PNDA-2965: Rename `cloudera_*` role grains to `hadoop_*`
+
 ## [1.3.0] 2017-08-01
 ### Added
 - PNDA-3043: Added [mandatory] os_user parameter to pnda_env.yaml - the target platform specific operating system user/sudoer used to configure the cluster instances
@@ -19,6 +27,7 @@ All notable changes to this project will be documented in this file.
 - Add code to make Salt-master listen on a specific VLAN interface
 - Add functionality to simulate offline deployment and support pico flavor
 - Add online fallback for yum
+
 ### Changed
 - PNDA-2446: Place PNDA packages in root of PNDA_MIRROR
 - PNDA-2688: review pnda_env default values
@@ -33,6 +42,7 @@ All notable changes to this project will be documented in this file.
 - Use 'requests' instead of 'tornado' to download files in salt
 - Make saltmaster listen on eth0 by default
 - Prioritize local mirror over original repo
+
 ### Fixed
 - PNDA-2804: Remove unused cloudera role on kafka instance
 - PNDA-2916: Make number of kafka nodes variable for pico flavour

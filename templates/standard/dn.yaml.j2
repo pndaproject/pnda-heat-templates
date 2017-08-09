@@ -85,7 +85,7 @@ resources:
             $pnda_cluster$: { get_param: cluster_name }
             $log_volume_id$: { get_resource: logvolume }
             $hdfs_volume_id$: { get_resource: volume }
-            $cloudera_role$: 'DATANODE'
+            $hadoop_role$: 'DATANODE'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
   deploy_package:
     type: OS::Heat::SoftwareDeployment

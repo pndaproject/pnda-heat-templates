@@ -58,10 +58,10 @@ pnda:
 pnda_cluster: $pnda_cluster$
 EOF
 
-if [ "$cloudera_role$" != "$" ]; then
+if [ "$hadoop_role$" != "$" ]; then
   cat >> /etc/salt/grains <<EOF
-cloudera:
-  role: $cloudera_role$
+hadoop:
+  role: $hadoop_role$
 EOF
 fi
 

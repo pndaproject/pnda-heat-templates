@@ -403,7 +403,7 @@ resources:
       KeyName: { get_param: KeyName }
       name:
         str_replace:
-          template: '%stackname%-cdh-cm'
+          template: '%stackname%-hadoop-cm'
           params:
             '%stackname%': { get_param: deployment_name }
       PrivateNet: { get_param: private_net }
@@ -449,7 +449,7 @@ resources:
       KeyName: { get_param: KeyName }
       name:
         str_replace:
-          template: '%stackname%-cdh-jupyter'
+          template: '%stackname%-hadoop-jupyter'
           params:
             '%stackname%': { get_param: deployment_name }
       PrivateNet: { get_param: private_net }
@@ -472,7 +472,7 @@ resources:
       KeyName: { get_param: KeyName }
       name:
         str_replace:
-          template: '%stackname%-cdh-mgr1'
+          template: '%stackname%-hadoop-mgr1'
           params:
             '%stackname%': { get_param: deployment_name }
       PrivateNet: { get_param: private_net }
@@ -496,7 +496,7 @@ resources:
       KeyName: { get_param: KeyName }
       name:
         str_replace:
-          template: '%stackname%-cdh-mgr2'
+          template: '%stackname%-hadoop-mgr2'
           params:
             '%stackname%': { get_param: deployment_name }
       PrivateNet: { get_param: private_net }
@@ -520,7 +520,7 @@ resources:
       KeyName: { get_param: KeyName }
       name:
         str_replace:
-          template: '%stackname%-cdh-mgr3'
+          template: '%stackname%-hadoop-mgr3'
           params:
             '%stackname%': { get_param: deployment_name }
       PrivateNet: { get_param: private_net }
@@ -543,7 +543,7 @@ resources:
       KeyName: { get_param: KeyName }
       name:
         str_replace:
-          template: '%stackname%-cdh-mgr4'
+          template: '%stackname%-hadoop-mgr4'
           params:
             '%stackname%': { get_param: deployment_name }
       PrivateNet: { get_param: private_net }
@@ -567,7 +567,7 @@ resources:
       KeyName: { get_param: KeyName }
       name:
         str_replace:
-          template: '%stackname%-cdh-edge'
+          template: '%stackname%-hadoop-edge'
           params:
             '%stackname%': { get_param: deployment_name }
       PrivateNet: { get_param: private_net }
@@ -594,7 +594,7 @@ resources:
           KeyName: { get_param: KeyName }
           name:
             str_replace:
-              template: '%stackname%-cdh-dn-%index%'
+              template: '%stackname%-hadoop-dn-%index%'
               params:
                 '%stackname%': { get_param: deployment_name }
           NodeIndex: '%index%'
