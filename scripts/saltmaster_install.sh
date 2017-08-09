@@ -6,13 +6,31 @@
 
 set -ex
 
+declare -A conf=( )
+declare -A specific=( $$SPECIFIC_CONF$$ )
+
+# Override default configuration
+for key in "${!specific[@]}"; do conf[$key]="${specific[${key}]}"; done
+
+DISTRO=$(cat /etc/*-release|grep ^ID\=|awk -F\= {'print $2'}|sed s/\"//g)
+
+# VLAN interface on which saltmaster will listen
+# By default it's eth0
+VLAN=eth0
+
 # Install the saltmaster, plus saltmaster config
+if [ "x$DISTRO" == "xubuntu" ]; then
 export DEBIAN_FRONTEND=noninteractive
-apt-get update && apt-get -y install python-pip
-apt-get -y install python-git
-wget -O install_salt.sh https://bootstrap.saltstack.com
-sh install_salt.sh -D -U -M stable 2015.8.11
-apt-get -y install unzip
+apt-get -y install unzip=6.0-9ubuntu1.5 salt-minion=2015.8.11+ds-1 salt-master=2015.8.11+ds-1
+elif [ "x$DISTRO" == "xrhel" ]; then
+yum -y install unzip-6.0-16.el7 salt-minion-2015.8.11-1.el7 salt-master-2015.8.11-1.el7
+fi
+
+get_interface_ip () {
+    iface=$1
+
+    ip -f inet -o addr show ${iface} | cut -d' ' -f 7 | cut -d'/' -f 1
+}
 
 cat << EOF > /etc/salt/master
 ## specific PNDA saltmaster config
@@ -48,6 +66,12 @@ file_recv: True
 failhard: True
 EOF
 
+if [ -n "${VLAN}" ]; then
+    listen_ip=$(get_interface_ip ${VLAN})
+    echo "# Only listen on ${listen_ip} which is on VLAN interface: ${VLAN}" >> /etc/salt/master
+    echo "interface: ${listen_ip}" >> /etc/salt/master
+fi
+
 # Set up ssh access to the platform-salt git repo
 # if secure access is required this key will be used automatically.
 # This mode is not normally used now the public github is available
@@ -75,37 +99,36 @@ fi
 
 # Push pillar config into platform-salt for environment specific config
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
+os_user: '$os_user$'
 keystone.user: '$keystone_user$'
 keystone.password: '$keystone_password$'
 keystone.tenant: '$keystone_tenant$'
 keystone.auth_url: '$keystone_auth_url$'
+keystone.auth_version: '$keystone_auth_version$'
 keystone.region_name: '$keystone_region_name$'
 pnda.apps_container: '$pnda_apps_container$'
 pnda.apps_folder: '$pnda_apps_folder$'
 pnda.archive_container: '$pnda_archive_container$'
 EOF
 
-if [ "x$java_mirror$" != "x" ] ; then
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
-java:
-  source_url: '$java_mirror$'
-EOF
-fi
+pnda_mirror:
+  base_url: '$pnda_mirror$'
+  misc_packages_path: /mirror_misc/
 
-if [ "x$cloudera_mirror$" != "x" ] ; then
-cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
 cloudera:
-  parcel_repo: '$cloudera_mirror$'
-EOF
-fi
+  parcel_repo: '$pnda_mirror$/mirror_cloudera'
 
-if [ "x$anaconda_mirror$" != "x" ] ; then
-cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
 anaconda:
-  parcel_version: '4.0.0'  
-  parcel_repo: '$anaconda_mirror$'
+  parcel_version: "4.0.0"
+  parcel_repo: '$pnda_mirror$/mirror_anaconda'
+
+packages_server:
+  base_uri: $pnda_mirror$
+
+pip:
+  index_url: '$pnda_mirror$/mirror_python/simple'
 EOF
-fi
 
 if [ "x$ntp_servers$" != "x" ] ; then
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
@@ -151,15 +174,11 @@ package_repository:
 EOF
 fi
 
-
-if [ "x$packages_server_uri$" != "x" ] ; then
+# Add all the specific values to the env_parameter file
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
-packages_server:
-  base_uri: $packages_server_uri$
+specific_config:
 EOF
-fi
-
-restart salt-master
+for i in "${!conf[@]}"; do echo "  $i: ${conf[$i]}" >> /srv/salt/platform-salt/pillar/env_parameters.sls; done
 
 # Set up a salt minion on the saltmaster too
 cat >> /etc/hosts <<EOF
@@ -173,4 +192,6 @@ pnda:
 pnda_cluster: $pnda_cluster$
 EOF
 
-restart salt-minion
+
+service salt-minion restart
+service salt-master restart

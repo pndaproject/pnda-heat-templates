@@ -2,7 +2,7 @@
 # Specifies which bootstrap script to run to set up this instance type and which roles
 # to apply to this instance type
 
-heat_template_version: 2014-10-16
+heat_template_version: 2015-04-30
 
 parameters:
   Flavor:
@@ -40,7 +40,18 @@ parameters:
     type: string
   software_config_transport:
     type: string
-
+  PndaMirror:
+    description: URL of a mirror for operating system package download
+    type: string
+    default: ''
+  pre_config:
+    type: string
+  specific_config:
+    description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
+    type: string
+    default: ''
+  package_config:
+    type: string
 
 resources:
   port:
@@ -58,11 +69,25 @@ resources:
         str_replace:
           template: {get_file: scripts/base_install.sh }
           params:
+            $pnda_mirror$: { get_param: PndaMirror }
             $flavor$: { get_param: pnda_flavor }
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
             $roles$: 'kafka_manager,platform_testing_general,elk'
+            $$SPECIFIC_CONF$$: { get_param: specific_config }
+  deploy_package:
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      signal_transport: { get_param: signal_transport }
+      config:
+        get_param: package_config
+      server:
+        get_resource: server
+      actions:
+        - CREATE
+
   install_deployment:
+    depends_on: [ deploy_package ]
     type: OS::Heat::SoftwareDeployment
     properties:
       signal_transport: { get_param: signal_transport }
@@ -82,6 +107,7 @@ resources:
         - port: { get_resource: port }
       software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
+      user_data: { get_param: pre_config }
       config_drive: True
 
 outputs:

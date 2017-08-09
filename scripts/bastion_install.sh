@@ -6,13 +6,20 @@
 
 set -e
 
+declare -A conf=( )
+declare -A specific=( $$SPECIFIC_CONF$$ )
+
+# Override default configuration
+for key in "${!specific[@]}"; do conf[$key]="${specific[${key}]}"; done
+
 KEY="$private_key$"
 KEYNAME=$keyname$
 
 if [ "x$KEYNAME" != "x" ];
 then
-printf "%b" "$KEY" > /home/cloud-user/$KEYNAME.pem
-chown cloud-user:cloud-user /home/cloud-user/$KEYNAME.pem
-chmod 600 /home/cloud-user/$KEYNAME.pem
+HOME_DIR=$(getent passwd $os_user$ | cut -d: -f6)
+printf "%b" "$KEY" > ${HOME_DIR}/$KEYNAME.pem
+chown $os_user$:$os_user$ ${HOME_DIR}/$KEYNAME.pem
+chmod 600 ${HOME_DIR}/$KEYNAME.pem
 unset KEY KEYNAME
 fi

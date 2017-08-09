@@ -1,0 +1,12 @@
+parameter_defaults:
+  BastionFlavor: s1.large
+  CMFlavor: s1.small
+  Manager1Flavor: s1.small
+  Manager2Flavor: s1.small
+  EdgeFlavor: s2.medium
+  ZookeeperFlavor: s1.small
+  KafkaFlavor: s1.large
+  DatanodeFlavor: s1.medium
+  SaltmasterFlavor: master
+  DatanodeVolumeSize: 1024
+  PndaFlavor: bmstandard
