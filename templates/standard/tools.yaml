@@ -73,7 +73,7 @@ resources:
             $flavor$: { get_param: pnda_flavor }
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
-            $roles$: 'kafka_manager,platform_testing_general,elk'
+            $roles$: 'kafka_manager,platform_testing_general,elk,kafka_tool'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
   deploy_package:
     type: OS::Heat::SoftwareDeployment
