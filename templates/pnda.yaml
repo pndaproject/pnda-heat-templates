@@ -394,7 +394,8 @@ resources:
             #!/bin/bash -v
             set -e
             set -o pipefail
-            salt -v --log-level=debug --timeout=120 --state-output=mixed '*' state.highstate | tee salt-highstate-$(date +"%F-%T").log
+            salt -v --log-level=debug --timeout=120 --state-output=mixed '*' state.sls hostsfile | tee salt-highstate-$(date +"%F-%T").log
+            salt -v --log-level=debug --timeout=120 --state-output=mixed -C "G@pnda:is_new_node" state.highstate | tee salt-highstate-$(date +"%F-%T").log
             CLUSTER=cname salt-run --log-level=debug state.orchestrate orchestrate.pnda-expand | tee salt-expand-$(date +"%F-%T").log
           params:
             cname: { get_param: 'OS::stack_name' }

@@ -198,6 +198,7 @@ EOF
 cat > /etc/salt/grains <<EOF
 pnda:
   flavor: $flavor$
+  is_new_node: True
 pnda_cluster: $pnda_cluster$
 EOF
 
