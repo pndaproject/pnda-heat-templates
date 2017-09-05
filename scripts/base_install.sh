@@ -37,6 +37,9 @@ log_level_logfile: debug
 
 backend: requests
 requests_lib: True
+beacons:
+  kernel_reboot_required:
+    interval: $PLATFORM_SALT_BEACON_TIMEOUT
 EOF
 
 # Set up the grains

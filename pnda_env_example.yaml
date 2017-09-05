@@ -97,6 +97,11 @@ parameter_defaults:
   platform_git_repo_uri: 'https://github.com/pndaproject/platform-salt.git'
 
   #
+  # Beacon timeout to check system reboot 
+  #
+  PLATFORM_SALT_BEACON_TIMEOUT: 30
+
+  #
   # PndaMirror: URI of the mirror for offline installation
   #  
   PndaMirror: 'http://www.example.com'
