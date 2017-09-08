@@ -8,6 +8,11 @@ parameters:
     description: Flavor of the bastion server
     type: string
     default: ec2.t2.medium
+  platform_salt_beacon_timeout:
+    type: string
+    default: '30'
+    description: |
+      default beacon timeout for saltstack
   KeyName:
     description: Name of an existing ssh keypair
     type: string
@@ -104,6 +109,7 @@ resources:
           template: {get_file: scripts/base_install.sh }
           params:
             $pnda_mirror$: { get_param: PndaMirror }
+            $beacon_timeout$: { get_param: platform_salt_beacon_timeout }
             $flavor$: { get_param: pnda_flavor }
             $roles$: 'bastion'
             $master_ip$: { get_param: SaltmasterIP }

@@ -132,6 +132,11 @@ parameters:
     default: ''
     description: |
       uri to the platform-salt upstream git repository
+  platform_salt_beacon_timeout:
+    type: string
+    default: '30'
+    description: |
+      default beacon timeout for saltstack
   signal_transport:
     type: string
     default: TEMP_URL_SIGNAL
@@ -241,6 +246,7 @@ resources:
       NtpServers: { get_param: NtpServers }
       keystone_auth_url: { get_param: keystone_auth_url }
       platform_git_repo_uri: { get_param: platform_git_repo_uri }
+      platform_salt_beacon_timeout: { get_param: platform_salt_beacon_timeout }
       platform_uri: { get_param: platform_uri }
 
   package_config:
@@ -252,6 +258,7 @@ resources:
           template: { get_file: scripts/package_install.sh }
           params:
             $pnda_mirror$: { get_param: PndaMirror }
+            $platform_salt_beacon_timeout$: { get_param: platform_salt_beacon_timeout }
 
   # A SoftwareConfig resource contains all the parameters used when provisioning PNDA
   install_config:
