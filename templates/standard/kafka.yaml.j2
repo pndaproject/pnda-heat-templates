@@ -82,7 +82,7 @@ resources:
             $brokerid$: { get_param: NodeIndex}
             $pnda_cluster$: { get_param: cluster_name }
             $log_volume_id$: { get_resource: logvolume }
-            $roles$: 'kafka,kafka_tool'
+            $roles$: 'kafka'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
   deploy_package:
     type: OS::Heat::SoftwareDeployment
