@@ -37,9 +37,13 @@ log_level_logfile: debug
 
 backend: requests
 requests_lib: True
+EOF
+
+cat >> /etc/salt/minion.d/beacons.conf <<EOF
 beacons:
   kernel_reboot_required:
-    interval: $PLATFORM_SALT_BEACON_TIMEOUT
+    interval: $beacon_timeout$
+  $beacons$
 EOF
 
 # Set up the grains

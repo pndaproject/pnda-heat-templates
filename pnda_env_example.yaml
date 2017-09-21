@@ -99,7 +99,7 @@ parameter_defaults:
   #
   # Beacon timeout to check system reboot 
   #
-  PLATFORM_SALT_BEACON_TIMEOUT: 30
+  platform_salt_beacon_timeout: 30
 
   #
   # PndaMirror: URI of the mirror for offline installation
