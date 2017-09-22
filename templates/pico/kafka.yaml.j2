@@ -96,7 +96,7 @@ resources:
 {%if create_volumes is equalto 1 %}
             $log_volume_id$: { get_resource: logvolume }
 {%endif%}
-            $roles$: 'kafka,kafka_manager,platform_testing_general,elk,zookeeper'
+            $roles$: 'kafka,kafka_manager,platform_testing_general,elk,zookeeper,kafka_tool'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
   deploy_package:
     type: OS::Heat::SoftwareDeployment
