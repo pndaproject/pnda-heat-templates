@@ -197,3 +197,6 @@ resource_registry:
   #OS::Pnda::preConfig : iptracker.yaml
   # To enable the ip rejecting config script uncomment the next line.
   #OS::Pnda::preConfig : iprejecter.yaml
+
+mine_functions:
+  mine_functions_network_ip_addrs_nic: eth0

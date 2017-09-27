@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - PNDA-2965: Rename `cloudera_*` role grains to `hadoop_*`
 - PNDA-3180: When expanding a cluster limit the operations to strictly required steps on specific nodes
+- PNDA-3249: put mine configuration in pillar
 
 ## [1.3.0] 2017-08-01
 ### Added
