@@ -147,6 +147,9 @@ parameters:
     description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
     type: string
     default: ''
+  mine_functions_network_ip_addrs_nic:
+    description: "Salt master specific configuration on network"
+    type: string
 
 resources:
   # A keypair is created for this stack and used to secure login for all instances
@@ -304,6 +307,7 @@ resources:
             $pnda_archive_container$: { get_param: pnda_archive_container }
             $hadoop_distro$: { get_param: hadoop_distro }
             $$SPECIFIC_CONF$$: { get_param: specific_config }
+            $mine_functions_network_ip_addrs_nic$: { get_param: mine_functions_network_ip_addrs_nic}
 
   deploy_package:
     type: OS::Heat::SoftwareDeployment
