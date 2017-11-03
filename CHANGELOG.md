@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - PNDA-2389: PNDA automatically reboots instances that need rebooting following kernel updates
 
 ### Changed
+- PNDA-3444: Disallow uppercase letters in the cluster names.
 - PNDA-2965: Rename `cloudera_*` role grains to `hadoop_*`
 - PNDA-3180: When expanding a cluster limit the operations to strictly required steps on specific nodes
 - PNDA-3249: put mine configuration in pillar

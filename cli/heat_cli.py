@@ -14,7 +14,7 @@ import glob
 import jinja2
 import yaml
 
-NAME_REGEX = r"^[\.a-zA-Z0-9-]+$"
+NAME_REGEX = r"^[\.a-z0-9-]+$"
 
 CREATE_INFO = """
 Please wait while your PNDA cluster is being created.
