@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [1.4.0] 2017-11-24
 ### Added:
 - PNDA-2969: Allow hadoop distro to be set in `pnda_env.yaml`. Supported values are `HDP` and `CDH`.
 - PNDA-2389: PNDA automatically reboots instances that need rebooting following kernel updates
