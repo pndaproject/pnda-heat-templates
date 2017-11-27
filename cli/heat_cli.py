@@ -291,7 +291,6 @@ def create_cluster(args):
                                                                                                          stack_params_string)
     print cmdline
     os_cmd(cmdline, print_output=True)
-    print 'Nodes may reboot due to kernel upgrade, wait for few minutes'
     time.sleep(180)
     console_info = subprocess.check_output(['nova', 'list', '--name', "%s-hadoop-edge" % pnda_cluster, '--fields', 'networks'])
     console_ip = re.search('([0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*)', console_info)
