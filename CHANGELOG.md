@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - PNDA-3249: put mine configuration in pillar
 ### Fixed
 - PNDA-3499: Cleanup CHANGELOG with missing release info.
+- PNDA-3524: remove beacons logic
 
 ## [1.3.0] 2017-08-01
 ### Added
