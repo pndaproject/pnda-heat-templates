@@ -1,6 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+- Issue-123: Fixed Jenkins GPG Key Added in pacage-install.sh file
 ## [Unreleased]
 ### Added:
 - PNDA-2969: Allow hadoop distro to be set in `pnda_env.yaml`. Supported values are `HDP` and `CDH`.
