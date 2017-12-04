@@ -110,9 +110,11 @@ parameter_defaults:
   #
   # NtpServers: Optional ntp servers. Use this if the standard Ubuntu NTP servers on the Internet cannot be reached
   # and a local NTP server has been configured. PNDA will not work without NTP.
-  # example format: 'xxx.ntp.org'
-  NtpServers: ''
-
+  # example formats as below 
+  # NtpServers: "['ntp.ubuntu.com', '91.189.94.4', '0.ubuntu.pool.ntp.org']" 
+  # NtpServers: "['ntp.ubuntu.com']" 
+  # NtpServers: '' 
+  NtpServers: "['ntp.ubuntu.com']" 
   # APPLICATION PACKAGE REPOSITORY
   
   #
