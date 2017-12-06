@@ -60,7 +60,7 @@ resources:
       name:
         str_replace:
           template:
-            cname-cdh-cm
+            cname-hadoop-cm
           params:
             cname: { get_param: cluster_name }
       rules:
@@ -103,8 +103,8 @@ resources:
 {%if create_volumes is equalto 1 %}
             $volume_dev$: { get_param: log_mountpoint }
 {%endif%}
-            $roles$: 'cloudera_manager,platform_testing_cdh,platform_testing_general,mysql_connector,cloudera_namenode,mysql_connector,elk,logserver,opentsdb,grafana,kibana_dashboard'
-            $cloudera_role$: 'CM'
+            $roles$: 'hadoop_manager,platform_testing_cdh,platform_testing_general,mysql_connector,mysql_connector,elk,logserver,opentsdb,grafana,kibana_dashboard'
+            $hadoop_role$: 'CM'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
   install_deployment:
     type: OS::Heat::SoftwareDeployment

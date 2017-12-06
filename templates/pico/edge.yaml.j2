@@ -13,6 +13,11 @@ parameters:
     description: Flavor of the edge server
     type: string
     default: ec2.m3.xlarge
+  platform_salt_beacon_timeout:
+    type: string
+    default: '30'
+    description: |
+      default beacon timeout for saltstack
   KeyName:
     description: Name of an existing ssh keypair
     type: string
@@ -96,14 +101,19 @@ resources:
           template: {get_file: scripts/base_install.sh }
           params:
             $pnda_mirror$: { get_param: PndaMirror }
+            $beacon_timeout$: { get_param: platform_salt_beacon_timeout }
             $flavor$: { get_param: pnda_flavor }
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
 {%if create_volumes is equalto 1 %}
             $log_volume_id$: { get_resource: logvolume }
 {%endif%}
-            $roles$: 'cloudera_edge,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,gobblin,deployment_manager,package_repository,data_service,impala-shell,yarn-gateway,hbase_opentsdb_tables,hdfs_cleaner,master_dataset,elk,logserver,kibana_dashboard,jupyter,cloudera_manager,platform_testing_cdh,mysql_connector,pnda_restart'
-            $cloudera_role$: 'EDGE'
+            $roles$: 'hadoop_edge,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,gobblin,deployment_manager,package_repository,data_service,impala-shell,yarn-gateway,hbase_opentsdb_tables,hdfs_cleaner,master_dataset,elk,logserver,kibana_dashboard,jupyter,hadoop_manager,platform_testing_cdh,mysql_connector,pnda_restart'
+            $hadoop_role$: 'EDGE'
+            $beacons$: |
+                service_restart:
+                    interval: 30
+                    disable_during_state_run: True
             $$SPECIFIC_CONF$$: { get_param: specific_config }
   deploy_package:
     type: OS::Heat::SoftwareDeployment

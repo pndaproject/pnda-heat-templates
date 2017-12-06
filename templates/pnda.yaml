@@ -108,7 +108,8 @@ parameters:
     type: string
   pnda_archive_container:
     type: string
-
+  hadoop_distro:
+    type: string
   DeploymentID:
     type: string
     default: ''
@@ -131,6 +132,11 @@ parameters:
     default: ''
     description: |
       uri to the platform-salt upstream git repository
+  platform_salt_beacon_timeout:
+    type: string
+    default: '30'
+    description: |
+      default beacon timeout for saltstack
   signal_transport:
     type: string
     default: TEMP_URL_SIGNAL
@@ -141,6 +147,9 @@ parameters:
     description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
     type: string
     default: ''
+  mine_functions_network_ip_addrs_nic:
+    description: "Salt master specific configuration on network"
+    type: string
 
 resources:
   # A keypair is created for this stack and used to secure login for all instances
@@ -240,6 +249,7 @@ resources:
       NtpServers: { get_param: NtpServers }
       keystone_auth_url: { get_param: keystone_auth_url }
       platform_git_repo_uri: { get_param: platform_git_repo_uri }
+      platform_salt_beacon_timeout: { get_param: platform_salt_beacon_timeout }
       platform_uri: { get_param: platform_uri }
 
   package_config:
@@ -251,6 +261,7 @@ resources:
           template: { get_file: scripts/package_install.sh }
           params:
             $pnda_mirror$: { get_param: PndaMirror }
+            $platform_salt_beacon_timeout$: { get_param: platform_salt_beacon_timeout }
 
   # A SoftwareConfig resource contains all the parameters used when provisioning PNDA
   install_config:
@@ -294,7 +305,9 @@ resources:
             $pnda_apps_container$: { get_param: pnda_apps_container }
             $pnda_apps_folder$: { get_param: pnda_apps_folder }
             $pnda_archive_container$: { get_param: pnda_archive_container }
+            $hadoop_distro$: { get_param: hadoop_distro }
             $$SPECIFIC_CONF$$: { get_param: specific_config }
+            $mine_functions_network_ip_addrs_nic$: { get_param: mine_functions_network_ip_addrs_nic}
 
   deploy_package:
     type: OS::Heat::SoftwareDeployment
@@ -332,7 +345,7 @@ resources:
         #!/bin/bash -v
         set -e
         set -o pipefail
-        salt -v --log-level=debug --timeout=120 --state-output=mixed '*' state.highstate | tee salt-highstate-$(date +"%F-%T").log
+        salt -v --log-level=debug --timeout=120 --state-output=mixed '*' state.highstate queue=True | tee salt-highstate-$(date +"%F-%T").log
   deploy_highstate:
         type: OS::Heat::SoftwareDeployment
         depends_on: [deploy_install,pnda_cluster]
@@ -392,7 +405,8 @@ resources:
             #!/bin/bash -v
             set -e
             set -o pipefail
-            salt -v --log-level=debug --timeout=120 --state-output=mixed '*' state.highstate | tee salt-highstate-$(date +"%F-%T").log
+            salt -v --log-level=debug --timeout=120 --state-output=mixed '*' state.sls hostsfile queue=True | tee salt-highstate-$(date +"%F-%T").log
+            salt -v --log-level=debug --timeout=120 --state-output=mixed -C "G@pnda:is_new_node" state.highstate queue=True| tee salt-highstate-$(date +"%F-%T").log
             CLUSTER=cname salt-run --log-level=debug state.orchestrate orchestrate.pnda-expand | tee salt-expand-$(date +"%F-%T").log
           params:
             cname: { get_param: 'OS::stack_name' }

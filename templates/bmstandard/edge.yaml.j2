@@ -2,7 +2,7 @@ heat_template_version: 2014-10-16
 
 parameters:
   Flavor:
-    description: Flavor of the cloudera manager server
+    description: Flavor of the edge server
     type: string
     default: m1.xlarge
   KeyName:
@@ -59,7 +59,7 @@ resources:
       name:
         str_replace:
           template:
-            cname-cdh-edge
+            cname-hadoop-edge
           params:
             cname: { get_param: cluster_name }
       rules:
@@ -102,8 +102,8 @@ resources:
 {%if create_volumes is equalto 1 %}
             $volume_dev$: { get_param: log_mountpoint }
 {%endif%}
-            $roles$: 'cloudera_edge,mysql_connector,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,gobblin,deployment_manager,package_repository,data_service,impala-shell,yarn-gateway,hbase_opentsdb_tables,hdfs_cleaner,master_dataset,jupyter,kafka_manager'
-            $cloudera_role$: 'EDGE'
+            $roles$: 'hadoop_edge,mysql_connector,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,gobblin,deployment_manager,package_repository,data_service,impala-shell,yarn-gateway,hbase_opentsdb_tables,hdfs_cleaner,master_dataset,jupyter,kafka_manager'
+            $hadoop_role$: 'EDGE'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
   install_deployment:
     type: OS::Heat::SoftwareDeployment
@@ -122,7 +122,7 @@ resources:
     type: OS::Cinder::Volume
     properties:
       size: { get_param: logvolume_size }
-      description: Volume for cloudera manager logs
+      description: Volume for hadoop manager logs
 
   logvolume_attachment:
     type: OS::Cinder::VolumeAttachment

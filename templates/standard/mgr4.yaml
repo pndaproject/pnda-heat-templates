@@ -9,6 +9,11 @@ parameters:
     description: Flavor of the manager4 server
     type: string
     default: ec2.m3.2xlarge
+  platform_salt_beacon_timeout:
+    type: string
+    default: '30'
+    description: |
+      default beacon timeout for saltstack
   KeyName:
     description: Name of an existing ssh keypair
     type: string
@@ -61,7 +66,7 @@ resources:
       name:
         str_replace:
           template:
-            cname-cdh-mgr4
+            cname-hadoop-mgr4
           params:
             cname: { get_param: cluster_name }
       rules:
@@ -84,12 +89,13 @@ resources:
           template: {get_file: scripts/base_install.sh }
           params:
             $pnda_mirror$: { get_param: PndaMirror }
+            $beacon_timeout$: { get_param: platform_salt_beacon_timeout }
             $flavor$: { get_param: pnda_flavor }
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
             $log_volume_id$: { get_resource: logvolume }
             $roles$: 'oozie_database,mysql_connector,hue'
-            $cloudera_role$: 'MGR04'
+            $hadoop_role$: 'MGR04'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
   deploy_package:
     type: OS::Heat::SoftwareDeployment

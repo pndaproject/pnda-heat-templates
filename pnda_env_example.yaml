@@ -82,6 +82,11 @@ parameter_defaults:
   keystone_region_name: 'regionOne'
 
   #
+  # hadoop_distro: The distribution of hadoop to install.
+  #  
+  hadoop_distro: 'CDH'
+
+  #
   # pnda_archive_container: Swift container for PNDA to use when archiving data
   #  
   pnda_archive_container:  'pnda_archive'
@@ -90,6 +95,11 @@ parameter_defaults:
   # platform_git_repo_uri: The platform-salt git repository url.
   #
   platform_git_repo_uri: 'https://github.com/pndaproject/platform-salt.git'
+
+  #
+  # Beacon timeout to check system reboot 
+  #
+  platform_salt_beacon_timeout: 30
 
   #
   # PndaMirror: URI of the mirror for offline installation
@@ -187,3 +197,6 @@ resource_registry:
   #OS::Pnda::preConfig : iptracker.yaml
   # To enable the ip rejecting config script uncomment the next line.
   #OS::Pnda::preConfig : iprejecter.yaml
+
+mine_functions:
+  mine_functions_network_ip_addrs_nic: eth0

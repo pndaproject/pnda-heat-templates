@@ -1,4 +1,4 @@
-# Definition for the cloudera manager instance type
+# Definition for the hadoop manager instance type
 # Specifies which bootstrap script to run to set up this instance type and which roles
 # to apply to this instance type
 
@@ -6,9 +6,14 @@ heat_template_version: 2015-04-30
 
 parameters:
   Flavor:
-    description: Flavor of the cloudera manager server
+    description: Flavor of the hadoop manager server
     type: string
     default: ec2.m3.xlarge
+  platform_salt_beacon_timeout:
+    type: string
+    default: '30'
+    description: |
+      default beacon timeout for saltstack
   KeyName:
     description: Name of an existing ssh keypair
     type: string
@@ -59,7 +64,7 @@ resources:
       name:
         str_replace:
           template:
-            cname-cdh-cm
+            cname-hadoop-cm
           params:
             cname: { get_param: cluster_name }
       rules:
@@ -85,12 +90,17 @@ resources:
           template: {get_file: scripts/base_install.sh }
           params:
             $pnda_mirror$: { get_param: PndaMirror }
+            $beacon_timeout$: { get_param: platform_salt_beacon_timeout }
             $flavor$: { get_param: pnda_flavor }
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
             $log_volume_id$: { get_resource: logvolume }
-            $roles$: 'cloudera_manager,platform_testing_cdh,mysql_connector,pnda_restart'
-            $cloudera_role$: 'CM'
+            $roles$: 'hadoop_manager,platform_testing_cdh,mysql_connector,pnda_restart'
+            $beacons$: |
+                service_restart:
+                    interval: 30
+                    disable_during_state_run: True
+            $hadoop_role$: 'CM'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
   deploy_package:
     type: OS::Heat::SoftwareDeployment
@@ -117,7 +127,7 @@ resources:
     type: OS::Cinder::Volume
     properties:
       size: { get_param: logvolume_size }
-      description: Volume for cloudera manager logs
+      description: Volume for hadoop manager logs
 
   logvolume_attachment:
     type: OS::Cinder::VolumeAttachment

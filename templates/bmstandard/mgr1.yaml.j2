@@ -60,7 +60,7 @@ resources:
       name:
         str_replace:
           template:
-            cname-cdh-mgr1
+            cname-hadoop-mgr1
           params:
             cname: { get_param: cluster_name }
       rules:
@@ -99,8 +99,8 @@ resources:
 {%if create_volumes is equalto 1 %}
             $volume_dev$: { get_param: log_mountpoint }
 {%endif%}
-            $roles$: 'cloudera_namenode,mysql_connector'
-            $cloudera_role$: 'MGR01'
+            $roles$: 'mysql_connector'
+            $hadoop_role$: 'MGR01'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
   install_deployment:
     type: OS::Heat::SoftwareDeployment
