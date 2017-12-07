@@ -213,7 +213,7 @@ resources:
       Image: { get_param: image_id }
       name:
         str_replace:
-          template: '%stackname%-hadoop-mgr1'
+          template: '%stackname%-hadoop-mgr-1'
           params:
             '%stackname%': { get_param: deployment_name }
 {%if create_network is equalto 1 %}
