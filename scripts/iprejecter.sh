@@ -13,7 +13,8 @@ for key in "${!specific[@]}"; do conf[$key]="${specific[${key}]}"; done
 # built the white list ip address
 ## mirror ntp and dns servers are white listed
 MIRRORSERVER=$(echo '$pnda_mirror$' | awk -F/ '{print $3}' | awk -F: '{print $1}')
-NTPSERVER=$(echo '$ntp_servers$' | awk '{print $1}')
+
+NTPSERVER=$(echo "$ntp_servers" | sed -e 's|[]"'\''\[ ]||g')
 KEYSTONE=$(echo '$keystone_auth_url$' | awk -F/ '{print $3}' | awk -F: '{print $1}')
 DNSLIST=$(cat /etc/resolv.conf  | grep -E -o  "([0-9]{1,3}[\.]){3}[0-9]{1,3}")
 
