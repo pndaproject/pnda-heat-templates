@@ -276,7 +276,7 @@ resources:
       KeyName: { get_param: KeyName }
       name:
         str_replace:
-          template: '%stackname%-hadoop-mgr1'
+          template: '%stackname%-hadoop-mgr-1'
           params:
             '%stackname%': { get_param: deployment_name }
 {%if create_network is equalto 1 %}
@@ -296,7 +296,7 @@ resources:
       KeyName: { get_param: KeyName }
       name:
         str_replace:
-          template: '%stackname%-hadoop-mgr2'
+          template: '%stackname%-hadoop-mgr-2'
           params:
             '%stackname%': { get_param: deployment_name }
 {%if create_network is equalto 1 %}
