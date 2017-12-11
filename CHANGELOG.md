@@ -1,8 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-- Issue-123: Fixed Jenkins GPG Key Added in pacage-install.sh file
 ## [Unreleased]
+### Fixed
+- Issue-123: Fixed Jenkins GPG Key Added in pacage-install.sh file
 
 ## [1.4.0] 2017-11-24
 ### Added:
