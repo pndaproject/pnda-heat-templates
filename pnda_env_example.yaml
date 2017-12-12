@@ -97,6 +97,11 @@ parameter_defaults:
   platform_git_repo_uri: 'https://github.com/pndaproject/platform-salt.git'
 
   #
+  # GitBranch: The platform-salt git repository branch
+  #
+  GitBranch: 'master'
+
+  #
   # PndaMirror: URI of the mirror for offline installation
   #  
   PndaMirror: 'http://www.example.com'
