@@ -52,6 +52,8 @@ parameters:
     default: ''
   package_config:
     type: string
+  hadoop_distro:
+    type: string
 
 resources:
   port:
@@ -75,6 +77,7 @@ resources:
             $pnda_cluster$: { get_param: cluster_name }
             $roles$: 'kafka_manager,platform_testing_general,elk'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
+            $hadoop_distro$: { get_param: hadoop_distro }
   deploy_package:
     type: OS::Heat::SoftwareDeployment
     properties:

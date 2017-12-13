@@ -55,6 +55,8 @@ parameters:
     default: ''
   package_config:
     type: string
+  hadoop_distro:
+    type: string
 
 resources:
   port:
@@ -79,6 +81,7 @@ resources:
             $index$: { get_param: NodeIndex }
             $roles$: 'opentsdb,grafana'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
+            $hadoop_distro$: { get_param: hadoop_distro }
   deploy_package:
     type: OS::Heat::SoftwareDeployment
     properties:
