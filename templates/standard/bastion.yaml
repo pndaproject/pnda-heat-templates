@@ -51,6 +51,8 @@ parameters:
     default: ''
   package_config:
     type: string
+  hadoop_distro:
+    type: string
 
 resources:
   sec_group:
@@ -111,6 +113,7 @@ resources:
             $private_key$: { get_param: private_key }
             $pnda_cluster$: { get_param: cluster_name }
             $$SPECIFIC_CONF$$: { get_param: specific_config }
+            $hadoop_distro$: { get_param: hadoop_distro }
   install_deployment:
     type: OS::Heat::SoftwareDeployment
     depends_on: [ bastion_deployment, deploy_package ]

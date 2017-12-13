@@ -66,6 +66,8 @@ parameters:
     description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
     type: string
     default: ''
+  hadoop_distro:
+    type: string
 
 resources:
 {%if create_network is equalto 1 %}
@@ -95,6 +97,7 @@ resources:
 {%endif%}
             $hadoop_role$: 'DATANODE'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
+            $hadoop_distro$: { get_param: hadoop_distro }
   deploy_package:
     type: OS::Heat::SoftwareDeployment
     properties:

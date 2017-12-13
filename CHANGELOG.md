@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+### Changed
+- PNDA-3583: hadoop distro is now part of grains
+
 ### Fixed
 - Issue-123: Fixed Jenkins GPG Key Added in pacage-install.sh file
 

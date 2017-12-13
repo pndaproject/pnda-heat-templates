@@ -136,8 +136,6 @@ packages_server:
 pip:
   index_url: '$pnda_mirror$/mirror_python/simple'
 
-hadoop.distro: '$hadoop_distro$'
-
 hdp:
   hdp_core_stack_repo: '$pnda_mirror$/mirror_hdp/HDP/$HDP_OS/'
   hdp_utils_stack_repo: '$pnda_mirror$/mirror_hdp/HDP-UTILS-1.1.0.21/repos/$HDP_OS/'

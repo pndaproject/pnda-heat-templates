@@ -52,6 +52,8 @@ parameters:
     default: ''
   package_config:
     type: string
+  hadoop_distro:
+    type: string
 
 resources:
   sec_group:
@@ -90,6 +92,7 @@ resources:
             $roles$: 'mysql_connector'
             $hadoop_role$: 'MGR01'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
+            $hadoop_distro$: { get_param: hadoop_distro }
   deploy_package:
     type: OS::Heat::SoftwareDeployment
     properties:
