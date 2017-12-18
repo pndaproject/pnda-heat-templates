@@ -1,7 +1,6 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-- Issue-123: Fixed Jenkins GPG Key Added in pacage-install.sh file
 ## [Unreleased]
 
 ## [1.4.0] 2017-11-24
@@ -14,6 +13,8 @@ All notable changes to this project will be documented in this file.
 - PNDA-2965: Rename `cloudera_*` role grains to `hadoop_*`
 - PNDA-3180: When expanding a cluster limit the operations to strictly required steps on specific nodes
 - PNDA-3249: put mine configuration in pillar
+- Issue-123: Fixed Jenkins GPG Key Added in package-install.sh file
+
 ### Fixed
 - PNDA-3499: Cleanup CHANGELOG with missing release info.
 - PNDA-3524: remove beacons logic
