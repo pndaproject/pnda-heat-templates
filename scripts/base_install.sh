@@ -39,13 +39,6 @@ backend: requests
 requests_lib: True
 EOF
 
-cat >> /etc/salt/minion.d/beacons.conf <<EOF
-beacons:
-  kernel_reboot_required:
-    interval: $beacon_timeout$
-  $beacons$
-EOF
-
 # Set up the grains
 cat > /etc/salt/grains <<EOF
 pnda:

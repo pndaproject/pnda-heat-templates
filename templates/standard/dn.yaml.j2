@@ -9,11 +9,6 @@ parameters:
     description: Flavor of the datanode server
     type: string
     default: ec2.m4.2xlarge
-  platform_salt_beacon_timeout:
-    type: string
-    default: '30'
-    description: |
-      default beacon timeout for saltstack
   KeyName:
     description: Name of an existing ssh keypair
     type: string
@@ -85,7 +80,6 @@ resources:
           template: {get_file: scripts/base_install.sh }
           params:
             $pnda_mirror$: { get_param: PndaMirror }
-            $beacon_timeout$: { get_param: platform_salt_beacon_timeout }
             $flavor$: { get_param: pnda_flavor }
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
