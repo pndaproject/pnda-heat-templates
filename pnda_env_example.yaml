@@ -7,6 +7,10 @@ parameter_defaults:
   public_net: 5982b761-802a-4af3-9c0b-c3b457559179
   
   #
+  mine_functions_network_ip_addrs_nic: eth0
+  #
+
+  #
   # private_net_cidr: CIDR specifying the address range that the private network
   # should be created with
   #
@@ -192,6 +196,3 @@ resource_registry:
   #OS::Pnda::preConfig : iptracker.yaml
   # To enable the ip rejecting config script uncomment the next line.
   #OS::Pnda::preConfig : iprejecter.yaml
-
-mine_functions:
-  mine_functions_network_ip_addrs_nic: eth0
