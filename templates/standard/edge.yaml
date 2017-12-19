@@ -1,3 +1,7 @@
+# Definition for the edge instance type
+# Specifies which bootstrap script to run to set up this instance type and which roles
+# to apply to this instance type
+
 heat_template_version: 2014-10-16
 
 parameters:
@@ -32,13 +36,7 @@ parameters:
     default: standard
   logvolume_size:
     type: number
-    default: 250
-  log_mountpoint:
-    type: string
-    default: /dev/vdb
-  pr_mountpoint:
-    type: string
-    default: /dev/vdc
+    default: 120
   prvolume_size:
     type: number
     default: 10
@@ -46,6 +44,10 @@ parameters:
     description: Package repository FS location path
     type: string
     default: ''
+  package_repository_fs_type:
+    description: Package repository FS type
+    type: string
+    default: ''  
   signal_transport:
     type: string
   software_config_transport:
@@ -84,9 +86,10 @@ resources:
             $flavor$: { get_param: pnda_flavor }
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
-            $volume_dev$: { get_param: log_mountpoint }
-            $volume_pr$: { get_param: pr_mountpoint }
+            $log_volume_id$: { get_resource: logvolume }
+            $pr_volume_id$: { get_resource: prvolume }
             $package_repository_fs_location_path$: { get_param: package_repository_fs_location_path }
+            $package_repository_fs_type$: { get_param: package_repository_fs_type }
             $roles$: 'cloudera_edge,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,gobblin,deployment_manager,package_repository,data_service,impala-shell,yarn-gateway,hbase_opentsdb_tables,hdfs_cleaner,master_dataset'
             $cloudera_role$: 'EDGE'
 
@@ -122,14 +125,12 @@ resources:
     properties:
       volume_id: { get_resource: prvolume }
       instance_uuid: { get_resource: server }
-      mountpoint: { get_param: pr_mountpoint }
 
   logvolume_attachment:
     type: OS::Cinder::VolumeAttachment
     properties:
       volume_id: { get_resource: logvolume }
       instance_uuid: { get_resource: server }
-      mountpoint: { get_param: log_mountpoint }
 
 
   server:

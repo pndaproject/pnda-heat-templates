@@ -1,3 +1,7 @@
+# Definition for the cloudera manager instance type
+# Specifies which bootstrap script to run to set up this instance type and which roles
+# to apply to this instance type
+
 heat_template_version: 2014-10-16
 
 parameters:
@@ -29,10 +33,7 @@ parameters:
     default: standard
   logvolume_size:
     type: number
-    default: 500
-  log_mountpoint:
-    type: string
-    default: /dev/vdb
+    default: 250
   signal_transport:
     type: string
   software_config_transport:
@@ -74,8 +75,8 @@ resources:
             $flavor$: { get_param: pnda_flavor }
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
-            $volume_dev$: { get_param: log_mountpoint }
-            $roles$: 'cloudera_manager,platform_testing_cdh,mysql_connector'
+            $log_volume_id$: { get_resource: logvolume }
+            $roles$: 'cloudera_manager,platform_testing_cdh,mysql_connector,pnda_restart'
             $cloudera_role$: 'CM'
   install_deployment:
     type: OS::Heat::SoftwareDeployment
@@ -98,7 +99,6 @@ resources:
     properties:
       volume_id: { get_resource: logvolume }
       instance_uuid: { get_resource: server }
-      mountpoint: { get_param: log_mountpoint }
 
 
   server:

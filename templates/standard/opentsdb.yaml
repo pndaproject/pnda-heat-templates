@@ -1,3 +1,7 @@
+# Definition for the opentsdb instance type
+# Specifies which bootstrap script to run to set up this instance type and which roles
+# to apply to this instance type
+
 heat_template_version: 2014-10-16
 
 parameters:
@@ -28,9 +32,6 @@ parameters:
   volume_size:
     type: number
     default: 200
-  mountpoint:
-    type: string
-    default: /dev/vdb
   cluster_name:
     type: string
   pnda_secgroup:

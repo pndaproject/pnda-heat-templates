@@ -1,3 +1,12 @@
+# pnda_cluster.yaml defines the instances to create for this flavor of PNDA
+# The resource_registry.yaml file defines which yaml template to apply to
+# each instance type, and these specific yaml files configure the
+# instance as required for that type of node.
+
+# It is processed as a jinja2 template with the following parameters:
+#   - create_network: 0|1. Set to 1 to create network related resources or to 0 when running
+#                          for an openstack ironic bare-metal install
+
 heat_template_version: 2014-10-16
 
 parameters:
@@ -38,9 +47,6 @@ parameters:
   DatanodeVolumeSize:
     default: 10
     type: number
-  DatanodeMountpoint:
-    default: /dev/vdc
-    type: string
 
 {%if create_network is equalto 1 %}
   public_net:
@@ -240,7 +246,6 @@ resources:
           PrivateSubnet: { get_param: private_subnet }
           sec_group: { get_resource: DNSecGroup }
           volume_size: { get_param: DatanodeVolumeSize }
-          mountpoint: { get_param: DatanodeMountpoint }
           pnda_secgroup: { get_param: PndaSecGroup }
 {% endif %}
           KeyName: { get_param: KeyName }

@@ -1,3 +1,11 @@
+# Definition for the mgr1 instance type
+# Specifies which bootstrap script to run to set up this instance type and which roles
+# to apply to this instance type
+
+# It is processed as a jinja2 template with the following parameters:
+#   - create_network: 0|1. Set to 1 to create network related resources or to 0 when running
+#                          for an openstack ironic bare-metal install
+
 heat_template_version: 2014-10-16
 
 parameters:
@@ -31,10 +39,7 @@ parameters:
     default: standard
   logvolume_size:
     type: number
-    default: 250
-  log_mountpoint:
-    type: string
-    default: /dev/vdb
+    default: 10
   signal_transport:
     type: string
     default: TEMP_URL_SIGNAL
@@ -78,7 +83,7 @@ resources:
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
             $flavor$: { get_param: pnda_flavor }
-            $volume_dev$: { get_param: log_mountpoint }
+            $log_volume_id$: { get_resource: logvolume }
             $roles$: 'cloudera_namenode,mysql_connector,oozie_database,hue,opentsdb,grafana'
             $cloudera_role$: 'MGR01'
 
@@ -105,7 +110,6 @@ resources:
     properties:
       volume_id: { get_resource: logvolume }
       instance_uuid: { get_resource: server }
-      mountpoint: { get_param: log_mountpoint }
 {%endif%}
 
   server:

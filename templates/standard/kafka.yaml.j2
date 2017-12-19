@@ -1,8 +1,12 @@
+# Definition for the kafka instance type
+# Specifies which bootstrap script to run to set up this instance type and which roles
+# to apply to this instance type
+
 heat_template_version: 2014-10-16
 
 parameters:
   Flavor:
-    description: Flavor of the zookeeper server
+    description: Flavor of the kafka server
     type: string
     default: m1.small
   KeyName:
@@ -34,14 +38,16 @@ parameters:
     default: standard
   logvolume_size:
     type: number
-    default: 500
-  log_mountpoint:
-    type: string
-    default: /dev/vdb
+    default: 120
   signal_transport:
     type: string
   software_config_transport:
     type: string
+{%if create_kafkanodes_group is equalto 1 %}
+  scheduler_group_hint:
+    type: string
+{%endif%}
+
 
 resources:
   port:
@@ -61,9 +67,11 @@ resources:
           params:
             $flavor$: { get_param: pnda_flavor }
             $master_ip$: { get_param: SaltmasterIP }
+            $brokerid$: { get_param: NodeIndex}
             $pnda_cluster$: { get_param: cluster_name }
-            $volume_dev$: { get_param: log_mountpoint }
-            $roles$: 'zookeeper'
+            $log_volume_id$: { get_resource: logvolume }
+            $roles$: 'kafka'
+            $cloudera_role$: ''
   install_deployment:
     type: OS::Heat::SoftwareDeployment
     depends_on: [ logvolume_attachment ]
@@ -78,14 +86,13 @@ resources:
     type: OS::Cinder::Volume
     properties:
       size: { get_param: logvolume_size }
-      description: Volume for zookeeper logs
+      description: Volume for kafka logs
 
   logvolume_attachment:
     type: OS::Cinder::VolumeAttachment
     properties:
       volume_id: { get_resource: logvolume }
       instance_uuid: { get_resource: server }
-      mountpoint: { get_param: log_mountpoint }
 
 
   server:
@@ -100,6 +107,10 @@ resources:
       software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
       config_drive: True
+{%if create_kafkanodes_group is equalto 1 %}
+      scheduler_hints: 
+        group: { get_param: scheduler_group_hint}
+{%endif%}
 
 outputs:
   port_resource:

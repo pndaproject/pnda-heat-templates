@@ -1,3 +1,18 @@
+# This base pnda.yaml contains the parts of the stack that are common to all flavors
+# The <flavor>/pnda.yaml file is merged over the top of this one before creating the stack 
+
+# To create a new flavor copy an existing flavor folder and edit:
+# - pnda_yaml.yaml to define a pnda_cluster with a parameter for each instance size and a saltmaster 
+# - pnda_cluster.yaml to define the specific instances required to host the flavor
+# - a yaml for each instance type that defines which bootstrap script to run and what parameters to pass to it
+# - resource_registry.yaml to specify which of these yaml files to run for each instance type
+# - instance_flavors.yaml to define the default size for each instance type
+
+# It is processed as a jinja2 template with the following parameters:
+#   - create_network: 0|1. Set to 1 to create network related resources
+#   - package_repository_fs_type: swift|s3|fs|sshfs. Additional properties are defined based on the type
+#                                 of package repository selected
+
 heat_template_version: 2014-10-16
 
 parameters:
@@ -5,16 +20,10 @@ parameters:
     type: string
     description: default image for pnda servers
     default: ubuntu1404
-  DatanodeMountpoint:
-    default: /dev/vdb
-    type: string
   public_net:
     type: string
     description: >
       ID or name of public network for which floating IP addresses will be allocated
-  private_net_name:
-    type: string
-    description: Name of private network to be created
   private_net_cidr:
     type: string
     description: Private network address (CIDR notation)
@@ -136,12 +145,16 @@ parameters:
     default: POLL_TEMP_URL
 
 resources:
+  # A keypair is created for this stack and used to secure login for all instances
+  # on the private network
 {%if create_network is equalto 1 %}
   Key:
     type: OS::Nova::KeyPair
     properties:
       save_private_key: true
       name: { get_param: 'OS::stack_name' }
+
+  # A private network is created for the PNDA instances
   private_net:
     type: OS::Neutron::Net
     properties:
@@ -221,6 +234,8 @@ resources:
         - subnet_id: { get_resource: private_subnet }
       security_groups: [{ get_resource: saltmaster_sec_group }, { get_resource: PndaSecGroup }]
 {% endif %}
+
+  # A SoftwareConfig resource contains all the parameters used when provisioning PNDA
   install_config:
     type: OS::Heat::SoftwareConfig
     properties:
@@ -231,6 +246,8 @@ resources:
         str_replace:
           template: { get_file: scripts/saltmaster_install.sh }
           params:
+            $flavor$: { get_param: PndaFlavor }
+            $pnda_cluster$: {get_param: 'OS::stack_name'}
             $git_private_key$: { get_file: deploy }
             $git_branch$: { get_param: GitBranch }
             $java_mirror$: { get_param: JavaMirror }
@@ -272,6 +289,9 @@ resources:
           actions:
             - CREATE
 
+  # The salt highstate command is the first of the two main salt commands to run
+  # Each instance is targetted using the "roles" grains to install the right software on them
+  # The salt/top.sls file defines which salt states to run for which roles.
   highstate_config:
     type: OS::Heat::SoftwareConfig
     properties:
@@ -296,6 +316,10 @@ resources:
           - CREATE
           - UPDATE
 
+  # The salt orchestrate command is the second of the two main salt commands to run
+  # Selected instances are targetted using the "roles" grains to install the right software on them
+  # in a specific order.
+  # The orchestrate/pnda.sls file defines which salt states to run for which roles and in what order.
   orchestrate_config:
     type: OS::Heat::SoftwareConfig
     properties:
@@ -322,6 +346,8 @@ resources:
           actions:
           - CREATE
 
+  # To expand a cluster highstate is run for the new nodes, then orchestrate/pnda-expand.sls orchestrate
+  # command is run to add them to the cluster.
   expand_config:
     type: OS::Heat::SoftwareConfig
     properties:
