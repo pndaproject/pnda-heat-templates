@@ -60,8 +60,13 @@ parameters:
   software_config_transport:
     type: string
     default: POLL_TEMP_URL
+  specific_config:
+    description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
+    type: string
+    default: ''
 
 resources:
+
   pnda_cluster:
     type: OS::Pnda::cluster
   {%if create_network is equalto 1 %}
@@ -94,8 +99,12 @@ resources:
       Manager1Flavor: { get_param: Manager1Flavor }
       DataNodes: { get_param: DataNodes }
       DatanodeVolumeSize : { get_param: DatanodeVolumeSize }
+      KafkaNodes: { get_param: KafkaNodes }
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      pre_config: {get_resource: pre_config}
+      specific_config: { get_param: specific_config }
+      package_config: {get_resource: package_config}
 
   saltmaster_server:
     type: OS::Nova::Server
@@ -119,4 +128,5 @@ resources:
             '%stackname%': {get_param: 'OS::stack_name'}
       software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
+      user_data: { get_resource: pre_config }
       config_drive: True

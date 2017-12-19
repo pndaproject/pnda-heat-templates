@@ -6,3 +6,5 @@ _resources_*
 pnda_env.yaml
 cli/logs
 
+
+*.run

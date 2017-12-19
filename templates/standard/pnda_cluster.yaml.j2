@@ -6,7 +6,7 @@
 # It is processed as a jinja2 template with the following parameters:
 #   - create_network: 0|1. Set to 1 to create network related resources
 
-heat_template_version: 2014-10-16
+heat_template_version: 2015-04-30
 
 parameters:
   SaltmasterFlavor:
@@ -69,11 +69,12 @@ parameters:
     type: string
     description: Flavor for the opentsdb node
     default: m1.large
-
+  os_user:
+    type: string
+    description: operating system user for provisioning
   image_id:
     type: string
     description: default image for pnda servers
-    default: ubuntu1404
 
   ToolsNodes:
     default: '1'
@@ -118,9 +119,6 @@ parameters:
     description: pnda flavor
     type: string
     default: standard
-  git_private_key_file:
-    description: private key file for cloning from git
-    type: string
   SaltmasterIP:
     type: string
   PndaSecGroup:
@@ -137,6 +135,18 @@ parameters:
   software_config_transport:
     type: string
     default: POLL_TEMP_URL
+  PndaMirror:
+    description: URL of a mirror for operating system package download
+    type: string
+    default: ''
+  pre_config:
+    type: string
+  specific_config:
+    description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
+    type: string
+    default: ''
+  package_config:
+    type: string
 
 resources:
   MgrAAGroup:
@@ -267,6 +277,7 @@ resources:
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      package_config: { get_param: package_config }
       Flavor: { get_param: BastionFlavor }
       Image: { get_param: image_id }
       KeyName: { get_param: BastionKeyName }
@@ -283,6 +294,10 @@ resources:
       pnda_secgroup: { get_param: PndaSecGroup }
       cluster_name: { get_param: deployment_name }
       pnda_flavor: { get_param: PndaFlavor }
+      PndaMirror: { get_param: PndaMirror }
+      os_user: { get_param: os_user }
+      specific_config: { get_param: specific_config }
+
   zookeeper:
     type: OS::Heat::ResourceGroup
     properties:
@@ -292,6 +307,8 @@ resources:
         properties:
           signal_transport: { get_param: signal_transport }
           software_config_transport: { get_param: software_config_transport }
+          pre_config: { get_param: pre_config }
+          package_config: { get_param: package_config }
           Flavor: { get_param: ZookeeperFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }
@@ -308,9 +325,11 @@ resources:
           cluster_name: { get_param: deployment_name }
           pnda_secgroup: { get_param: PndaSecGroup }
           pnda_flavor: { get_param: PndaFlavor }
+          PndaMirror: { get_param: PndaMirror }
 {%if create_zknodes_group is equalto 1 %}
           scheduler_group_hint: { get_resource: ZkAAGroup}
 {%endif%}
+          specific_config: { get_param: specific_config }
   kafka:
     type: OS::Heat::ResourceGroup
     properties:
@@ -320,6 +339,8 @@ resources:
         properties:
           signal_transport: { get_param: signal_transport }
           software_config_transport: { get_param: software_config_transport }
+          pre_config: { get_param: pre_config }
+          package_config: { get_param: package_config }
           Flavor: { get_param: KafkaFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }
@@ -336,9 +357,11 @@ resources:
           cluster_name: { get_param: deployment_name }
           pnda_secgroup: { get_param: PndaSecGroup }
           pnda_flavor: { get_param: PndaFlavor }
+          PndaMirror: { get_param: PndaMirror }
 {%if create_kafkanodes_group is equalto 1 %}
           scheduler_group_hint: { get_resource: KafkaAAGroup}
 {%endif%}
+          specific_config: { get_param: specific_config }
   tools:
     type: OS::Heat::ResourceGroup
     properties:
@@ -348,6 +371,8 @@ resources:
         properties:
           signal_transport: { get_param: signal_transport }
           software_config_transport: { get_param: software_config_transport }
+          pre_config: { get_param: pre_config }
+          package_config: { get_param: package_config }
           Flavor: { get_param: ToolsFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }
@@ -364,11 +389,15 @@ resources:
           cluster_name: { get_param: deployment_name }
           pnda_secgroup: { get_param: PndaSecGroup }
           pnda_flavor: { get_param: PndaFlavor }
+          PndaMirror: { get_param: PndaMirror }
+          specific_config: { get_param: specific_config }
   cm:
     type: OS::Pnda::cm
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      pre_config: { get_param: pre_config }
+      package_config: { get_param: package_config }
       Flavor: { get_param: CMFlavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -383,11 +412,15 @@ resources:
       cluster_name: { get_param: deployment_name }
       pnda_secgroup: { get_param: PndaSecGroup }
       pnda_flavor: { get_param: PndaFlavor }
+      PndaMirror: { get_param: PndaMirror }
+      specific_config: { get_param: specific_config }
   logserver:
     type: OS::Pnda::logserver
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      pre_config: { get_param: pre_config }
+      package_config: { get_param: package_config }
       Flavor: { get_param: LogserverFlavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -402,11 +435,15 @@ resources:
       cluster_name: { get_param: deployment_name }
       pnda_secgroup: { get_param: PndaSecGroup }
       pnda_flavor: { get_param: PndaFlavor }
+      PndaMirror: { get_param: PndaMirror }
+      specific_config: { get_param: specific_config }
   jupyter:
     type: OS::Pnda::jupyter
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      pre_config: { get_param: pre_config }
+      package_config: { get_param: package_config }
       Flavor: { get_param: JupyterFlavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -421,11 +458,15 @@ resources:
       cluster_name: { get_param: deployment_name }
       pnda_secgroup: { get_param: PndaSecGroup }
       pnda_flavor: { get_param: PndaFlavor }
+      PndaMirror: { get_param: PndaMirror }
+      specific_config: { get_param: specific_config }
   manager1:
     type: OS::Pnda::manager1
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      pre_config: { get_param: pre_config }
+      package_config: { get_param: package_config }
       Flavor: { get_param: Manager1Flavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -440,12 +481,16 @@ resources:
       pnda_secgroup: { get_param: PndaSecGroup }
       cluster_name: { get_param: deployment_name }
       pnda_flavor: { get_param: PndaFlavor }
+      PndaMirror: { get_param: PndaMirror }
       scheduler_group_hint: { get_resource: MgrAAGroup}
+      specific_config: { get_param: specific_config }
   manager2:
     type: OS::Pnda::manager2
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      pre_config: { get_param: pre_config }
+      package_config: { get_param: package_config }
       Flavor: { get_param: Manager2Flavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -460,12 +505,16 @@ resources:
       pnda_secgroup: { get_param: PndaSecGroup }
       cluster_name: { get_param: deployment_name }
       pnda_flavor: { get_param: PndaFlavor }
+      PndaMirror: { get_param: PndaMirror }
       scheduler_group_hint: { get_resource: MgrAAGroup}
+      specific_config: { get_param: specific_config }
   manager3:
     type: OS::Pnda::manager3
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      pre_config: { get_param: pre_config }
+      package_config: { get_param: package_config }
       Flavor: { get_param: Manager3Flavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -480,11 +529,15 @@ resources:
       pnda_secgroup: { get_param: PndaSecGroup }
       cluster_name: { get_param: deployment_name }
       pnda_flavor: { get_param: PndaFlavor }
+      PndaMirror: { get_param: PndaMirror }
+      specific_config: { get_param: specific_config }
   manager4:
     type: OS::Pnda::manager4
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      pre_config: { get_param: pre_config }
+      package_config: { get_param: package_config }
       Flavor: { get_param: Manager4Flavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -500,11 +553,15 @@ resources:
       cluster_name: { get_param: deployment_name }
       pnda_flavor: { get_param: PndaFlavor }
       scheduler_group_hint: { get_resource: MgrAAGroup}
+      PndaMirror: { get_param: PndaMirror }
+      specific_config: { get_param: specific_config }
   edge:
     type: OS::Pnda::edge
     properties:
       signal_transport: { get_param: signal_transport }
       software_config_transport: { get_param: software_config_transport }
+      pre_config: { get_param: pre_config }
+      package_config: { get_param: package_config }
       Flavor: { get_param: EdgeFlavor }
       Image: { get_param: image_id }
       KeyName: { get_param: KeyName }
@@ -519,6 +576,8 @@ resources:
       cluster_name: { get_param: deployment_name }
       pnda_secgroup: { get_param: PndaSecGroup }
       pnda_flavor: { get_param: PndaFlavor }
+      PndaMirror: { get_param: PndaMirror }
+      specific_config: { get_param: specific_config }
   dn:
     type: OS::Heat::ResourceGroup
     properties:
@@ -528,6 +587,8 @@ resources:
         properties:
           signal_transport: { get_param: signal_transport }
           software_config_transport: { get_param: software_config_transport }
+          pre_config: { get_param: pre_config }
+          package_config: { get_param: package_config }
           Flavor: { get_param: DatanodeFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }
@@ -545,9 +606,11 @@ resources:
           cluster_name: { get_param: deployment_name }
           pnda_secgroup: { get_param: PndaSecGroup }
           pnda_flavor: { get_param: PndaFlavor }
+          PndaMirror: { get_param: PndaMirror }
 {%if create_datanodes_group is equalto 1 %}
           scheduler_group_hint: { get_resource: DataNodeAAGroup}
 {%endif%}
+          specific_config: { get_param: specific_config }
   opentsdb:
     type: OS::Heat::ResourceGroup
     properties:
@@ -557,6 +620,8 @@ resources:
         properties:
           signal_transport: { get_param: signal_transport }
           software_config_transport: { get_param: software_config_transport }
+          pre_config: { get_param: pre_config }
+          package_config: { get_param: package_config }
           Flavor: { get_param: OpentsdbFlavor }
           Image: { get_param: image_id }
           KeyName: { get_param: KeyName }
@@ -573,7 +638,8 @@ resources:
           cluster_name: { get_param: deployment_name }
           pnda_secgroup: { get_param: PndaSecGroup }
           pnda_flavor: { get_param: PndaFlavor }
-
+          PndaMirror: { get_param: PndaMirror }
+          specific_config: { get_param: specific_config }
 outputs:
   zookeeper_hosts:
     value: { get_attr: [zookeeper, hosts_entry] }

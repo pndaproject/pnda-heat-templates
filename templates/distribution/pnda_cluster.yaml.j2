@@ -1,0 +1,193 @@
+heat_template_version: 2014-10-16
+
+parameters:
+  SaltmasterFlavor:
+    type: string
+    description: Falvor for the salmaster nodes
+  EdgeFlavor:
+    type: string
+    description: Falvor for the edge node
+    default: pnda-micro
+{%if create_bastion is equalto 1 %}
+  BastionFlavor:
+    type: string
+    description: Flavor for the bastion nodes
+{%endif%}
+  KafkaFlavor:
+    type: string
+    description: Flavor for the kafka nodes
+  KafkaNodes:
+    default: '3'
+    description: Number of KAFKA nodes
+    type: string
+  DataNodes:
+    default: '4'
+    description: Number of DATA nodes
+    type: string
+  OpentsdbNodes:
+    default: 0
+    description: Number of Opentsdb nodes
+    type: number
+  image_id:
+    type: string
+    description: default image for pnda servers
+
+{%if create_network is equalto 1 %}
+  public_net:
+    type: string
+    description: >
+      ID or name of public network for which floating IP addresses will be allocated
+  private_net:
+    type: string
+  private_subnet:
+    type: string
+{%endif%}
+  KeyName:
+    description: Name of an existing KeyPair to enable SSH access to the instances
+    type: string
+  git_private_key_file:
+    description: private key file for cloning from git
+    type: string
+  PndaFlavor:
+    description: pnda flavor
+    type: string
+    default: standard
+  git_private_key_file:
+    description: private key file for cloning from git
+    type: string
+  SaltmasterIP:
+    type: string
+{%if create_network is equalto 1 %}
+  PndaSecGroup:
+    type: string
+  private_key:
+    type: string
+{%endif%}
+  BastionKeyName:
+    type: string
+  deployment_name:
+    type: string
+  signal_transport:
+    type: string
+    default: TEMP_URL_SIGNAL
+  software_config_transport:
+    type: string
+    default: POLL_TEMP_URL
+  specific_config:
+    description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
+    type: string
+    default: ''
+
+resources:
+{%if create_network is equalto 1 %}
+  KafkaSecGroup:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      description: Add security group rules for Kafka Nodes
+      name:
+        str_replace:
+          template:
+            cname-kafka
+          params:
+            cname: { get_param: deployment_name }
+      rules:
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: tcp
+          port_range_min: 22
+          port_range_max: 22
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: icmp
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: tcp
+          port_range_min: 443
+          port_range_max: 443
+  DNSecGroup:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      description: Add security group rules for Data Nodes
+      name:
+        str_replace:
+          template:
+            cname-dn
+          params:
+            cname: { get_param: deployment_name }
+      rules:
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: icmp
+{% endif %}
+{%if create_bastion is equalto 1 %}
+  bastion:
+    type: OS::Pnda::bastion
+    properties:
+      Flavor: { get_param: BastionFlavor }
+      Image: { get_param: image_id }
+      name:
+        str_replace:
+          template: '%stackname%-bastion'
+          params:
+            '%stackname%': { get_param: deployment_name }
+{%if create_network is equalto 1 %}
+      PrivateNet: { get_param: private_net }
+      PrivateSubnet: { get_param: private_subnet }
+      PublicNet: { get_param: public_net }
+      private_key: { get_param: private_key }
+      pnda_secgroup: { get_param: PndaSecGroup }
+{% endif %}
+      KeyName: { get_param: BastionKeyName }
+      SaltmasterIP: { get_param: SaltmasterIP }
+      cluster_name: { get_param: deployment_name }
+      pnda_flavor: { get_param: PndaFlavor }
+{%endif%}
+      specific_config: { get_param: specific_config }
+
+  kafka:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: { get_param: KafkaNodes }
+      resource_def:
+        type: OS::Pnda::kafka
+        properties:
+          Flavor: { get_param: KafkaFlavor }
+          Image: { get_param: image_id }
+          name:
+            str_replace:
+              template: '%stackname%-kafka-%index%'
+              params:
+                '%stackname%': { get_param: deployment_name }
+          NodeIndex: '%index%'
+          SaltmasterIP: { get_param: SaltmasterIP }
+{%if create_network is equalto 1 %}
+          PrivateNet: { get_param: private_net }
+          PrivateSubnet: { get_param: private_subnet }
+          sec_group: { get_resource: KafkaSecGroup }
+          pnda_secgroup: { get_param: PndaSecGroup }
+{% endif %}
+          KeyName: { get_param: KeyName }
+          cluster_name: { get_param: deployment_name }
+          pnda_flavor: { get_param: PndaFlavor }
+          specific_config: { get_param: specific_config }
+
+  edge:
+    type: OS::Pnda::edge
+    properties:
+      Flavor: { get_param: EdgeFlavor }
+      Image: { get_param: image_id }
+      name:
+        str_replace:
+          template: '%stackname%-cdh-edge'
+          params:
+            '%stackname%': { get_param: deployment_name }
+{%if create_network is equalto 1 %}
+      PrivateNet: { get_param: private_net }
+      PrivateSubnet: { get_param: private_subnet }
+      pnda_secgroup: { get_param: PndaSecGroup }
+{% endif %}
+      KeyName: { get_param: KeyName }
+      cluster_name: { get_param: deployment_name }
+      SaltmasterIP: { get_param: SaltmasterIP }
+      pnda_flavor: { get_param: PndaFlavor }
+      specific_config: { get_param: specific_config }
+
+outputs:
+  kafka_hosts:
+    value: { get_attr: [kafka, hosts_entry] }

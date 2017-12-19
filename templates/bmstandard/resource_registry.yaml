@@ -1,0 +1,11 @@
+resource_registry:
+  OS::Pnda::cluster: pnda_cluster.yaml
+  OS::Pnda::bastion: bastion.yaml
+  OS::Pnda::edge: edge.yaml
+  OS::Pnda::dn: dn.yaml
+  OS::Pnda::zookeeper: zookeeper.yaml
+  OS::Pnda::kafka: kafka.yaml
+  OS::Pnda::cm: cm.yaml
+  OS::Pnda::manager1: mgr1.yaml
+  OS::Pnda::manager2: mgr2.yaml
+  OS::Pnda::preConfig : OS::Heat::None

@@ -33,11 +33,18 @@ parameter_defaults:
   name_servers: [ "173.38.200.100" ]
 
   #
-  # image_id: A a base image to use for the created instances. It should be created by 
+  # image_id: Base image to use for the created instances. It should be created by 
   # following the guide in https://github.com/pndaproject/pnda-dib-elements
   #
   image_id: pnda-base
+  image_id_saltmaster: pnda-base
 
+  #
+  # os_user: Default sudo or root user for the instances created from the image above. 
+  # Often but not always 'cloud-user' on OpenStack platforms.
+  #
+  os_user: 'root'
+  
   # KEYSTONE CREDENTIALS
   
   #
@@ -61,6 +68,12 @@ parameter_defaults:
   # under the Access & Security section.
   #  
   keystone_auth_url: 'http://x.x.x.x:5000/v2.0'
+
+  #
+  # keystone_auth_version: Keystone authentication version. The Openstack console provides this 
+  # under the Access & Security section.
+  #  
+  keystone_auth_version: '2'
   
   #
   # keystone_region_name: Keystone region. The Openstack console provides this 
@@ -74,33 +87,14 @@ parameter_defaults:
   pnda_archive_container:  'pnda_archive'
 
   #
-  # packages_server_uri: HTTP server containing the compiled binary packages for the 
-  # components required to provision PNDA
-  #
-  packages_server_uri: 'http://x.x.x.x'
-
-  #
   # platform_git_repo_uri: The platform-salt git repository url.
   #
   platform_git_repo_uri: 'https://github.com/pndaproject/platform-salt.git'
 
   #
-  # JavaMirror: A mirror of the JDK. PNDA is unlikely to succeed without this being hosted locally
-  # see PNDA-2274
-  #
-  JavaMirror: 'http://x.x.x.x/mirror/java/jdk/8u74-b02/jdk-8u74-linux-x64.tar.gz'
-
-  #
-  # ClouderaParcelsMirror: A mirror of the CDH repo. This is optional but can speed up provisioning
-  # if the network connection to the Cloudera hosted repo is slow, as the download is 1.5GB
+  # PndaMirror: URI of the mirror for offline installation
   #  
-  ClouderaParcelsMirror: 'http://x.x.x.x/mirror/archive.cloudera.com/cdh5/parcels/5.9.0/'
-
-  #
-  # AnacondaParcelsMirror: A mirror of the Anaconda repo. This is optional but can speed up provisioning
-  # if the network connection to the Anaconda hosted repo is unreliable
-  #  
-  AnacondaParcelsMirror: 'http://x.x.x.x/mirror/anaconda'
+  PndaMirror: 'http://www.example.com'
   
   #
   # git_private_key_file: If authenticated access to platform_git_repo_uri is required then this key should be
@@ -111,8 +105,8 @@ parameter_defaults:
   #
   # NtpServers: Optional ntp servers. Use this if the standard Ubuntu NTP servers on the Internet cannot be reached
   # and a local NTP server has been configured. PNDA will not work without NTP.
-  #
-  NtpServers: 'xxx.ntp.org'
+  # example format: 'xxx.ntp.org'
+  NtpServers: ''
 
   # APPLICATION PACKAGE REPOSITORY
   
@@ -138,7 +132,7 @@ parameter_defaults:
   # package_repository_fs_location_path: Path to local folder on the package repository service server that contains 
   # application packages
   #  
-  #package_repository_fs_location_path: '/mnt/packages'
+  package_repository_fs_location_path: '/mnt/packages'
   
   #
   # package_repository_sshfs_user: Username to use when logging in to the sshfs repo
@@ -176,3 +170,20 @@ parameter_defaults:
   # AWS_REGION: AWS region to use to access the s3 bucket that contains application packages
   # 
   #AWS_REGION=xxxx
+
+  #
+  # hypervisor_count: The number of available hypervisors the distribute the Anti-Affiliate servers over.
+  # This optional parameter can be used to trigger Anti-Affiliate support.
+  # Commenting out this parameter will disable Anti-Affiliate support altogether. 
+  #
+  #hypervisor_count: 30
+
+resource_registry:
+  #
+  # OS::Pnda::preConfig: the resource definition of a pre configuration file
+  # that will be run prior to all the other PNDA configuration files.
+  # Examples: 
+  # To enable the ip tracking config script uncomment the next line.
+  #OS::Pnda::preConfig : iptracker.yaml
+  # To enable the ip rejecting config script uncomment the next line.
+  #OS::Pnda::preConfig : iprejecter.yaml

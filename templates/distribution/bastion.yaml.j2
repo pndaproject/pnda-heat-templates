@@ -1,0 +1,171 @@
+heat_template_version: 2014-10-16
+
+parameters:
+  Flavor:
+    description: Flavor of the bastion server
+    type: string
+    default: m1.small
+  KeyName:
+    description: Name of an existing ssh keypair
+    type: string
+{%if create_network is equalto 1 %}
+  PrivateNet:
+    description: Private network for pnda deployment
+    type: string
+  PrivateSubnet:
+    description: Private network for pnda deployment
+    type: string
+  PublicNet:
+    description: Private network for pnda deployment
+    type: string
+{%endif%}
+  Image:
+    type: string
+  name:
+    type: string
+  SaltmasterIP:
+    type: string
+  cluster_name:
+    type: string
+  pnda_flavor:
+    type: string
+    default: standard
+{%if create_network is equalto 1 %}
+  private_key:
+    type: string
+  pnda_secgroup:
+    type: string
+{% endif %}
+  signal_transport:
+    type: string
+    default: TEMP_URL_SIGNAL
+  software_config_transport:
+    type: string
+    default: POLL_TEMP_URL
+  PndaMirror:
+    description: URL of a mirror for operating system package download
+    type: string
+    default: ''
+  specific_config:
+    description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
+    type: string
+    default: ''
+  package_config:
+    type: string
+
+resources:
+{%if create_network is equalto 1 %}
+  sec_group:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      description: Bastion SecurityGroup
+      name:
+        str_replace:
+          template: cname-bastion
+          params :
+            cname: { get_param: cluster_name }
+      rules:
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: icmp
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: tcp
+          port_range_min: 22
+          port_range_max: 22
+
+  port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: PrivateNet }
+      fixed_ips:
+        - subnet_id: { get_param: PrivateSubnet }
+      security_groups: [{ get_resource: sec_group },{ get_param: pnda_secgroup }]
+
+  floatingIP:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network_id: { get_param: PublicNet }
+      port_id: { get_resource: port}
+{% endif %}
+  deploy_package:
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      signal_transport: { get_param: signal_transport }
+      config:
+        get_param: package_config
+      server:
+        get_resource: server
+      actions:
+        - CREATE
+
+  install_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      config:
+        str_replace:
+          template: {get_file: scripts/base_install.sh }
+          params:
+            $pnda_mirror$: { get_param: PndaMirror }
+            $flavor$: { get_param: pnda_flavor }
+            $roles$: 'bastion'
+            $master_ip$: { get_param: SaltmasterIP }
+            $keyname$: { get_param: 'OS::stack_name' }
+{%if create_network is equalto 1 %}
+            $private_key$: { get_param: private_key }
+{%endif%}
+            $pnda_cluster$: { get_param: cluster_name }
+            $$SPECIFIC_CONF$$: { get_param: specific_config }
+  install_deployment:
+    type: OS::Heat::SoftwareDeployment
+    depends_on: [ bastion_deployment, deploy_package ]
+    properties:
+      signal_transport: { get_param: signal_transport }
+      config:
+        get_resource: install_config
+      server:
+        get_resource: server
+
+  bastion_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      config:
+        str_replace:
+          template: {get_file: scripts/bastion_install.sh }
+          params:
+{%if create_network is equalto 1 %}
+            $private_key$: { get_param: private_key }
+{%endif%}
+            $keyname$: { get_param: 'OS::stack_name' }
+            $$SPECIFIC_CONF$$: { get_param: specific_config }
+  bastion_deployment:
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      signal_transport: { get_param: signal_transport }
+      config:
+        get_resource: bastion_config
+      server:
+        get_resource: server
+  server:
+    type: OS::Nova::Server
+{%if create_network is equalto 1 %}
+    depends_on: floatingIP
+{%endif%}
+    properties:
+      name: { get_param: name }
+      image: { get_param: Image }
+      flavor: { get_param: Flavor}
+      key_name: { get_param: KeyName }
+{%if create_network is equalto 1 %}
+      networks:
+        - port: { get_resource: port }
+{% endif %}
+      software_config_transport: { get_param: software_config_transport }
+      user_data_format: SOFTWARE_CONFIG
+      config_drive: True
+
+outputs:
+  server_resource:
+    description: Heat resource handle for the Nova compute server
+    value:
+      {get_resource: server}

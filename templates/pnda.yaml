@@ -1,8 +1,8 @@
 # This base pnda.yaml contains the parts of the stack that are common to all flavors
-# The <flavor>/pnda.yaml file is merged over the top of this one before creating the stack 
+# The <flavor>/pnda.yaml file is merged over the top of this one before creating the stack
 
 # To create a new flavor copy an existing flavor folder and edit:
-# - pnda_yaml.yaml to define a pnda_cluster with a parameter for each instance size and a saltmaster 
+# - pnda_yaml.yaml to define a pnda_cluster with a parameter for each instance size and a saltmaster
 # - pnda_cluster.yaml to define the specific instances required to host the flavor
 # - a yaml for each instance type that defines which bootstrap script to run and what parameters to pass to it
 # - resource_registry.yaml to specify which of these yaml files to run for each instance type
@@ -13,13 +13,12 @@
 #   - package_repository_fs_type: swift|s3|fs|sshfs. Additional properties are defined based on the type
 #                                 of package repository selected
 
-heat_template_version: 2014-10-16
+heat_template_version: 2015-04-30
 
 parameters:
   image_id:
     type: string
     description: default image for pnda servers
-    default: ubuntu1404
   public_net:
     type: string
     description: >
@@ -49,16 +48,8 @@ parameters:
     description: Branch of the salt repository
     type: string
     default: master
-  JavaMirror:
-    description: URL of a mirror for java release download
-    type: string
-    default: ''
-  ClouderaParcelsMirror:
-    description: URL of a mirror for cloudera parcels download
-    type: string
-    default: ''
-  AnacondaParcelsMirror:
-    description: URL of a mirror for anaconda parcels download
+  PndaMirror:
+    description: URL of a mirror for operating system package download
     type: string
     default: ''
   NtpServers:
@@ -97,7 +88,8 @@ parameters:
     description: AWS region
     type: string
     default: ''
-
+  os_user:
+    type: string
   keystone_user:
     type: string
   keystone_password:
@@ -105,6 +97,8 @@ parameters:
   keystone_tenant:
     type: string
   keystone_auth_url:
+    type: string
+  keystone_auth_version:
     type: string
   keystone_region_name:
     type: string
@@ -143,6 +137,10 @@ parameters:
   software_config_transport:
     type: string
     default: POLL_TEMP_URL
+  specific_config:
+    description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
+    type: string
+    default: ''
 
 resources:
   # A keypair is created for this stack and used to secure login for all instances
@@ -235,6 +233,25 @@ resources:
       security_groups: [{ get_resource: saltmaster_sec_group }, { get_resource: PndaSecGroup }]
 {% endif %}
 
+  pre_config:
+    type: OS::Pnda::preConfig
+    properties:
+      PndaMirror: { get_param: PndaMirror }
+      NtpServers: { get_param: NtpServers }
+      keystone_auth_url: { get_param: keystone_auth_url }
+      platform_git_repo_uri: { get_param: platform_git_repo_uri }
+      platform_uri: { get_param: platform_uri }
+
+  package_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      config:
+        str_replace:
+          template: { get_file: scripts/package_install.sh }
+          params:
+            $pnda_mirror$: { get_param: PndaMirror }
+
   # A SoftwareConfig resource contains all the parameters used when provisioning PNDA
   install_config:
     type: OS::Heat::SoftwareConfig
@@ -246,13 +263,11 @@ resources:
         str_replace:
           template: { get_file: scripts/saltmaster_install.sh }
           params:
+            $pnda_mirror$: { get_param: PndaMirror }
             $flavor$: { get_param: PndaFlavor }
             $pnda_cluster$: {get_param: 'OS::stack_name'}
             $git_private_key$: { get_file: deploy }
             $git_branch$: { get_param: GitBranch }
-            $java_mirror$: { get_param: JavaMirror }
-            $cloudera_mirror$: { get_param: ClouderaParcelsMirror }
-            $anaconda_mirror$: { get_param: AnacondaParcelsMirror }
             $ntp_servers$: { get_param: NtpServers }
             $package_repository_fs_type$ : {{ package_repository_fs_type }}
             $package_repository_fs_location_path$: { get_param: package_repository_fs_location_path }
@@ -266,10 +281,12 @@ resources:
             $S3_ACCESS_KEY_ID$: { get_param: S3_ACCESS_KEY_ID }
             $S3_SECRET_ACCESS_KEY$: { get_param: S3_SECRET_ACCESS_KEY }
             $AWS_REGION$: { get_param: AWS_REGION }
+            $os_user$: { get_param: os_user }
             $keystone_user$: { get_param: keystone_user }
             $keystone_password$: { get_param: keystone_password }
             $keystone_tenant$: { get_param: keystone_tenant }
             $keystone_auth_url$: { get_param: keystone_auth_url }
+            $keystone_auth_version$: { get_param: keystone_auth_version }
             $keystone_region_name$: { get_param: keystone_region_name }
             $packages_server_uri$: { get_param: packages_server_uri }
             $platform_uri$: { get_param: platform_uri }
@@ -277,17 +294,30 @@ resources:
             $pnda_apps_container$: { get_param: pnda_apps_container }
             $pnda_apps_folder$: { get_param: pnda_apps_folder }
             $pnda_archive_container$: { get_param: pnda_archive_container }
+            $$SPECIFIC_CONF$$: { get_param: specific_config }
+
+  deploy_package:
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      signal_transport: { get_param: signal_transport }
+      config:
+        get_resource: package_config
+      server:
+        get_resource: saltmaster_server
+      actions:
+        - CREATE
 
   deploy_install:
-        type: OS::Heat::SoftwareDeployment
-        properties:
-          signal_transport: { get_param: signal_transport }
-          config:
-            get_resource: install_config
-          server:
-            get_resource: saltmaster_server
-          actions:
-            - CREATE
+    depends_on: [deploy_package]
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      signal_transport: { get_param: signal_transport }
+      config:
+        get_resource: install_config
+      server:
+        get_resource: saltmaster_server
+      actions:
+        - CREATE
 
   # The salt highstate command is the first of the two main salt commands to run
   # Each instance is targetted using the "roles" grains to install the right software on them
@@ -399,6 +429,14 @@ outputs:
     description: Output of the Salt orchestrate command
     value:
       get_attr: [deploy_orchestrate, deploy_stdout]
+  salt_highstate_err:
+    description: Output of the Salt highstate command
+    value:
+      get_attr: [deploy_highstate, deploy_stderr]
+  salt_orchestrate_err:
+    description: Output of the Salt orchestrate command
+    value:
+      get_attr: [deploy_orchestrate, deploy_stderr]      
   install_stdout:
     value:
       get_attr: [deploy_install, deploy_stdout]

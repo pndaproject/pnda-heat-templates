@@ -52,6 +52,7 @@ You MUST update the `KEYSTONE CREDENTIALS` section in the `pnda_env.yaml` file w
     keystone_password: '32165468321654'
     keystone_tenant: 'pnda'
     keystone_auth_url: 'https://openstack.example.com:5000/v2.0'
+    keystone_auth_version: '2'    
     keystone_region_name: 'europe'
 
 You MUST edit the `pnda_apps_container`, `pnda_apps_folder` parameters to change which location to use for the application repository in Swift.  For example:

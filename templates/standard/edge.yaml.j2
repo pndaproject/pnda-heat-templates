@@ -2,7 +2,7 @@
 # Specifies which bootstrap script to run to set up this instance type and which roles
 # to apply to this instance type
 
-heat_template_version: 2014-10-16
+heat_template_version: 2015-04-30
 
 parameters:
   Flavor:
@@ -52,6 +52,18 @@ parameters:
     type: string
   software_config_transport:
     type: string
+  PndaMirror:
+    description: URL of a mirror for operating system package download
+    type: string
+    default: ''
+  pre_config:
+    type: string
+  specific_config:
+    description: "Warning: Specific configuration that will be passed to bash scripts as associative array"
+    type: string
+    default: ''
+  package_config:
+    type: string
 
 resources:
   sec_group:
@@ -83,19 +95,38 @@ resources:
         str_replace:
           template: {get_file: scripts/base_install.sh }
           params:
+            $pnda_mirror$: { get_param: PndaMirror }
             $flavor$: { get_param: pnda_flavor }
             $master_ip$: { get_param: SaltmasterIP }
             $pnda_cluster$: { get_param: cluster_name }
             $log_volume_id$: { get_resource: logvolume }
+{%if package_repository_fs_type == 'local' %}
             $pr_volume_id$: { get_resource: prvolume }
+{%endif%}
             $package_repository_fs_location_path$: { get_param: package_repository_fs_location_path }
             $package_repository_fs_type$: { get_param: package_repository_fs_type }
             $roles$: 'cloudera_edge,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,gobblin,deployment_manager,package_repository,data_service,impala-shell,yarn-gateway,hbase_opentsdb_tables,hdfs_cleaner,master_dataset'
             $cloudera_role$: 'EDGE'
+            $$SPECIFIC_CONF$$: { get_param: specific_config }
+
+  deploy_package:
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      signal_transport: { get_param: signal_transport }
+      config:
+        get_param: package_config
+      server:
+        get_resource: server
+      actions:
+        - CREATE
 
   install_deployment:
     type: OS::Heat::SoftwareDeployment
-    depends_on: [ logvolume_attachment ,  prvolume_attachment]
+{%if package_repository_fs_type == 'local' %}
+    depends_on: [ logvolume_attachment ,  prvolume_attachment, deploy_package]
+{%else%}
+    depends_on: [ logvolume_attachment , deploy_package]
+{%endif%}
     properties:
       signal_transport: { get_param: signal_transport }
       config:
@@ -115,6 +146,7 @@ resources:
     properties:
       size: { get_param: logvolume_size }
       description: Volume for edge logs
+{%if package_repository_fs_type == 'local' %}      
   prvolume:
     type: OS::Cinder::Volume
     properties:
@@ -125,7 +157,7 @@ resources:
     properties:
       volume_id: { get_resource: prvolume }
       instance_uuid: { get_resource: server }
-
+{%endif%}
   logvolume_attachment:
     type: OS::Cinder::VolumeAttachment
     properties:
@@ -145,6 +177,7 @@ resources:
 
       software_config_transport: { get_param: software_config_transport }
       user_data_format: SOFTWARE_CONFIG
+      user_data: { get_param: pre_config }
       config_drive: True
 
 outputs:
