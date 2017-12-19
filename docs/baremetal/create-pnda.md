@@ -67,6 +67,7 @@ parameter_defaults:
   software_config_transport: POLL_TEMP_URL
   package_repository_fs_type: 'local'
   package_repository_fs_location_path: '/opt/pnda/packages'
+  hadoop_distro: 'CDH'  
 EOF
 ```
 #### Creating the necessary files and swift containers

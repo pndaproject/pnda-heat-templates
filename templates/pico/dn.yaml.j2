@@ -93,7 +93,7 @@ resources:
             $log_volume_id$: { get_resource: logvolume }
             $hdfs_volume_id$: { get_resource: volume }
 {%endif%}
-            $cloudera_role$: 'DATANODE'
+            $hadoop_role$: 'DATANODE'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
   deploy_package:
     type: OS::Heat::SoftwareDeployment

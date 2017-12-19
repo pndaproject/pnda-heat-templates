@@ -14,7 +14,7 @@ import glob
 import jinja2
 import yaml
 
-NAME_REGEX = r"^[\.a-zA-Z0-9-]+$"
+NAME_REGEX = r"^[\.a-z0-9-]+$"
 
 CREATE_INFO = """
 Please wait while your PNDA cluster is being created.
@@ -291,7 +291,8 @@ def create_cluster(args):
                                                                                                          stack_params_string)
     print cmdline
     os_cmd(cmdline, print_output=True)
-    console_info = subprocess.check_output(['nova', 'list', '--name', "%s-cdh-edge" % pnda_cluster, '--fields', 'networks'])
+    time.sleep(180)
+    console_info = subprocess.check_output(['nova', 'list', '--name', "%s-hadoop-edge" % pnda_cluster, '--fields', 'networks'])
     console_ip = re.search('([0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*)', console_info)
     if console_ip:
         print 'Use the PNDA console to get started: http://%s' % console_ip.group(1)
@@ -312,7 +313,7 @@ def get_pnda_cluster_info(cluster_name):
         bastion_ip = bastion['Networks'].split(',')[-1]
 
         # edge node informations
-        edge = next(h for h in hosts if h['Name'] == '{}-cdh-edge'.format(cluster_name))
+        edge = next(h for h in hosts if h['Name'] == '{}-hadoop-edge'.format(cluster_name))
         edge_ip = edge['Networks'].split(',')[0].split('=')[-1]
 
         return {'bastion' : {'public-ip': bastion_ip},

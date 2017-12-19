@@ -22,8 +22,10 @@ VLAN=eth0
 if [ "x$DISTRO" == "xubuntu" ]; then
 export DEBIAN_FRONTEND=noninteractive
 apt-get -y install unzip=6.0-9ubuntu1.5 salt-minion=2015.8.11+ds-1 salt-master=2015.8.11+ds-1
+HDP_OS=ubuntu14
 elif [ "x$DISTRO" == "xrhel" ]; then
 yum -y install unzip-6.0-16.el7 salt-minion-2015.8.11-1.el7 salt-master-2015.8.11-1.el7
+HDP_OS=centos7
 fi
 
 get_interface_ip () {
@@ -111,12 +113,17 @@ pnda.apps_folder: '$pnda_apps_folder$'
 pnda.archive_container: '$pnda_archive_container$'
 EOF
 
+MINE_FUNCTIONS_NETWORK_INTERFACE="eth0"
+if [ "x$mine_functions_network_ip_addrs_nic$" != "x" ]; then
+  MINE_FUNCTIONS_NETWORK_INTERFACE="$mine_functions_network_ip_addrs_nic$"
+fi
+
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
 pnda_mirror:
   base_url: '$pnda_mirror$'
   misc_packages_path: /mirror_misc/
 
-cloudera:
+hadoop:
   parcel_repo: '$pnda_mirror$/mirror_cloudera'
 
 anaconda:
@@ -128,6 +135,15 @@ packages_server:
 
 pip:
   index_url: '$pnda_mirror$/mirror_python/simple'
+
+hadoop.distro: '$hadoop_distro$'
+
+hdp:
+  hdp_core_stack_repo: '$pnda_mirror$/mirror_hdp/HDP/$HDP_OS/'
+  hdp_utils_stack_repo: '$pnda_mirror$/mirror_hdp/HDP-UTILS-1.1.0.21/repos/$HDP_OS/'
+mine_functions:
+  network.ip_addrs: [$MINE_FUNCTIONS_NETWORK_INTERFACE]
+  grains.items: []
 EOF
 
 if [ "x$ntp_servers$" != "x" ] ; then
@@ -189,6 +205,7 @@ EOF
 cat > /etc/salt/grains <<EOF
 pnda:
   flavor: $flavor$
+  is_new_node: True
 pnda_cluster: $pnda_cluster$
 EOF
 

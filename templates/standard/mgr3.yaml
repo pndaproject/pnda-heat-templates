@@ -59,7 +59,7 @@ resources:
       name:
         str_replace:
           template:
-            cname-cdh-mgr3
+            cname-hadoop-mgr3
           params:
             cname: { get_param: cluster_name }
       rules:
@@ -87,7 +87,7 @@ resources:
             $pnda_cluster$: { get_param: cluster_name }
             $log_volume_id$: { get_resource: logvolume }
             $roles$: 'mysql_connector'
-            $cloudera_role$: 'MGR03'
+            $hadoop_role$: 'MGR03'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
   deploy_package:
     type: OS::Heat::SoftwareDeployment

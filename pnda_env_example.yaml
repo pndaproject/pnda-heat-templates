@@ -7,6 +7,10 @@ parameter_defaults:
   public_net: 5982b761-802a-4af3-9c0b-c3b457559179
   
   #
+  mine_functions_network_ip_addrs_nic: eth0
+  #
+
+  #
   # private_net_cidr: CIDR specifying the address range that the private network
   # should be created with
   #
@@ -80,6 +84,11 @@ parameter_defaults:
   # under the Access & Security section.
   #  
   keystone_region_name: 'regionOne'
+
+  #
+  # hadoop_distro: The distribution of hadoop to install.
+  #  
+  hadoop_distro: 'CDH'
 
   #
   # pnda_archive_container: Swift container for PNDA to use when archiving data

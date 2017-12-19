@@ -60,7 +60,7 @@ resources:
       name:
         str_replace:
           template:
-            cname-cdh-mgr2
+            cname-hadoop-mgr2
           params:
             cname: { get_param: cluster_name }
       rules:
@@ -100,8 +100,8 @@ resources:
 {%if create_volumes is equalto 1 %}
             $volume_dev$: { get_param: log_mountpoint }
 {%endif%}
-            $roles$: 'cloudera_namenode,mysql_connector,cloudera_zookeeper,oozie_database,hue'
-            $cloudera_role$: 'MGR02'
+            $roles$: 'mysql_connector,cloudera_zookeeper,oozie_database,hue'
+            $hadoop_role$: 'MGR02'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
 
   install_deployment:

@@ -37,8 +37,8 @@ sudo hostnamectl set-hostname --transient <undercloud_fqdn>
 for example:
 
 ```
-sudo hostnamectl set-hostname undercloud
-sudo hostnamectl set-hostname --transient undercloud
+sudo hostnamectl set-hostname undercloud.mydomain.com
+sudo hostnamectl set-hostname --transient undercloud.mydomain.com
 ```
 
 #### Updating hosts file
@@ -54,7 +54,7 @@ sudo vi /etc/hosts
 for example:
 
 ```
-127.0.0.1   undercloud undercloud localhost
+127.0.0.1   undercloud undercloud.mydomain.com localhost
 ```
 
 #### Setting up the required repositories

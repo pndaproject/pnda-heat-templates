@@ -64,12 +64,12 @@ Listing the previously create virtual machines
 
 	Id Name State
 	----------------------------------------------------
-	- pnda-cdh-cm shut off
-	- pnda-cdh-dn1 shut off
-	- pnda-cdh-dn2 shut off
-	- pnda-cdh-dn3 shut off
-	- pnda-cdh-mgr1 shut off
-	- pnda-cdh-mgr2 shut off
+	- pnda-hadoop-cm shut off
+	- pnda-hadoop-dn1 shut off
+	- pnda-hadoop-dn2 shut off
+	- pnda-hadoop-dn3 shut off
+	- pnda-hadoop-mgr1 shut off
+	- pnda-hadoop-mgr2 shut off
 	- pnda-gateway shut off
 	- pnda-kafka-1 shut off
 	- pnda-kafka-2 shut off
@@ -130,12 +130,12 @@ Reviewing the imported nodes.txt
 	| UUID | Name | Instance UUID | Power State | Provisioning State |
 	Maintenance |
 	+--------------------------------------+------------------+---------------+-------------+--------------------+-------------+
-	| 4cbe3b0d-8fbc-48e8-ba85-933f5e39a158 | pnda-cdh-cm | None | power off	| available | False |
-	| 82e88847-88ed-4558-8ec1-0b4523d70401 | pnda-cdh-dn1 | None | power off	| available | False |
-	| 813f77ea-4982-40ec-8b09-2c2b431583b8 | pnda-cdh-dn2 | None | power off	| available | False |
-	| 13824fb4-1a31-48ad-b065-82ebaa71eac4 | pnda-cdh-dn3 | None | power off	| available | False |
-	| d2292b5e-e2e8-46cb-b644-b101a691661f | pnda-cdh-mgr1 | None | power	off | available | False |
-	| a6d9e7ba-f893-416b-ab2d-83ec03272dec | pnda-cdh-mgr2 | None | power	off | available | False |
+	| 4cbe3b0d-8fbc-48e8-ba85-933f5e39a158 | pnda-hadoop-cm | None | power off	| available | False |
+	| 82e88847-88ed-4558-8ec1-0b4523d70401 | pnda-hadoop-dn1 | None | power off	| available | False |
+	| 813f77ea-4982-40ec-8b09-2c2b431583b8 | pnda-hadoop-dn2 | None | power off	| available | False |
+	| 13824fb4-1a31-48ad-b065-82ebaa71eac4 | pnda-hadoop-dn3 | None | power off	| available | False |
+	| d2292b5e-e2e8-46cb-b644-b101a691661f | pnda-hadoop-mgr1 | None | power	off | available | False |
+	| a6d9e7ba-f893-416b-ab2d-83ec03272dec | pnda-hadoop-mgr2 | None | power	off | available | False |
 	| 67fea56b-3baf-4694-b175-c5b67970481a | pnda-gateway | None | power off	| available | False |
 	| 770ba417-1e29-47dc-b86a-598c8889768c | pnda-kafka-1 | None | power off	| available | False |
 	| b8b26264-3c29-4e44-8fb0-9b90dbb04156 | pnda-kafka-2 | None | power off	| available | False |
