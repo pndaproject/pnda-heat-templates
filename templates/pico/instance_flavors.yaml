@@ -1,0 +1,8 @@
+parameter_defaults:
+  Manager1Flavor: pico-mgr
+  EdgeFlavor: pico-edge
+  KafkaFlavor: pico-kafka
+  DatanodeFlavor: pico-dn
+  BastionFlavor: pnda-micro
+  DatanodeVolumeSize: 35
+  PndaFlavor: pico

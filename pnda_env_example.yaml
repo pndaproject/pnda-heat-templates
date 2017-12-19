@@ -1,0 +1,58 @@
+parameter_defaults:
+  # NETWORK CONFIGURATION
+  # Specify here the external network id so that the stack can allaocate a
+  # Floating IP
+  public_net: 5982b761-802a-4af3-9c0b-c3b457559179
+  private_net_name: 'corp18'
+  private_net_cidr: '192.168.10.0/24'
+  private_net_pool_end: '192.168.10.250'
+  private_net_pool_start: '192.168.10.10'
+  private_net_gateway: '192.168.10.1'
+  name_servers: [ "173.38.200.100" ]
+
+  # SERVER IMAGE
+  image_id: pnda-base
+
+  # KEYSTONE CREDENTIALS
+  # Uncomment and initialize this snippet's values in regards to your tenant
+  keystone_user: 'username'
+  keystone_password: 'password'
+  keystone_tenant: 'pnda'
+  keystone_auth_url: 'http://x.x.x.x:5000/v2.0'
+  keystone_region_name: 'regionOne'
+
+  # Swift containers and folders
+  pnda_apps_container:  'pnda_apps'
+  pnda_apps_folder:  'releases'
+  pnda_archive_container:  'pnda_archive'
+
+  # Initialize this if you want to use a specific packages http server
+  packages_server_uri: 'http://x.x.x.x'
+
+  # Initialize this to the platform-salt git repository url.
+  platform_git_repo_uri: 'https://github.com/pndaproject/platform-salt.git'
+
+  # Optional mirrors
+  JavaMirror: 'http://x.x.x.x/NFS/repos/java/jdk/8u74-b02/jdk-8u74-linux-x64.tar.gz'
+  ClouderaParcelsMirror: 'http://x.x.x.x/mirror/archive.cloudera.com/cdh5/parcels/5.5.2/'
+
+  git_private_key_file: deploy
+
+  # Optional ntp servers
+  NtpServers: 'xxx.ntp.org'
+
+  # package repository
+  #package_repository_fs_location_path: '/mnt/packages'
+  #package_repository_sshfs_user: 'cloud-user'
+  #package_repository_sshfs_host: '127.0.0.1'
+  #package_repository_sshfs_path: '/mnt/packages'
+  #package_repository_sshfs_key: pr_key
+
+  # AWS configuration
+  #S3_ACCESS_KEY_ID=xxxx
+  #S3_SECRET_ACCESS_KEY=xxxx
+  #AWS_REGION=xxxx
+
+  # software deployment syncrho
+  #signal_transport: TEMP_URL_SIGNAL
+  #software_config_transport: POLL_TEMP_URL
