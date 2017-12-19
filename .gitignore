@@ -4,26 +4,26 @@ cli/test.py
 
 heat_operations.md
 
-panda_env-git.yaml
+pnda_env-git.yaml
 
 alternate_envs/huge.yaml
 
-alternate_envs/panda_env_b1.yaml
+alternate_envs/pnda_env_b1.yaml
 
-alternate_envs/panda_env_b2.yaml
+alternate_envs/pnda_env_b2.yaml
 
-alternate_envs/panda_env_b3.yaml
+alternate_envs/pnda_env_b3.yaml
 
-alternate_envs/panda_env_b4.yaml
+alternate_envs/pnda_env_b4.yaml
 
-alternate_envs/panda_env_xxlarge.yaml
+alternate_envs/pnda_env_xxlarge.yaml
 
-panda_env_default.yaml
+pnda_env_default.yaml
 
-panda_env.yaml
+pnda_env.yaml
 
-panda_env_standard.yaml
+pnda_env_standard.yaml
 
 os_scripts/ccast_create_flavors.sh
 
-panda_env_cpod.yaml
+pnda_env_cpod.yaml

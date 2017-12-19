@@ -429,6 +429,15 @@ Installing the Cloudera Hadoop cluster might take some time. In an effort to red
 | *Default values:* | None |
 | *Example value:* | 'http://www.example.com/mirror/archive.cloudera.com/cdh5/parcels/5.5.2/' |
 
+* **AnacondaParcelsMirror**
+
+| *Mandatory:* | no |
+| -------------|-----|
+| *Purpose:* | URI of the Anaconda parcels mirror |
+| *Type:* | string |
+| *Default values:* | None |
+| *Example value:* | 'http://www.example.com/mirror/anaconda/misc/parcels/' |
+
 * **JavaMirror**
 
 | *Mandatory:* | no |

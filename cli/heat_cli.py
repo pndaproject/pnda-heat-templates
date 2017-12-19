@@ -29,9 +29,12 @@ def name_string(v):
         raise argparse.ArgumentTypeError("String '%s' may contain only  a-z 0-9 and '-'"%v)
 
 def banner():
-    print "+-----------+"
-    print "| P a N D A |"
-    print "+-----------+"
+    print r"    ____  _   ______  ___ "
+    print r"   / __ \/ | / / __ \/   |"
+    print r"  / /_/ /  |/ / / / / /| |"
+    print r" / ____/ /|  / /_/ / ___ |"
+    print r"/_/   /_/ |_/_____/_/  |_|"
+    print r""
 
 def os_cmd(cmdline, print_output=False, verbose=False):
     if verbose:
@@ -129,8 +132,8 @@ def create_cluster(args):
                                                                                     stack_environment_file,
                                                                                     stack_params_string)
     elif args.command == 'resize':
-        stack_params_string = ' '.join(stack_params)    
-        cmdline = 'openstack stack update --timeout 120 --template {} --environment {} {}'.format(stack_template_file,
+        stack_params_string = ' '.join(stack_params)
+        cmdline = 'openstack stack update --timeout 120 --wait --template {} --environment {} {}'.format(stack_template_file,
                                                                                     stack_environment_file,
                                                                                     stack_params_string)
     print cmdline

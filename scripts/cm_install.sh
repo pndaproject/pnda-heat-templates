@@ -3,8 +3,9 @@
 set -e
 
 cat > /etc/salt/grains <<EOF
+pnda:
+  flavor: $flavor$
 cloudera:
-  cluster_flavour: $flavor$
   role: CM
 roles:
   - cloudera_management
