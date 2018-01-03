@@ -8,7 +8,8 @@ parameter_defaults:
   
   #
   mine_functions_network_ip_addrs_nic: eth0
-  # 
+  #
+
   #
   # private_net_cidr: CIDR specifying the address range that the private network
   # should be created with

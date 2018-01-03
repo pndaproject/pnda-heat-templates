@@ -5,9 +5,6 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - PNDA-3583: hadoop distro is now part of grains
 
-### Fixed
-- Issue-123: Fixed Jenkins GPG Key Added in pacage-install.sh file
-
 ## [1.4.0] 2017-11-24
 ### Added:
 - PNDA-2969: Allow hadoop distro to be set in `pnda_env.yaml`. Supported values are `HDP` and `CDH`.
@@ -18,6 +15,8 @@ All notable changes to this project will be documented in this file.
 - PNDA-2965: Rename `cloudera_*` role grains to `hadoop_*`
 - PNDA-3180: When expanding a cluster limit the operations to strictly required steps on specific nodes
 - PNDA-3249: put mine configuration in pillar
+- Issue-123: Fixed Jenkins GPG Key Added in package-install.sh file
+
 ### Fixed
 - PNDA-3499: Cleanup CHANGELOG with missing release info.
 - PNDA-3524: remove beacons logic
