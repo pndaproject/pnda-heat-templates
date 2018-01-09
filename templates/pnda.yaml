@@ -108,6 +108,8 @@ parameters:
     type: string
   pnda_archive_container:
     type: string
+  hadoop_distro:
+    type: string
   DeploymentID:
     type: string
     default: ''
@@ -296,6 +298,7 @@ resources:
             $pnda_apps_container$: { get_param: pnda_apps_container }
             $pnda_apps_folder$: { get_param: pnda_apps_folder }
             $pnda_archive_container$: { get_param: pnda_archive_container }
+            $hadoop_distro$: { get_param: hadoop_distro }
             $$SPECIFIC_CONF$$: { get_param: specific_config }
             $mine_functions_network_ip_addrs_nic$: { get_param: mine_functions_network_ip_addrs_nic}
 
