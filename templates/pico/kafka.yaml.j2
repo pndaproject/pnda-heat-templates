@@ -65,6 +65,12 @@ parameters:
     default: ''
   hadoop_distro:
     type: string
+  pnda_internal_network:
+    type: string
+    default: ''
+  pnda_ingest_network:
+    type: string
+    default: ''
 
 resources:
 {%if create_network is equalto 1 %}
@@ -95,6 +101,8 @@ resources:
             $roles$: 'kafka,kafka_manager,platform_testing_general,elk,zookeeper,kafka_tool'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
             $hadoop_distro$: { get_param: hadoop_distro }
+	    $pnda_internal_network$: { get_param: pnda_internal_network }
+	    $pnda_ingest_network$: { get_param: pnda_ingest_network }
   deploy_package:
     type: OS::Heat::SoftwareDeployment
     properties:
