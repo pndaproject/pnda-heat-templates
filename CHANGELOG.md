@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 - PNDA-3583: hadoop distro is now part of grains
 - Issue-143: Added pnda_internal_network and pnda_ingest_network as grains.
 - Issue-144: Added param "hadoop_distro" to mgr1 node template for pico flavor.
+- Issue-145: Added "hadoop.distro" grain to saltmaster_install bootstrap script.
 
 ## [1.4.0] 2017-11-24
 ### Added:

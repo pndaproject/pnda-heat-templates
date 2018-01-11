@@ -205,6 +205,7 @@ pnda:
   flavor: $flavor$
   is_new_node: True
 pnda_cluster: $pnda_cluster$
+hadoop.distro: '$hadoop_distro$'
 EOF
 
 
