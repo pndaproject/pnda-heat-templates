@@ -79,6 +79,14 @@ roles: [${ROLES}]
 EOF
 fi
 
+if [ "$pnda_internal_network$" != "$" ] && [ "$pnda_ingest_network$" != "$" ]; then
+cat >> /etc/salt/grains <<EOF
+vlans:
+  pnda: $pnda_internal_network$
+  ingest: $pnda_ingest_network$
+EOF
+fi
+
 PIP_INDEX_URL="$pnda_mirror$/mirror_python/simple"
 TRUSTED_HOST=$(echo $PIP_INDEX_URL | awk -F'[/:]' '/http:\/\//{print $4}')
 cat << EOF > /etc/pip.conf

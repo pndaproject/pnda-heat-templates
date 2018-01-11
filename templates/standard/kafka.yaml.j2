@@ -61,6 +61,12 @@ parameters:
     default: ''
   hadoop_distro:
     type: string
+  pnda_internal_network:
+    type: string
+    default: ''
+  pnda_ingest_network:
+    type: string
+    default: '
 
 resources:
   port:
@@ -87,6 +93,8 @@ resources:
             $roles$: 'kafka,kafka_tool'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
             $hadoop_distro$: { get_param: hadoop_distro }
+            $pnda_internal_network$: { get_param: pnda_internal_network }
+            $pnda_ingest_network$: { get_param: pnda_ingest_network }
   deploy_package:
     type: OS::Heat::SoftwareDeployment
     properties:
