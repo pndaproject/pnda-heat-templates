@@ -1,7 +1,27 @@
+if [[ $1 == "" ]] || [[ $2 != "" ]]; then
+    echo "Try  'check-stack.sh --help '  for more information"
+    exit -1;
+fi
+
+if [[ $1 == "--help" ]] || [[ $1 == "-h" ]]; then
+    echo "Usage check-stack.sh <stack-name>"
+    echo "Example: check-stack.sh pnda"
+    exit -1;
+fi
+
 D=$(date)
 LOG="$1.stack.log"
 echo "$D" > $LOG
 IFS=$'\n'
+
+output=$(openstack stack resource list $1 2>&1)
+
+if [[ "$output" =~ "Stack not found" ]]; then
+    echo "*** Stack not found: $1"
+    echo "*** stack not found: $1" >> $LOG 2>&1
+    exit -1;
+fi
+
 stacks=$(openstack stack list --nested | grep $1)
 for stackline in $stacks; do echo $stackline >> $LOG 2>&1; done
 for stackline in $stacks
