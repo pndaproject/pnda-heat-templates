@@ -103,7 +103,7 @@ resources:
             $roles$: 'mysql_connector,oozie_database,hue,opentsdb,grafana'
             $hadoop_role$: 'MGR01'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
-            $hadoop_distro$: { get_param: hadoop_distro }	    
+            $hadoop_distro$: { get_param: hadoop_distro }
   deploy_package:
     type: OS::Heat::SoftwareDeployment
     properties:
