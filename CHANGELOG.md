@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - Issue-144: Added param "hadoop_distro" to mgr1 node template for pico flavor.
 - Issue-145: Added "hadoop.distro" grain to saltmaster_install bootstrap script.
 - Issue-146: Updated new path of "hdp_core_stack_repo" in saltmaster_install bootstarp script.
+- PNDA-4043: Update HDP to version 2.6.4.0
 
 ## [1.4.0] 2017-11-24
 ### Added:
