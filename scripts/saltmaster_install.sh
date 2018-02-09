@@ -122,6 +122,7 @@ cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
 pnda_mirror:
   base_url: '$pnda_mirror$'
   misc_packages_path: /mirror_misc/
+  app_packages_path: /mirror_apps/
 
 hadoop:
   parcel_repo: '$pnda_mirror$/mirror_cloudera'
