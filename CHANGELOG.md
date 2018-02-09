@@ -3,12 +3,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Changed
-- PNDA-3583: hadoop distro is now part of grains
+- PNDA-3583: Hadoop distro is now part of grains
 - Issue-143: Added pnda_internal_network and pnda_ingest_network as grains.
 - Issue-144: Added param "hadoop_distro" to mgr1 node template for pico flavor.
 - Issue-145: Added "hadoop.distro" grain to saltmaster_install bootstrap script.
 - Issue-146: Updated new path of "hdp_core_stack_repo" in saltmaster_install bootstarp script.
 - PNDA-4043: Update HDP to version 2.6.4.0
+- PNDA-3524: Removed beacon related logic from codebase
 
 ## [1.4.0] 2017-11-24
 ### Added:
@@ -19,7 +20,7 @@ All notable changes to this project will be documented in this file.
 - PNDA-3444: Disallow uppercase letters in the cluster names.
 - PNDA-2965: Rename `cloudera_*` role grains to `hadoop_*`
 - PNDA-3180: When expanding a cluster limit the operations to strictly required steps on specific nodes
-- PNDA-3249: put mine configuration in pillar
+- PNDA-3249: Put mine configuration in pillar
 - Issue-123: Fixed Jenkins GPG Key Added in package-install.sh file
 
 ### Fixed
