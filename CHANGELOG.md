@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [1.5.0] 2018-02-10
 ### Changed
 - PNDA-3583: Hadoop distro is now part of grains
 - Issue-143: Added pnda_internal_network and pnda_ingest_network as grains.
