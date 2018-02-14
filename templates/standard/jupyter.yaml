@@ -49,6 +49,9 @@ parameters:
     type: string
   hadoop_distro:
     type: string
+  logvolume_size:
+    type: number
+    default: 120
 
 resources:
   sec_group:
@@ -87,6 +90,7 @@ resources:
             $hadoop_role$: 'EDGE'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
             $hadoop_distro$: { get_param: hadoop_distro }
+            $log_volume_id$: { get_resource: logvolume }
   deploy_package:
     type: OS::Heat::SoftwareDeployment
     properties:
@@ -100,13 +104,25 @@ resources:
 
   install_deployment:
     type: OS::Heat::SoftwareDeployment
-    depends_on: [ deploy_package ]
+    depends_on: [ logvolume_attachment, deploy_package ]
     properties:
       signal_transport: { get_param: signal_transport }
       config:
         get_resource: install_config
       server:
         get_resource: server
+
+  logvolume:
+    type: OS::Cinder::Volume
+    properties:
+      size: { get_param: logvolume_size }
+      description: Volume for jupyter logs
+
+  logvolume_attachment:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      volume_id: { get_resource: logvolume }
+      instance_uuid: { get_resource: server }
 
   server:
     type: OS::Nova::Server
