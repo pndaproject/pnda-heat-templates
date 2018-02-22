@@ -184,6 +184,20 @@ package_repository:
 EOF
 fi
 
+if [ "$compaction$" == "YES" ] ; then
+cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
+dataset_compaction:
+  compaction: $compaction$
+  pattern: '$pattern$'
+EOF
+else
+cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
+dataset_compaction:
+  compaction: NO
+  pattern: '$pattern$'
+EOF
+fi
+
 # Add all the specific values to the env_parameter file
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
 specific_config:
