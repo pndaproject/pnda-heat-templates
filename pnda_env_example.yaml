@@ -193,6 +193,18 @@ parameter_defaults:
   pnda_internal_network: eth0
   pnda_ingest_network: eth0
 
+  #dataset_compaction:
+  # Enable/Disable compaction on datasets.
+  # "YES" to enable.
+  # "NO" to disable.
+  compaction: "NO"
+  # If compaction is enabled, PATTERN sets the frequency of compaction
+  # H - hourly compaction.
+  # d - daily compaction.
+  # M - monthly compaction.
+  # Y - yearly compaction.
+  pattern: "d"
+
 resource_registry:
   #
   # OS::Pnda::preConfig: the resource definition of a pre configuration file
