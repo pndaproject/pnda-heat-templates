@@ -113,11 +113,6 @@ pnda.apps_folder: '$pnda_apps_folder$'
 pnda.archive_container: '$pnda_archive_container$'
 EOF
 
-MINE_FUNCTIONS_NETWORK_INTERFACE="eth0"
-if [ "x$mine_functions_network_ip_addrs_nic$" != "x" ]; then
-  MINE_FUNCTIONS_NETWORK_INTERFACE="$mine_functions_network_ip_addrs_nic$"
-fi
-
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
 pnda_mirror:
   base_url: '$pnda_mirror$'
@@ -141,7 +136,7 @@ hdp:
   hdp_core_stack_repo: '$pnda_mirror$/mirror_hdp/HDP/$HDP_OS/2.6.4.0-91/'
   hdp_utils_stack_repo: '$pnda_mirror$/mirror_hdp/HDP-UTILS-1.1.0.22/repos/$HDP_OS/'
 mine_functions:
-  network.ip_addrs: [$MINE_FUNCTIONS_NETWORK_INTERFACE]
+  network.ip_addrs: [$pnda_internal_network$]
   grains.items: []
 EOF
 
