@@ -153,6 +153,9 @@ parameters:
     description: "If compaction is enabled, pattern sets the frequency of compaction"
     type: string
     default: ''
+  experimental_features:
+    description: "Include experimental features"
+    type: string
 
 resources:
   # A keypair is created for this stack and used to secure login for all instances
@@ -311,6 +314,7 @@ resources:
             $pnda_internal_network$: { get_param: pnda_internal_network }
             $compaction$: { get_param: compaction }
             $pattern$: { get_param: pattern }
+            $experimental_features$: { get_param: experimental_features }
 
   deploy_package:
     type: OS::Heat::SoftwareDeployment

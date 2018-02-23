@@ -193,6 +193,10 @@ parameter_defaults:
   pnda_internal_network: eth0
   pnda_ingest_network: eth0
 
+  # Include experimental features.
+  # Set to "NO", omit setting or omit features section entirely to turn off experimental features
+  experimental_features: "NO"
+
   #dataset_compaction:
   # Enable/Disable compaction on datasets.
   # "YES" to enable.

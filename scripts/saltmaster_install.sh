@@ -198,6 +198,13 @@ dataset_compaction:
 EOF
 fi
 
+if [ "x$experimental_features$" == "xYES" ] ; then
+cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
+features:
+  - EXPERIMENTAL
+EOF
+fi
+
 # Add all the specific values to the env_parameter file
 cat << EOF >> /srv/salt/platform-salt/pillar/env_parameters.sls
 specific_config:
