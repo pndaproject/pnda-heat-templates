@@ -103,7 +103,7 @@ resources:
 {%if create_volumes is equalto 1 %}
             $log_volume_id$: { get_resource: logvolume }
 {%endif%}
-            $roles$: 'hadoop_edge,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,gobblin,deployment_manager,package_repository,data_service,impala-shell,yarn-gateway,hbase_opentsdb_tables,hdfs_cleaner,master_dataset,elk,logserver,kibana_dashboard,jupyter,hadoop_manager,platform_testing_cdh,mysql_connector,pnda_restart'
+            $roles$: 'hadoop_edge,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,gobblin,flink,deployment_manager,package_repository,data_service,impala-shell,yarn-gateway,hbase_opentsdb_tables,hdfs_cleaner,master_dataset,elk,logserver,kibana_dashboard,jupyter,hadoop_manager,platform_testing_cdh,mysql_connector,pnda_restart'
             $hadoop_role$: 'EDGE'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
             $hadoop_distro$: { get_param: hadoop_distro }

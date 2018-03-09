@@ -107,7 +107,7 @@ resources:
 {%endif%}
             $package_repository_fs_location_path$: { get_param: package_repository_fs_location_path }
             $package_repository_fs_type$: { get_param: package_repository_fs_type }
-            $roles$: 'hadoop_edge,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,gobblin,deployment_manager,package_repository,data_service,impala-shell,yarn-gateway,hbase_opentsdb_tables,hdfs_cleaner,master_dataset'
+            $roles$: 'hadoop_edge,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,gobblin,flink,deployment_manager,package_repository,data_service,impala-shell,yarn-gateway,hbase_opentsdb_tables,hdfs_cleaner,master_dataset'
             $hadoop_role$: 'EDGE'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
             $hadoop_distro$: { get_param: hadoop_distro }
