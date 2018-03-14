@@ -102,7 +102,7 @@ resources:
 {%if create_volumes is equalto 1 %}
             $volume_dev$: { get_param: log_mountpoint }
 {%endif%}
-            $roles$: 'hadoop_edge,mysql_connector,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,gobblin,deployment_manager,package_repository,data_service,impala-shell,yarn-gateway,hbase_opentsdb_tables,hdfs_cleaner,master_dataset,jupyter,kafka_manager'
+            $roles$: 'hadoop_edge,mysql_connector,console_frontend,console_backend_data_logger,console_backend_data_manager,graphite,gobblin,flink,deployment_manager,package_repository,data_service,impala-shell,yarn-gateway,hbase_opentsdb_tables,hdfs_cleaner,master_dataset,jupyter,kafka_manager'
             $hadoop_role$: 'EDGE'
             $$SPECIFIC_CONF$$: { get_param: specific_config }
   install_deployment:
