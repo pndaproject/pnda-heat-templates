@@ -87,11 +87,13 @@ TRUSTED_HOST=$(echo $PIP_INDEX_URL | awk -F'[/:]' '/http:\/\//{print $4}')
 cat << EOF > /etc/pip.conf
 [global]
 index-url=$PIP_INDEX_URL
+extra-index-url=https://pypi.python.org/simple/
 trusted-host=$TRUSTED_HOST
 EOF
 cat << EOF > /root/.pydistutils.cfg
 [easy_install]
 index_url=$PIP_INDEX_URL
+find_links=https://pypi.python.org/simple/
 EOF
 
 service salt-minion restart
