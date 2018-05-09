@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - PNDA-4428: Deploy & configure Flink
 
+### Fixed
+- PNDA-4441: Removed "extra-index-url" and "find_links" directives from pip and easy_install configurations
+
 ## [1.5.0] 2018-02-10
 ### Changed
 - PNDA-3583: Hadoop distro is now part of grains
